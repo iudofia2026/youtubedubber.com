@@ -42,7 +42,7 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             >
               Transform your content with{" "}
-              <span className="text-[#ff0000] font-medium">AI-powered multilingual dubbing</span>
+              <span className="text-[#ff0000] font-medium">multilingual dubbing</span>
             </motion.p>
             
             <motion.p
