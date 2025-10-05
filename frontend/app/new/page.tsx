@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle } from 'lucide-react';
@@ -34,43 +34,51 @@ export default function NewJobPage() {
     { id: 3, title: 'Target Languages', description: 'Select languages for dubbing', icon: Globe },
   ];
 
-  const validateStep = (step: number) => {
-    const newErrors: typeof errors = {};
-
+  const validateStep = useCallback((step: number) => {
     if (step === 1 && !voiceTrack) {
-      newErrors.voiceTrack = 'Voice track is required';
+      return false;
     }
 
     if (step === 3 && targetLanguages.length === 0) {
-      newErrors.targetLanguages = 'Please select at least one target language';
+      return false;
+    }
+
+    return true;
+  }, [voiceTrack, targetLanguages]);
+
+  const isStepValid = useMemo(() => {
+    return validateStep(currentStep);
+  }, [validateStep, currentStep]);
+
+  const isFinalStepValid = useMemo(() => {
+    if (!voiceTrack || targetLanguages.length === 0) {
+      return false;
     }
 
     // Check duration mismatch if both tracks are present
     if (voiceTrack && backgroundTrack && voiceDuration && backgroundDuration) {
       if (!areDurationsEqual(voiceDuration, backgroundDuration)) {
-        const diff = formatDurationDifference(voiceDuration, backgroundDuration);
-        newErrors.durationMismatch = `Track durations don't match. Difference: ${diff}`;
+        return false;
       }
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    return true;
+  }, [voiceTrack, targetLanguages, backgroundTrack, voiceDuration, backgroundDuration]);
 
-  const nextStep = () => {
-    if (validateStep(currentStep) && currentStep < steps.length) {
+  const nextStep = useCallback(() => {
+    if (isStepValid && currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
-  };
+  }, [isStepValid, currentStep, steps.length]);
 
-  const prevStep = () => {
+  const prevStep = useCallback(() => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
-  };
+  }, [currentStep]);
 
-  const handleSubmit = async () => {
-    if (!validateStep(3)) {
+  const handleSubmit = useCallback(async () => {
+    if (!isFinalStepValid) {
       return;
     }
 
@@ -95,7 +103,7 @@ export default function NewJobPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [isFinalStepValid, voiceTrack, backgroundTrack, targetLanguages, router]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -373,14 +381,14 @@ export default function NewJobPage() {
             {currentStep < steps.length ? (
               <motion.button
                 onClick={nextStep}
-                disabled={!validateStep(currentStep)}
+                disabled={!isStepValid}
                 className={`inline-flex items-center space-x-2 px-8 py-3 rounded-lg font-medium transition-all duration-200 ${
-                  validateStep(currentStep)
+                  isStepValid
                     ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]'
                     : 'bg-muted text-muted-foreground cursor-not-allowed'
                 }`}
-                whileHover={validateStep(currentStep) ? { scale: 1.05 } : {}}
-                whileTap={validateStep(currentStep) ? { scale: 0.95 } : {}}
+                whileHover={isStepValid ? { scale: 1.05 } : {}}
+                whileTap={isStepValid ? { scale: 0.95 } : {}}
               >
                 <span>Next</span>
                 <ArrowRight className="w-4 h-4" />
@@ -388,14 +396,14 @@ export default function NewJobPage() {
             ) : (
               <motion.button
                 onClick={handleSubmit}
-                disabled={isSubmitting || !validateStep(3)}
+                disabled={isSubmitting || !isFinalStepValid}
                 className={`inline-flex items-center space-x-2 px-8 py-3 rounded-lg font-medium transition-all duration-200 ${
-                  isSubmitting || !validateStep(3)
+                  isSubmitting || !isFinalStepValid
                     ? 'bg-muted text-muted-foreground cursor-not-allowed'
                     : 'bg-[#ff0000] text-white hover:bg-[#cc0000]'
                 }`}
-                whileHover={!isSubmitting && validateStep(3) ? { scale: 1.05 } : {}}
-                whileTap={!isSubmitting && validateStep(3) ? { scale: 0.95 } : {}}
+                whileHover={!isSubmitting && isFinalStepValid ? { scale: 1.05 } : {}}
+                whileTap={!isSubmitting && isFinalStepValid ? { scale: 0.95 } : {}}
               >
                 {isSubmitting ? (
                   <>
