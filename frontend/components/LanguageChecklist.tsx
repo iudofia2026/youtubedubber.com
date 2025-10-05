@@ -7,7 +7,6 @@ import { LanguageChecklistProps, Language } from '@/types';
 
 export function LanguageChecklist({ value, onChange, languages, error }: LanguageChecklistProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const filteredLanguages = languages.filter(lang =>
     lang.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -33,7 +32,8 @@ export function LanguageChecklist({ value, onChange, languages, error }: Languag
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium">
           Target Languages
@@ -61,7 +61,7 @@ export function LanguageChecklist({ value, onChange, languages, error }: Languag
           {selectedLanguages.map((language) => (
             <motion.div
               key={language.code}
-              className="flex items-center space-x-2 bg-[#ff0000]/10 border border-[#ff0000]/20 px-3 py-2 rounded-md"
+              className="flex items-center space-x-2 bg-[#ff0000]/10 border border-[#ff0000]/20 px-3 py-2"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
@@ -82,118 +82,88 @@ export function LanguageChecklist({ value, onChange, languages, error }: Languag
         </motion.div>
       )}
 
-      {/* Search and Expand Button */}
+      {/* Search Input */}
       <div className="relative">
-        <motion.button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full flex items-center justify-between p-4 border border-border hover:border-[#ff0000]/50 transition-colors duration-200 bg-background"
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
-        >
-          <div className="flex items-center space-x-3">
-            <Search className="w-4 h-4 text-muted-foreground" />
-            <span className="text-muted-foreground">
-              {value.length === 0 ? 'Select target languages' : `${value.length} language${value.length === 1 ? '' : 's'} selected`}
-            </span>
-          </div>
-          <motion.div
-            animate={{ rotate: isExpanded ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </motion.div>
-        </motion.button>
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Search languages..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-10 pr-3 py-3 text-sm border border-border focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 focus:border-transparent bg-background"
+        />
+      </div>
 
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              className="absolute top-full left-0 right-0 mt-1 bg-background border border-border shadow-lg z-50 max-h-80 overflow-hidden"
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
+      {/* Language Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-80 overflow-y-auto">
+        {filteredLanguages.map((language, index) => {
+          const isSelected = value.includes(language.code);
+          return (
+            <motion.button
+              key={language.code}
+              onClick={() => handleToggle(language.code)}
+              className={`p-4 text-left transition-all duration-200 flex flex-col items-center space-y-2 border-2 hover:border-[#ff0000]/50 ${
+                isSelected 
+                  ? 'border-[#ff0000] bg-[#ff0000]/5' 
+                  : 'border-border hover:bg-muted/50'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
             >
-              {/* Search input */}
-              <div className="p-3 border-b border-border">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="Search languages..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 focus:border-transparent bg-background"
-                    autoFocus
-                  />
+              {/* Flag */}
+              <span className="text-3xl">{language.flag}</span>
+              
+              {/* Language name */}
+              <div className="text-center">
+                <div className={`text-sm font-medium ${isSelected ? 'text-[#ff0000]' : 'text-foreground'}`}>
+                  {language.name}
+                </div>
+                <div className="text-xs text-muted-foreground uppercase">
+                  {language.code}
                 </div>
               </div>
 
-              {/* Language checklist */}
-              <div className="max-h-64 overflow-y-auto">
-                {filteredLanguages.map((language) => {
-                  const isSelected = value.includes(language.code);
-                  return (
-                    <motion.button
-                      key={language.code}
-                      onClick={() => handleToggle(language.code)}
-                      className={`w-full px-4 py-3 text-left transition-all duration-200 flex items-center space-x-3 hover:bg-muted/50 ${
-                        isSelected ? 'bg-[#ff0000]/5' : ''
-                      }`}
-                      whileHover={{ backgroundColor: 'var(--muted)' }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {/* Custom checkbox */}
-                      <div className="relative">
-                        <div className={`w-5 h-5 border-2 rounded-sm flex items-center justify-center transition-all duration-200 ${
-                          isSelected 
-                            ? 'border-[#ff0000] bg-[#ff0000]' 
-                            : 'border-border hover:border-[#ff0000]/50'
-                        }`}>
-                          <AnimatePresence>
-                            {isSelected && (
-                              <motion.div
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0, opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <Check className="w-3 h-3 text-white" />
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      </div>
-
-                      {/* Language info */}
-                      <div className="flex items-center space-x-3 flex-1">
-                        <span className="text-2xl">{language.flag}</span>
-                        <div className="flex-1">
-                          <div className={`font-medium ${isSelected ? 'text-[#ff0000]' : 'text-foreground'}`}>
-                            {language.name}
-                          </div>
-                          <div className="text-xs text-muted-foreground uppercase">
-                            {language.code}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.button>
-                  );
-                })}
-                
-                {filteredLanguages.length === 0 && (
-                  <div className="px-4 py-8 text-center text-muted-foreground">
-                    <div className="text-4xl mb-2">🔍</div>
-                    <p>No languages found</p>
-                    <p className="text-sm">Try a different search term</p>
-                  </div>
-                )}
+              {/* Checkbox indicator */}
+              <div className="relative">
+                <div className={`w-5 h-5 border-2 flex items-center justify-center transition-all duration-200 ${
+                  isSelected 
+                    ? 'border-[#ff0000] bg-[#ff0000]' 
+                    : 'border-border'
+                }`}>
+                  <AnimatePresence>
+                    {isSelected && (
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Check className="w-3 h-3 text-white" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </motion.button>
+          );
+        })}
       </div>
+
+      {/* No results message */}
+      {filteredLanguages.length === 0 && (
+        <motion.div
+          className="text-center py-8 text-muted-foreground"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="text-4xl mb-2">🔍</div>
+          <p>No languages found</p>
+          <p className="text-sm">Try a different search term</p>
+        </motion.div>
+      )}
 
       {/* Error message */}
       {error && (
@@ -208,7 +178,7 @@ export function LanguageChecklist({ value, onChange, languages, error }: Languag
 
       {/* Help text */}
       <p className="text-xs text-muted-foreground">
-        Select one or more languages to dub your content into. You can search and filter languages easily.
+        Select one or more languages to dub your content into. Click on any language to select or deselect it.
       </p>
     </div>
   );
