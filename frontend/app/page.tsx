@@ -76,13 +76,13 @@ export default function Home() {
 
         {/* Features Section */}
         <motion.section
-          className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8"
+          className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
         >
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-3 tracking-tight">
               Why Choose Our Platform?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-light">
@@ -90,7 +90,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
                 icon: Mic,
@@ -112,15 +112,15 @@ export default function Home() {
               return (
                 <motion.div
                   key={feature.title}
-                  className="text-center p-6"
+                  className="text-center p-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
                 >
-                  <div className="w-16 h-16 bg-[#ff0000]/10 flex items-center justify-center mx-auto mb-4 border border-[#ff0000]/20">
-                    <Icon className="w-8 h-8 text-[#ff0000]" />
+                  <div className="w-14 h-14 bg-[#ff0000]/10 flex items-center justify-center mx-auto mb-3 border border-[#ff0000]/20">
+                    <Icon className="w-7 h-7 text-[#ff0000]" />
                   </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-3 tracking-tight">
+                  <h3 className="text-lg font-semibold text-foreground mb-2 tracking-tight">
                     {feature.title}
                   </h3>
                   <p className="text-muted-foreground font-light leading-relaxed">
@@ -134,16 +134,16 @@ export default function Home() {
 
         {/* CTA Section */}
         <motion.section
-          className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8"
+          className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.6 }}
         >
           <div className="text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-3 tracking-tight">
               Ready to Get Started?
             </h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto font-light">
+            <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto font-light">
               Join thousands of content creators who trust our platform for their multilingual dubbing needs.
             </p>
             <Link href="/new">
