@@ -157,41 +157,14 @@ export default function NewJobPage() {
                       transition={{ duration: 0.6, delay: 0.4 }}
                       whileHover={{ scale: 1.05 }}
                     >
-                      {/* Animated background rings */}
-                      <motion.div
-                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/20 rounded-full"
-                        animate={{ 
-                          scale: [1, 1.3, 1],
-                          opacity: [0.3, 0.1, 0.3]
-                        }}
-                        transition={{ 
-                          duration: 2.5,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-                      <motion.div
-                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/10 rounded-full"
-                        animate={{ 
-                          scale: [1, 1.5, 1],
-                          opacity: [0.2, 0.05, 0.2]
-                        }}
-                        transition={{ 
-                          duration: 2.5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                          delay: 0.8
-                        }}
-                      />
                       {/* Main icon container */}
-                      <div className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center shadow-lg">
+                      <div className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] flex items-center justify-center shadow-lg">
                         <motion.div
                           animate={{ 
-                            y: [0, -1, 0],
-                            rotate: [0, 1, 0]
+                            scale: [1, 1.1, 1]
                           }}
                           transition={{ 
-                            duration: 4,
+                            duration: 2,
                             repeat: Infinity,
                             ease: "easeInOut"
                           }}
@@ -213,20 +186,19 @@ export default function NewJobPage() {
                           Upload Voice Track
                         </h2>
                         
-                        {/* Cool Animated Element */}
+                        {/* Animated Sound Waves */}
                         <motion.div
                           className="relative flex items-center"
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
                           transition={{ 
-                            duration: 0.8, 
+                            duration: 0.6, 
                             delay: 1,
                             type: "spring",
                             stiffness: 200,
                             damping: 15
                           }}
                         >
-                          {/* Animated Sound Waves */}
                           <div className="flex items-center space-x-1">
                             {[0, 1, 2, 3, 4].map((i) => (
                               <motion.div
@@ -245,31 +217,6 @@ export default function NewJobPage() {
                               />
                             ))}
                           </div>
-                          
-                          {/* Pulsing Dot */}
-                          <motion.div
-                            className="ml-2 w-2 h-2 bg-[#ff0000] rounded-full"
-                            animate={{
-                              scale: [1, 1.5, 1],
-                              opacity: [0.6, 1, 0.6]
-                            }}
-                            transition={{
-                              duration: 1.5,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                          />
-                          
-                          {/* Rotating Ring */}
-                          <motion.div
-                            className="absolute -inset-2 border border-[#ff0000]/30 rounded-full"
-                            animate={{ rotate: 360 }}
-                            transition={{
-                              duration: 4,
-                              repeat: Infinity,
-                              ease: "linear"
-                            }}
-                          />
                         </motion.div>
                         
                         <motion.div
@@ -334,41 +281,14 @@ export default function NewJobPage() {
                       transition={{ duration: 0.6, delay: 0.4 }}
                       whileHover={{ scale: 1.05 }}
                     >
-                      {/* Animated background rings */}
-                      <motion.div
-                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/20 rounded-full"
-                        animate={{ 
-                          scale: [1, 1.3, 1],
-                          opacity: [0.3, 0.1, 0.3]
-                        }}
-                        transition={{ 
-                          duration: 2.5,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-                      <motion.div
-                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/10 rounded-full"
-                        animate={{ 
-                          scale: [1, 1.5, 1],
-                          opacity: [0.2, 0.05, 0.2]
-                        }}
-                        transition={{ 
-                          duration: 2.5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                          delay: 0.8
-                        }}
-                      />
                       {/* Main icon container */}
-                      <div className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center shadow-lg">
+                      <div className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] flex items-center justify-center shadow-lg">
                         <motion.div
                           animate={{ 
-                            y: [0, -1, 0],
-                            rotate: [0, 1, 0]
+                            scale: [1, 1.1, 1]
                           }}
                           transition={{ 
-                            duration: 4,
+                            duration: 2,
                             repeat: Infinity,
                             ease: "easeInOut"
                           }}
@@ -390,20 +310,19 @@ export default function NewJobPage() {
                           Background Track
                         </h2>
                         
-                        {/* Cool Animated Music Element */}
+                        {/* Animated Music Notes */}
                         <motion.div
                           className="relative flex items-center"
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
                           transition={{ 
-                            duration: 0.8, 
+                            duration: 0.6, 
                             delay: 1,
                             type: "spring",
                             stiffness: 200,
                             damping: 15
                           }}
                         >
-                          {/* Animated Music Notes */}
                           <div className="flex items-center space-x-1">
                             {[0, 1, 2].map((i) => (
                               <motion.div
@@ -424,31 +343,6 @@ export default function NewJobPage() {
                               </motion.div>
                             ))}
                           </div>
-                          
-                          {/* Pulsing Dot */}
-                          <motion.div
-                            className="ml-2 w-2 h-2 bg-[#ff0000] rounded-full"
-                            animate={{
-                              scale: [1, 1.5, 1],
-                              opacity: [0.6, 1, 0.6]
-                            }}
-                            transition={{
-                              duration: 1.5,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                          />
-                          
-                          {/* Rotating Ring */}
-                          <motion.div
-                            className="absolute -inset-2 border border-[#ff0000]/30 rounded-full"
-                            animate={{ rotate: 360 }}
-                            transition={{
-                              duration: 4,
-                              repeat: Infinity,
-                              ease: "linear"
-                            }}
-                          />
                         </motion.div>
                         
                         <motion.div
@@ -542,41 +436,14 @@ export default function NewJobPage() {
                       transition={{ duration: 0.6, delay: 0.4 }}
                       whileHover={{ scale: 1.05 }}
                     >
-                      {/* Animated background rings */}
-                      <motion.div
-                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/20 rounded-full"
-                        animate={{ 
-                          scale: [1, 1.3, 1],
-                          opacity: [0.3, 0.1, 0.3]
-                        }}
-                        transition={{ 
-                          duration: 2.5,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-                      <motion.div
-                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/10 rounded-full"
-                        animate={{ 
-                          scale: [1, 1.5, 1],
-                          opacity: [0.2, 0.05, 0.2]
-                        }}
-                        transition={{ 
-                          duration: 2.5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                          delay: 0.8
-                        }}
-                      />
                       {/* Main icon container */}
-                      <div className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center shadow-lg">
+                      <div className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] flex items-center justify-center shadow-lg">
                         <motion.div
                           animate={{ 
-                            y: [0, -1, 0],
-                            rotate: [0, 1, 0]
+                            scale: [1, 1.1, 1]
                           }}
                           transition={{ 
-                            duration: 4,
+                            duration: 2,
                             repeat: Infinity,
                             ease: "easeInOut"
                           }}
@@ -598,20 +465,19 @@ export default function NewJobPage() {
                           Target Languages
                         </h2>
                         
-                        {/* Cool Animated Language Element */}
+                        {/* Animated Language Flags */}
                         <motion.div
                           className="relative flex items-center"
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
                           transition={{ 
-                            duration: 0.8, 
+                            duration: 0.6, 
                             delay: 1,
                             type: "spring",
                             stiffness: 200,
                             damping: 15
                           }}
                         >
-                          {/* Animated Language Flags */}
                           <div className="flex items-center space-x-1">
                             {['🌍', '🌎', '🌏'].map((flag, i) => (
                               <motion.div
@@ -632,31 +498,6 @@ export default function NewJobPage() {
                               </motion.div>
                             ))}
                           </div>
-                          
-                          {/* Pulsing Dot */}
-                          <motion.div
-                            className="ml-2 w-2 h-2 bg-[#ff0000] rounded-full"
-                            animate={{
-                              scale: [1, 1.5, 1],
-                              opacity: [0.6, 1, 0.6]
-                            }}
-                            transition={{
-                              duration: 1.5,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                          />
-                          
-                          {/* Rotating Ring */}
-                          <motion.div
-                            className="absolute -inset-2 border border-[#ff0000]/30 rounded-full"
-                            animate={{ rotate: 360 }}
-                            transition={{
-                              duration: 4,
-                              repeat: Infinity,
-                              ease: "linear"
-                            }}
-                          />
                         </motion.div>
                         
                         <motion.div
