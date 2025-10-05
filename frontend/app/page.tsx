@@ -23,175 +23,49 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-br from-[#ff0000]/5 via-transparent to-[#ff0000]/5 pointer-events-none"></div>
           <div className="text-center relative z-10">
             <motion.h1
-              className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6"
-              initial={{ opacity: 0, y: 30, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ 
-                duration: 1.2, 
-                delay: 0.2,
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }}
+              className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              <motion.span 
-                className="text-[#ff0000] drop-shadow-sm inline-block"
-                initial={{ opacity: 0, x: -20, rotateY: -90 }}
-                animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                transition={{ 
-                  duration: 0.8, 
-                  delay: 0.4,
-                  ease: "easeOut"
-                }}
-                whileHover={{ 
-                  scale: 1.05,
-                  textShadow: "0 0 20px rgba(255, 0, 0, 0.5)"
-                }}
-              >
-                YouTube
-              </motion.span>
-              <motion.span
-                className="inline-block"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ 
-                  duration: 0.6, 
-                  delay: 0.6,
-                  ease: "easeOut"
-                }}
-              >
-                {" "}Multilingual
-              </motion.span>
+              <span className="text-[#ff0000]">YouTube</span> Multilingual
               <br />
-              <motion.span 
-                className="text-[#ff0000] drop-shadow-sm inline-block"
-                initial={{ opacity: 0, x: 20, rotateY: 90 }}
-                animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                transition={{ 
-                  duration: 0.8, 
-                  delay: 0.8,
-                  ease: "easeOut"
-                }}
-                whileHover={{ 
-                  scale: 1.05,
-                  textShadow: "0 0 20px rgba(255, 0, 0, 0.5)"
-                }}
-              >
-                Dubber
-              </motion.span>
+              <span className="text-[#ff0000]">Dubber</span>
             </motion.h1>
             
             <motion.p
-              className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto"
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ 
-                duration: 1, 
-                delay: 1,
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }}
+              className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto font-light"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             >
-              <motion.span
-                className="inline-block"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2, duration: 0.6 }}
-              >
-                Transform your content with{" "}
-              </motion.span>
-              <motion.span
-                className="text-[#ff0000] font-semibold"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ 
-                  delay: 1.4, 
-                  duration: 0.5,
-                  ease: "backOut"
-                }}
-                whileHover={{ 
-                  scale: 1.05,
-                  textShadow: "0 0 15px rgba(255, 0, 0, 0.3)"
-                }}
-              >
-                AI-powered multilingual dubbing
-              </motion.span>
+              Transform your content with{" "}
+              <span className="text-[#ff0000] font-medium">AI-powered multilingual dubbing</span>
+            </motion.p>
+            
+            <motion.p
+              className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto font-light leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+            >
+              Upload your voice and background audio tracks, select your target language, 
+              and let our AI create professional-quality multilingual dubs for your content.
             </motion.p>
             
             <motion.div
-              className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 1.2, 
-                delay: 1.6,
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }}
-            >
-              <motion.p
-                className="mb-2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.8, duration: 0.6 }}
-              >
-                Upload your voice and background audio tracks, select your target language,
-              </motion.p>
-              <motion.p
-                className="text-[#ff0000]/80"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 2, duration: 0.6 }}
-              >
-                and let our AI create professional-quality multilingual dubs for your content.
-              </motion.p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ 
-                duration: 1, 
-                delay: 2.2,
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }}
+              transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
             >
               <Link href="/new">
                 <motion.button
-                  className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-semibold hover:bg-[#cc0000] transition-all duration-300 shadow-lg relative overflow-hidden group"
-                  whileHover={{ 
-                    scale: 1.05,
-                    boxShadow: "0 10px 30px rgba(255, 0, 0, 0.3)"
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 2.4, duration: 0.6 }}
+                  className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {/* Button shine effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    initial={{ x: "-100%" }}
-                    animate={{ x: "100%" }}
-                    transition={{ 
-                      duration: 2,
-                      repeat: Infinity,
-                      repeatDelay: 3,
-                      ease: "easeInOut"
-                    }}
-                  />
-                  
-                  <motion.span
-                    className="relative z-10"
-                    whileHover={{ x: 2 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    Start Dubbing
-                  </motion.span>
-                  
-                  <motion.div
-                    className="relative z-10"
-                    whileHover={{ x: 4 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ArrowRight className="w-5 h-5" />
-                  </motion.div>
+                  <span>Start Dubbing</span>
+                  <ArrowRight className="w-5 h-5" />
                 </motion.button>
               </Link>
             </motion.div>
@@ -206,10 +80,10 @@ export default function Home() {
           transition={{ duration: 0.8, delay: 1 }}
         >
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight">
               Why Choose Our Platform?
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-light">
               Professional-quality dubbing made simple and accessible
             </p>
           </div>
@@ -239,15 +113,15 @@ export default function Home() {
                   className="text-center p-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 1.2 + index * 0.2 }}
+                  transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
                 >
                   <div className="w-16 h-16 bg-[#ff0000]/10 flex items-center justify-center mx-auto mb-4 border border-[#ff0000]/20">
                     <Icon className="w-8 h-8 text-[#ff0000]" />
                   </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-3">
+                  <h3 className="text-xl font-semibold text-foreground mb-3 tracking-tight">
                     {feature.title}
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground font-light leading-relaxed">
                     {feature.description}
                   </p>
                 </motion.div>
@@ -264,17 +138,17 @@ export default function Home() {
           transition={{ duration: 0.8, delay: 1.6 }}
         >
           <div className="text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight">
               Ready to Get Started?
             </h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto font-light">
               Join thousands of content creators who trust our platform for their multilingual dubbing needs.
             </p>
             <Link href="/new">
               <motion.button
-                className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-semibold hover:bg-[#cc0000] transition-colors duration-200 shadow-lg"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <span>Create Your First Dub</span>
                 <ArrowRight className="w-5 h-5" />
