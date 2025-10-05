@@ -478,25 +478,72 @@ export default function NewJobPage() {
                             damping: 15
                           }}
                         >
-                          <div className="flex items-center space-x-1">
-                            {['🌍', '🌎', '🌏'].map((flag, i) => (
+                          <div className="relative flex items-center justify-center w-8 h-8">
+                            {/* Central Node */}
+                            <motion.div
+                              className="w-2 h-2 bg-[#ff0000] rounded-full"
+                              animate={{
+                                scale: [1, 1.3, 1],
+                                opacity: [0.8, 1, 0.8]
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            />
+                            
+                            {/* Orbiting Language Dots */}
+                            {[0, 1, 2, 3, 4].map((i) => (
                               <motion.div
                                 key={i}
-                                className="text-lg"
+                                className="absolute w-1.5 h-1.5 bg-gradient-to-r from-[#ff0000] to-[#ff6666] rounded-full"
+                                style={{
+                                  transformOrigin: '0 0',
+                                  left: '12px',
+                                  top: '12px'
+                                }}
                                 animate={{
-                                  y: [0, -2, 0],
-                                  rotate: [0, 10, 0]
+                                  rotate: [0, 360],
+                                  scale: [0.8, 1.2, 0.8]
                                 }}
                                 transition={{
-                                  duration: 2,
+                                  duration: 4,
                                   repeat: Infinity,
-                                  delay: i * 0.4,
-                                  ease: "easeInOut"
+                                  delay: i * 0.8,
+                                  ease: "linear"
                                 }}
-                              >
-                                {flag}
-                              </motion.div>
+                                initial={{
+                                  x: Math.cos(i * (2 * Math.PI / 5)) * 10,
+                                  y: Math.sin(i * (2 * Math.PI / 5)) * 10
+                                }}
+                              />
                             ))}
+                            
+                            {/* Connecting Lines */}
+                            <motion.div
+                              className="absolute inset-0 w-6 h-6 border border-[#ff0000]/30 rounded-full"
+                              animate={{ rotate: 360 }}
+                              transition={{
+                                duration: 8,
+                                repeat: Infinity,
+                                ease: "linear"
+                              }}
+                            />
+                            
+                            {/* Pulsing Ring */}
+                            <motion.div
+                              className="absolute inset-0 w-6 h-6 border border-[#ff0000]/20 rounded-full"
+                              animate={{
+                                scale: [1, 1.5, 1],
+                                opacity: [0.3, 0, 0.3]
+                              }}
+                              transition={{
+                                duration: 3,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            />
                           </div>
                         </motion.div>
                         
