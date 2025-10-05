@@ -74,6 +74,33 @@ export default function Home() {
           </div>
         </motion.section>
 
+        {/* Scroll Indicator */}
+        <motion.div
+          className="flex flex-col items-center py-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+        >
+          <motion.p
+            className="text-sm text-muted-foreground mb-4"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            or learn more
+          </motion.p>
+          <motion.div
+            className="w-6 h-10 border-2 border-muted-foreground/30 rounded-full flex justify-center"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <motion.div
+              className="w-1 h-3 bg-muted-foreground/60 rounded-full mt-2"
+              animate={{ opacity: [0.3, 1, 0.3] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </motion.div>
+        </motion.div>
+
         {/* Features Section */}
         <motion.section
           className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8"
