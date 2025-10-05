@@ -141,88 +141,120 @@ export default function NewJobPage() {
             >
               {/* Step 1: Voice Track Upload */}
               {currentStep === 1 && (
-                <div className="text-center space-y-6">
-                  {/* Compact Header with Icon */}
+                <div className="space-y-6">
+                  {/* Creative Horizontal Header with Icon Left */}
                   <motion.div
-                    className="flex flex-col items-center space-y-3"
+                    className="flex items-center justify-center space-x-6 max-w-2xl mx-auto"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
                   >
+                    {/* Animated Icon Section */}
                     <motion.div
-                      className="relative"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 0.4 }}
+                      className="relative flex-shrink-0"
+                      initial={{ scale: 0.8, opacity: 0, x: -20 }}
+                      animate={{ scale: 1, opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
                       whileHover={{ scale: 1.05 }}
                     >
                       {/* Animated background rings */}
                       <motion.div
-                        className="absolute inset-0 w-20 h-20 bg-[#ff0000]/20 rounded-full"
+                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/20 rounded-full"
                         animate={{ 
-                          scale: [1, 1.2, 1],
+                          scale: [1, 1.3, 1],
                           opacity: [0.3, 0.1, 0.3]
                         }}
                         transition={{ 
-                          duration: 2,
+                          duration: 2.5,
                           repeat: Infinity,
                           ease: "easeInOut"
                         }}
                       />
                       <motion.div
-                        className="absolute inset-0 w-20 h-20 bg-[#ff0000]/10 rounded-full"
+                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/10 rounded-full"
                         animate={{ 
-                          scale: [1, 1.4, 1],
+                          scale: [1, 1.5, 1],
                           opacity: [0.2, 0.05, 0.2]
                         }}
                         transition={{ 
-                          duration: 2,
+                          duration: 2.5,
                           repeat: Infinity,
                           ease: "easeInOut",
-                          delay: 0.5
+                          delay: 0.8
                         }}
                       />
                       {/* Main icon container */}
-                      <div className="relative w-20 h-20 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center shadow-lg">
+                      <div className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center shadow-lg">
                         <motion.div
                           animate={{ 
-                            y: [0, -2, 0],
-                            rotate: [0, 2, 0]
+                            y: [0, -1, 0],
+                            rotate: [0, 1, 0]
                           }}
                           transition={{ 
-                            duration: 3,
+                            duration: 4,
                             repeat: Infinity,
                             ease: "easeInOut"
                           }}
                         >
-                          <Mic className="w-10 h-10 text-white" />
+                          <Mic className="w-8 h-8 text-white" />
                         </motion.div>
                       </div>
                     </motion.div>
                     
-                    <div className="space-y-2">
-                      <motion.h2 
-                        className="text-2xl font-bold text-foreground"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.6 }}
+                    {/* Text Content with Creative Layout */}
+                    <div className="flex-1 text-left space-y-2">
+                      <motion.div
+                        className="flex items-baseline space-x-3"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.6 }}
                       >
-                        Upload Voice Track
-                      </motion.h2>
+                        <h2 className="text-2xl font-bold text-foreground">
+                          Upload Voice Track
+                        </h2>
+                        <motion.div
+                          className="h-1 w-8 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full"
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ duration: 0.8, delay: 1 }}
+                        />
+                      </motion.div>
+                      
                       <motion.p 
-                        className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.7 }}
+                        className="text-base text-muted-foreground leading-relaxed max-w-md"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.8 }}
                       >
                         Upload your voice-only audio file for multilingual dubbing
                       </motion.p>
+                      
+                      {/* Inline Info Tags */}
+                      <motion.div
+                        className="flex items-center space-x-4 text-xs text-muted-foreground"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 1.2 }}
+                      >
+                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
+                          <span>🎤</span>
+                          <span>MP3, WAV, M4A</span>
+                        </span>
+                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
+                          <span>📏</span>
+                          <span>Max 100MB</span>
+                        </span>
+                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
+                          <span>⏱️</span>
+                          <span>5-15 min</span>
+                        </span>
+                      </motion.div>
                     </div>
                   </motion.div>
 
                   {/* File Upload Component */}
                   <motion.div
-                    className="max-w-md mx-auto"
+                    className="max-w-2xl mx-auto"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.8 }}
@@ -241,26 +273,6 @@ export default function NewJobPage() {
                     />
                   </motion.div>
 
-                  {/* Compact Info Grid */}
-                  <motion.div
-                    className="grid grid-cols-3 gap-4 max-w-lg mx-auto text-xs text-muted-foreground"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 1 }}
-                  >
-                    <div className="text-center p-2 bg-muted/30 rounded-lg">
-                      <div className="text-lg mb-1">🎤</div>
-                      <div className="font-medium">MP3, WAV, M4A</div>
-                    </div>
-                    <div className="text-center p-2 bg-muted/30 rounded-lg">
-                      <div className="text-lg mb-1">📏</div>
-                      <div className="font-medium">Max 100MB</div>
-                    </div>
-                    <div className="text-center p-2 bg-muted/30 rounded-lg">
-                      <div className="text-lg mb-1">⏱️</div>
-                      <div className="font-medium">5-15 min</div>
-                    </div>
-                  </motion.div>
                 </div>
               )}
 
