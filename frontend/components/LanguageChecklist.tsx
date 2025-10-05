@@ -95,30 +95,30 @@ export function LanguageChecklist({ value, onChange, languages, error }: Languag
       </div>
 
       {/* Language Grid */}
-      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3 max-h-80 overflow-y-auto">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-80 overflow-y-auto">
         {filteredLanguages.map((language, index) => {
           const isSelected = value.includes(language.code);
           return (
             <motion.button
               key={language.code}
               onClick={() => handleToggle(language.code)}
-              className={`p-3 text-left transition-all duration-200 flex flex-col items-center space-y-2 border-2 hover:border-[#ff0000]/50 ${
+              className={`p-4 text-left transition-all duration-200 flex flex-col items-center space-y-2 border-2 hover:border-[#ff0000]/50 ${
                 isSelected 
                   ? 'border-[#ff0000] bg-[#ff0000]/5' 
                   : 'border-border hover:bg-muted/50'
               }`}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.03 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
             >
               {/* Flag */}
-              <span className="text-2xl">{language.flag}</span>
+              <span className="text-3xl">{language.flag}</span>
               
               {/* Language name */}
               <div className="text-center">
-                <div className={`text-sm font-medium ${isSelected ? 'text-[#ff0000]' : 'text-foreground'} truncate`}>
+                <div className={`text-sm font-medium ${isSelected ? 'text-[#ff0000]' : 'text-foreground'}`}>
                   {language.name}
                 </div>
                 <div className="text-xs text-muted-foreground uppercase">
@@ -128,7 +128,7 @@ export function LanguageChecklist({ value, onChange, languages, error }: Languag
 
               {/* Checkbox indicator */}
               <div className="relative">
-                <div className={`w-4 h-4 border-2 flex items-center justify-center transition-all duration-200 ${
+                <div className={`w-5 h-5 border-2 flex items-center justify-center transition-all duration-200 ${
                   isSelected 
                     ? 'border-[#ff0000] bg-[#ff0000]' 
                     : 'border-border'
