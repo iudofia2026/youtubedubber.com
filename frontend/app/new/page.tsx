@@ -212,11 +212,71 @@ export default function NewJobPage() {
                         <h2 className="text-2xl font-bold text-foreground">
                           Upload Voice Track
                         </h2>
+                        
+                        {/* Cool Animated Element */}
+                        <motion.div
+                          className="relative flex items-center"
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ 
+                            duration: 0.8, 
+                            delay: 1,
+                            type: "spring",
+                            stiffness: 200,
+                            damping: 15
+                          }}
+                        >
+                          {/* Animated Sound Waves */}
+                          <div className="flex items-center space-x-1">
+                            {[0, 1, 2, 3, 4].map((i) => (
+                              <motion.div
+                                key={i}
+                                className="w-1 bg-gradient-to-t from-[#ff0000] to-[#ff6666] rounded-full"
+                                animate={{
+                                  height: [4, 16, 8, 20, 6, 12, 4],
+                                  opacity: [0.3, 1, 0.7, 1, 0.5, 0.9, 0.3]
+                                }}
+                                transition={{
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  delay: i * 0.1,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                            ))}
+                          </div>
+                          
+                          {/* Pulsing Dot */}
+                          <motion.div
+                            className="ml-2 w-2 h-2 bg-[#ff0000] rounded-full"
+                            animate={{
+                              scale: [1, 1.5, 1],
+                              opacity: [0.6, 1, 0.6]
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                          
+                          {/* Rotating Ring */}
+                          <motion.div
+                            className="absolute -inset-2 border border-[#ff0000]/30 rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{
+                              duration: 4,
+                              repeat: Infinity,
+                              ease: "linear"
+                            }}
+                          />
+                        </motion.div>
+                        
                         <motion.div
                           className="h-1 w-8 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full"
                           initial={{ scaleX: 0 }}
                           animate={{ scaleX: 1 }}
-                          transition={{ duration: 0.8, delay: 1 }}
+                          transition={{ duration: 0.8, delay: 1.2 }}
                         />
                       </motion.div>
                       
