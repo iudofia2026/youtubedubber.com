@@ -62,7 +62,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
                 </svg>
               </div>
               <span className="text-xl font-bold text-foreground">
-                YouTube Multilingual Dubber
+                <span className="youtube-font">YouTube</span> Multilingual Dubber
               </span>
             </Link>
           </div>

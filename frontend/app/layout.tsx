@@ -1,22 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Geist, Geist_Mono } from "next/font/google";
+import { DM_Sans, DM_Mono, Roboto } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
-const geist = Geist({
-  variable: "--font-geist",
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
   subsets: ["latin"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const roboto = Roboto({
+  variable: "--font-roboto",
   subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
   display: "swap",
 });
 
@@ -33,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geist.variable} ${geistMono.variable} antialiased`}
+        className={`${dmSans.variable} ${dmMono.variable} ${roboto.variable} antialiased`}
       >
         {children}
       </body>

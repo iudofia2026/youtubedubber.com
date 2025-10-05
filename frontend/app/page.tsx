@@ -28,7 +28,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              <span className="text-[#ff0000]">YouTube</span> Multilingual
+              <span className="text-[#ff0000] youtube-font">YouTube</span> Multilingual
               <br />
               <span className="text-[#ff0000]">Dubber</span>
             </motion.h1>
