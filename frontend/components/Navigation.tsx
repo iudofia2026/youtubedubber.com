@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Menu, X, Home, Plus, BarChart3 } from 'lucide-react';
 import { NavigationProps } from '@/types';
+import { ThemeToggleNav } from '@/components/ThemeToggleNav';
 
 export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -67,8 +68,8 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
+            <div className="flex items-baseline space-x-8">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -89,6 +90,9 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
                 );
               })}
             </div>
+            
+            {/* Theme Toggle */}
+            <ThemeToggleNav />
           </div>
 
           {/* Mobile menu button */}
@@ -147,6 +151,15 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
               </motion.div>
             );
           })}
+          
+          {/* Mobile Theme Toggle */}
+          <motion.div
+            className="flex items-center justify-center py-3 border-t border-border mt-2"
+            whileHover={{ x: 4 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ThemeToggleNav />
+          </motion.div>
         </div>
       </motion.div>
     </nav>
