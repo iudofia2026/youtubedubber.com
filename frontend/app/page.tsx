@@ -31,9 +31,8 @@ export default function Home() {
             >
               <span className="inline-flex items-center text-[#ff0000]">
                 <YouTubeIcon size={48} className="mr-2 sm:mr-3 sm:w-16 sm:h-16 w-12 h-12" />
-              </span> Multilingual
-              <br />
-              <span className="text-[#ff0000]">Dubber</span>
+                Dubber
+              </span>
             </motion.h1>
             
             <motion.p
