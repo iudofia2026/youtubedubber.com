@@ -23,6 +23,13 @@ export interface LanguageSelectProps {
   error?: string;
 }
 
+export interface LanguageChecklistProps {
+  value: string[];
+  onChange: (languages: string[]) => void;
+  languages: Language[];
+  error?: string;
+}
+
 export interface ProgressBarProps {
   progress: number; // 0-100
   status: string;
@@ -32,7 +39,7 @@ export interface ProgressBarProps {
 export interface DubbingJobData {
   voiceTrack: File;
   backgroundTrack?: File;
-  targetLanguage: string;
+  targetLanguages: string[];
 }
 
 export interface JobStatus {

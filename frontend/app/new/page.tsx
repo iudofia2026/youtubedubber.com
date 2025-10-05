@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Upload, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { FileUpload } from '@/components/FileUpload';
-import { LanguageSelect } from '@/components/LanguageSelect';
+import { LanguageChecklist } from '@/components/LanguageChecklist';
 import { Navigation } from '@/components/Navigation';
 import { LANGUAGES } from '@/types';
 import { submitDubbingJob } from '@/lib/api';
@@ -15,11 +15,11 @@ export default function NewJobPage() {
   const router = useRouter();
   const [voiceTrack, setVoiceTrack] = useState<File | null>(null);
   const [backgroundTrack, setBackgroundTrack] = useState<File | null>(null);
-  const [targetLanguage, setTargetLanguage] = useState('');
+  const [targetLanguages, setTargetLanguages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{
     voiceTrack?: string;
-    targetLanguage?: string;
+    targetLanguages?: string;
     general?: string;
   }>({});
 
@@ -30,8 +30,8 @@ export default function NewJobPage() {
       newErrors.voiceTrack = 'Voice track is required';
     }
 
-    if (!targetLanguage) {
-      newErrors.targetLanguage = 'Please select a target language';
+    if (targetLanguages.length === 0) {
+      newErrors.targetLanguages = 'Please select at least one target language';
     }
 
     setErrors(newErrors);
@@ -54,7 +54,7 @@ export default function NewJobPage() {
       const jobData = {
         voiceTrack,
         backgroundTrack: backgroundTrack || undefined,
-        targetLanguage,
+        targetLanguages,
       };
 
       const result = await submitDubbingJob(jobData);
@@ -92,7 +92,7 @@ export default function NewJobPage() {
             Create New Dubbing Job
           </h1>
           <p className="text-lg text-muted-foreground">
-            Upload your audio files and select the target language for dubbing.
+            Upload your audio files and select the target languages for dubbing.
           </p>
         </motion.div>
 
@@ -133,11 +133,11 @@ export default function NewJobPage() {
 
           {/* Language Selection */}
           <div>
-            <LanguageSelect
-              value={targetLanguage}
-              onChange={setTargetLanguage}
+            <LanguageChecklist
+              value={targetLanguages}
+              onChange={setTargetLanguages}
               languages={LANGUAGES}
-              error={errors.targetLanguage}
+              error={errors.targetLanguages}
             />
           </div>
 
