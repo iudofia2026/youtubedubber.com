@@ -192,25 +192,6 @@ export function FileUpload({
           </motion.div>
         )}
 
-        {/* YouTube-style play button overlay when file is selected */}
-        {value && (
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            whileHover={{ opacity: 1 }}
-          >
-            <motion.div
-              className="w-16 h-16 bg-[var(--youtube-red)] rounded-full flex items-center justify-center shadow-lg"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-            </motion.div>
-          </motion.div>
-        )}
       </motion.div>
 
       {error && (
