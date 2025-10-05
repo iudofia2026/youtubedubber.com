@@ -546,37 +546,193 @@ export default function NewJobPage() {
 
               {/* Step 3: Target Languages */}
               {currentStep === 3 && (
-                <div className="text-center space-y-8">
+                <div className="space-y-6">
+                  {/* Creative Horizontal Header with Globe Icon Left */}
                   <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="w-32 h-32 mx-auto bg-[#ff0000]/10 rounded-full flex items-center justify-center"
+                    className="flex items-center justify-center space-x-6 max-w-2xl mx-auto"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
                   >
-                    <Globe className="w-16 h-16 text-[#ff0000]" />
+                    {/* Animated Globe Icon Section */}
+                    <motion.div
+                      className="relative flex-shrink-0"
+                      initial={{ scale: 0.8, opacity: 0, x: -20 }}
+                      animate={{ scale: 1, opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      {/* Animated background rings */}
+                      <motion.div
+                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/20 rounded-full"
+                        animate={{ 
+                          scale: [1, 1.3, 1],
+                          opacity: [0.3, 0.1, 0.3]
+                        }}
+                        transition={{ 
+                          duration: 2.5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                      <motion.div
+                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/10 rounded-full"
+                        animate={{ 
+                          scale: [1, 1.5, 1],
+                          opacity: [0.2, 0.05, 0.2]
+                        }}
+                        transition={{ 
+                          duration: 2.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: 0.8
+                        }}
+                      />
+                      {/* Main icon container */}
+                      <div className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center shadow-lg">
+                        <motion.div
+                          animate={{ 
+                            y: [0, -1, 0],
+                            rotate: [0, 1, 0]
+                          }}
+                          transition={{ 
+                            duration: 4,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <Globe className="w-8 h-8 text-white" />
+                        </motion.div>
+                      </div>
+                    </motion.div>
+                    
+                    {/* Text Content with Creative Layout */}
+                    <div className="flex-1 text-left space-y-2">
+                      <motion.div
+                        className="flex items-baseline space-x-3"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.6 }}
+                      >
+                        <h2 className="text-2xl font-bold text-foreground">
+                          Target Languages
+                        </h2>
+                        
+                        {/* Cool Animated Language Element */}
+                        <motion.div
+                          className="relative flex items-center"
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ 
+                            duration: 0.8, 
+                            delay: 1,
+                            type: "spring",
+                            stiffness: 200,
+                            damping: 15
+                          }}
+                        >
+                          {/* Animated Language Flags */}
+                          <div className="flex items-center space-x-1">
+                            {['🌍', '🌎', '🌏'].map((flag, i) => (
+                              <motion.div
+                                key={i}
+                                className="text-lg"
+                                animate={{
+                                  y: [0, -2, 0],
+                                  rotate: [0, 10, 0]
+                                }}
+                                transition={{
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  delay: i * 0.4,
+                                  ease: "easeInOut"
+                                }}
+                              >
+                                {flag}
+                              </motion.div>
+                            ))}
+                          </div>
+                          
+                          {/* Pulsing Dot */}
+                          <motion.div
+                            className="ml-2 w-2 h-2 bg-[#ff0000] rounded-full"
+                            animate={{
+                              scale: [1, 1.5, 1],
+                              opacity: [0.6, 1, 0.6]
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                          
+                          {/* Rotating Ring */}
+                          <motion.div
+                            className="absolute -inset-2 border border-[#ff0000]/30 rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{
+                              duration: 4,
+                              repeat: Infinity,
+                              ease: "linear"
+                            }}
+                          />
+                        </motion.div>
+                        
+                        <motion.div
+                          className="h-1 w-8 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full"
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ duration: 0.8, delay: 1.2 }}
+                        />
+                      </motion.div>
+                      
+                      <motion.p 
+                        className="text-base text-muted-foreground leading-relaxed max-w-md"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.8 }}
+                      >
+                        Select languages for multilingual dubbing
+                      </motion.p>
+                      
+                      {/* Inline Info Tags */}
+                      <motion.div
+                        className="flex items-center space-x-4 text-xs text-muted-foreground"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 1.2 }}
+                      >
+                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
+                          <span>🌍</span>
+                          <span>Multiple select</span>
+                        </span>
+                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
+                          <span>🎯</span>
+                          <span>Separate versions</span>
+                        </span>
+                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
+                          <span>⚡</span>
+                          <span>More = longer</span>
+                        </span>
+                      </motion.div>
+                    </div>
                   </motion.div>
-                  
-                  <div className="space-y-4">
-                    <h2 className="text-3xl font-bold text-foreground">Select Target Languages*</h2>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                      Choose the languages you want your content dubbed into. You can select multiple languages.
-                    </p>
-                  </div>
 
-                  <div className="max-w-2xl mx-auto">
+                  {/* Language Selection Component */}
+                  <motion.div
+                    className="max-w-2xl mx-auto"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                  >
                     <LanguageChecklist
                       value={targetLanguages}
                       onChange={setTargetLanguages}
                       languages={LANGUAGES}
                       error={errors.targetLanguages}
                     />
-                  </div>
-
-                  <div className="text-sm text-muted-foreground space-y-2">
-                    <p>🌍 Select one or more languages</p>
-                    <p>🎯 Each language will create a separate dubbed version</p>
-                    <p>⚡ Processing time increases with more languages</p>
-                  </div>
+                  </motion.div>
                 </div>
               )}
             </motion.div>
