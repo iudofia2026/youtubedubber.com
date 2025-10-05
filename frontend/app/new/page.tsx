@@ -133,65 +133,6 @@ export default function NewJobPage() {
           </p>
         </motion.div>
 
-        {/* Progress Steps */}
-        <motion.div
-          className="mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="flex items-center justify-center space-x-8">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-              const isActive = currentStep === step.id;
-              const isCompleted = currentStep > step.id;
-              
-              return (
-                <div key={step.id} className="flex items-center">
-                  <motion.div
-                    className={`relative flex flex-col items-center space-y-2 ${
-                      isActive ? 'scale-110' : ''
-                    }`}
-                    animate={{ scale: isActive ? 1.1 : 1 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div
-                      className={`w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                        isCompleted
-                          ? 'bg-[#ff0000] border-[#ff0000] text-white'
-                          : isActive
-                          ? 'bg-[#ff0000] border-[#ff0000] text-white'
-                          : 'bg-background border-muted text-muted-foreground'
-                      }`}
-                    >
-                      {isCompleted ? (
-                        <CheckCircle className="w-8 h-8" />
-                      ) : (
-                        <Icon className="w-8 h-8" />
-                      )}
-                    </div>
-                    <div className="text-center">
-                      <p className={`text-sm font-medium ${
-                        isActive || isCompleted ? 'text-foreground' : 'text-muted-foreground'
-                      }`}>
-                        {step.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {step.description}
-                      </p>
-                    </div>
-                  </motion.div>
-                  
-                  {index < steps.length - 1 && (
-                    <div className={`w-16 h-1 mx-4 ${
-                      isCompleted ? 'bg-[#ff0000]' : 'bg-muted'
-                    }`} />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
 
         {/* Step Content */}
         <div className="max-w-4xl mx-auto">
@@ -355,6 +296,66 @@ export default function NewJobPage() {
               )}
             </motion.div>
           </AnimatePresence>
+
+          {/* Progress Steps */}
+          <motion.div
+            className="mt-12 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="flex items-center justify-center space-x-8">
+              {steps.map((step, index) => {
+                const Icon = step.icon;
+                const isActive = currentStep === step.id;
+                const isCompleted = currentStep > step.id;
+                
+                return (
+                  <div key={step.id} className="flex items-center">
+                    <motion.div
+                      className={`relative flex flex-col items-center space-y-2 ${
+                        isActive ? 'scale-110' : ''
+                      }`}
+                      animate={{ scale: isActive ? 1.1 : 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div
+                        className={`w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                          isCompleted
+                            ? 'bg-[#ff0000] border-[#ff0000] text-white'
+                            : isActive
+                            ? 'bg-[#ff0000] border-[#ff0000] text-white'
+                            : 'bg-background border-muted text-muted-foreground'
+                        }`}
+                      >
+                        {isCompleted ? (
+                          <CheckCircle className="w-8 h-8" />
+                        ) : (
+                          <Icon className="w-8 h-8" />
+                        )}
+                      </div>
+                      <div className="text-center">
+                        <p className={`text-sm font-medium ${
+                          isActive || isCompleted ? 'text-foreground' : 'text-muted-foreground'
+                        }`}>
+                          {step.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {step.description}
+                        </p>
+                      </div>
+                    </motion.div>
+                    
+                    {index < steps.length - 1 && (
+                      <div className={`w-16 h-1 mx-4 ${
+                        isCompleted ? 'bg-[#ff0000]' : 'bg-muted'
+                      }`} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
 
           {/* Navigation Buttons */}
           <motion.div
