@@ -1,0 +1,9 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Lightning bolt -->
+  <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="currentColor" opacity="0.1"/>
+  <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" fill="none"/>
+  
+  <!-- Play button overlay -->
+  <circle cx="12" cy="12" r="6" fill="#FF0000"/>
+  <path d="M9 9L15 12L9 15V9Z" fill="white"/>
+</svg>

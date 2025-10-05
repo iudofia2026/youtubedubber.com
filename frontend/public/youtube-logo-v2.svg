@@ -1,0 +1,10 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners -->
+  <rect width="40" height="40" rx="8" fill="#FF0000"/>
+  
+  <!-- Play button triangle - more prominent -->
+  <path d="M14 12L26 20L14 28V12Z" fill="white" stroke="none"/>
+  
+  <!-- YTM text with better spacing -->
+  <text x="20" y="35" font-family="Arial, sans-serif" font-size="7" font-weight="bold" text-anchor="middle" fill="white">YTM</text>
+</svg>

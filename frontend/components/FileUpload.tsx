@@ -1,115 +1,68 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Upload, File, X, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { FileUploadProps } from '@/types';
 
-export const FileUpload: React.FC<FileUploadProps> = ({
-  label,
-  required = false,
-  accept,
-  maxSize,
-  onFileSelect,
-  error,
-  value,
-  disabled = false,
-}) => {
+export function FileUpload({ 
+  label, 
+  required = false, 
+  accept, 
+  maxSize, 
+  onFileSelect, 
+  error, 
+  value 
+}: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [file, setFile] = useState<File | null>(value || null);
-  const [validationError, setValidationError] = useState<string | null>(error || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const validateFile = useCallback((file: File): string | null => {
-    // Check file type
-    const acceptedTypes = accept.split(',').map(type => type.trim());
-    const isValidType = acceptedTypes.some(type => {
-      if (type.endsWith('/*')) {
-        const category = type.split('/')[0];
-        return file.type.startsWith(category);
-      }
-      return file.type === type;
-    });
-
-    if (!isValidType) {
-      return `Please select a valid file type. Accepted types: ${accept}`;
-    }
-
-    // Check file size (convert MB to bytes)
-    const maxSizeBytes = maxSize * 1024 * 1024;
-    if (file.size > maxSizeBytes) {
-      return `File size must be less than ${maxSize}MB`;
-    }
-
-    return null;
-  }, [accept, maxSize]);
-
-  const handleFileSelect = useCallback((selectedFile: File) => {
-    setIsUploading(true);
-    setValidationError(null);
-
-    // Validate file
-    const error = validateFile(selectedFile);
-    if (error) {
-      setValidationError(error);
-      setIsUploading(false);
-      return;
-    }
-
-    // Set file and call callback
-    setFile(selectedFile);
-    onFileSelect(selectedFile);
-    setIsUploading(false);
-  }, [validateFile, onFileSelect]);
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    if (!disabled) {
-      setIsDragOver(true);
-    }
-  }, [disabled]);
+    setIsDragOver(true);
+  };
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
+  const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-  }, []);
+  };
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-
-    if (disabled) return;
-
+    
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       handleFileSelect(files[0]);
     }
-  }, [disabled, handleFileSelect]);
+  };
 
-  const handleClick = useCallback(() => {
-    if (!disabled && fileInputRef.current) {
-      fileInputRef.current.click();
+  const handleFileSelect = async (file: File) => {
+    // Validate file type
+    if (!accept.split(',').some(type => file.type.match(type.trim()))) {
+      return;
     }
-  }, [disabled]);
 
-  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      handleFileSelect(files[0]);
+    // Validate file size (convert MB to bytes)
+    if (file.size > maxSize * 1024 * 1024) {
+      return;
     }
-  }, [handleFileSelect]);
 
-  const handleRemoveFile = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setFile(null);
-    setValidationError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  }, []);
+    setIsUploading(true);
+    
+    // Simulate upload delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    onFileSelect(file);
+    setIsUploading(false);
+  };
 
-  const formatFileSize = (bytes: number): string => {
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -117,110 +70,139 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const getFileIcon = (file: File) => {
-    if (file.type.startsWith('audio/')) {
-      return <File className="w-5 h-5" />;
-    }
-    return <File className="w-5 h-5" />;
-  };
-
-  const isError = validationError || error;
-  const isSuccess = file && !isError;
-
   return (
-    <div className="w-full">
-      <label className="block text-sm font-medium text-foreground mb-2">
+    <div className="space-y-2">
+      <label className="text-sm font-medium">
         {label}
-        {required && <span className="text-destructive ml-1">*</span>}
+        {required && <span className="text-[var(--youtube-red)] ml-1">*</span>}
       </label>
       
       <motion.div
         className={`
-          relative w-full h-32 border-2 border-dashed cursor-pointer transition-all duration-200
-          ${isDragOver ? 'border-primary bg-primary/5' : ''}
-          ${isError ? 'border-destructive bg-destructive/5' : ''}
-          ${isSuccess ? 'border-green-500 bg-green-50' : ''}
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-primary/50'}
-          ${!isDragOver && !isError && !isSuccess ? 'border-border' : ''}
+          relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
+          transition-all duration-300
+          ${isDragOver 
+            ? 'border-[var(--youtube-red)] bg-red-50 dark:bg-red-900/10' 
+            : 'border-border hover:border-[var(--youtube-red)] hover:bg-muted/50'
+          }
+          ${error ? 'border-destructive' : ''}
         `}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={handleClick}
-        whileHover={!disabled ? { scale: 1.01 } : {}}
-        whileTap={!disabled ? { scale: 0.99 } : {}}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        animate={{
+          borderColor: isDragOver ? 'var(--youtube-red)' : undefined,
+          backgroundColor: isDragOver ? 'rgba(255, 0, 0, 0.05)' : undefined
+        }}
       >
         <input
           ref={fileInputRef}
           type="file"
           accept={accept}
-          onChange={handleFileInputChange}
+          onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
           className="hidden"
-          disabled={disabled}
         />
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-          {isUploading ? (
+        {isUploading ? (
+          <motion.div
+            className="space-y-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
             <motion.div
-              className="flex flex-col items-center space-y-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              className="w-12 h-12 mx-auto"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             >
-              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm text-muted-foreground">Uploading...</span>
+              <svg className="w-full h-full text-[var(--youtube-red)]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
             </motion.div>
-          ) : file ? (
-            <motion.div
-              className="flex items-center space-x-3 w-full"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <div className="flex-shrink-0">
-                {getFileIcon(file)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
-                  {file.name}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {formatFileSize(file.size)}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={handleRemoveFile}
-                className="flex-shrink-0 p-1 hover:bg-destructive/10 rounded transition-colors"
-                disabled={disabled}
-              >
-                <X className="w-4 h-4 text-destructive" />
-              </button>
-            </motion.div>
-          ) : (
-            <div className="flex flex-col items-center space-y-2">
-              <Upload className="w-8 h-8 text-muted-foreground" />
-              <div className="text-center">
-                <p className="text-sm font-medium text-foreground">
-                  {isDragOver ? 'Drop file here' : 'Click to upload or drag and drop'}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {accept} (max {maxSize}MB)
-                </p>
-              </div>
+            <p className="text-sm text-muted-foreground">Uploading...</p>
+          </motion.div>
+        ) : value ? (
+          <motion.div
+            className="space-y-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="w-12 h-12 mx-auto bg-[var(--youtube-red)] rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
             </div>
-          )}
-        </div>
+            <div>
+              <p className="font-medium">{value.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {formatFileSize(value.size)}
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onFileSelect(null as any);
+              }}
+            >
+              Remove
+            </Button>
+          </motion.div>
+        ) : (
+          <motion.div
+            className="space-y-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <div className="w-12 h-12 mx-auto text-muted-foreground">
+              <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-medium">
+                {isDragOver ? 'Drop your file here' : 'Click to upload or drag and drop'}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {accept} (max {maxSize}MB)
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* YouTube-style play button overlay when file is selected */}
+        {value && (
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            whileHover={{ opacity: 1 }}
+          >
+            <motion.div
+              className="w-16 h-16 bg-[var(--youtube-red)] rounded-full flex items-center justify-center shadow-lg"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </motion.div>
+          </motion.div>
+        )}
       </motion.div>
 
-      {isError && (
-        <motion.div
-          className="flex items-center space-x-2 mt-2 text-destructive"
+      {error && (
+        <motion.p
+          className="text-sm text-destructive"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <AlertCircle className="w-4 h-4" />
-          <span className="text-sm">{validationError || error}</span>
-        </motion.div>
+          {error}
+        </motion.p>
       )}
     </div>
   );
-};
+}
