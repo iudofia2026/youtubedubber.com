@@ -89,15 +89,13 @@ export default function Home() {
             or learn more
           </motion.p>
           <motion.div
-            className="w-6 h-10 border-2 border-muted-foreground/30 rounded-full flex justify-center"
+            className="text-muted-foreground/60"
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <motion.div
-              className="w-1 h-3 bg-muted-foreground/60 rounded-full mt-2"
-              animate={{ opacity: [0.3, 1, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            />
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
           </motion.div>
         </motion.div>
 
