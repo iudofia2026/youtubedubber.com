@@ -6,8 +6,11 @@ export interface FileUploadProps {
   accept: string;
   maxSize: number; // in MB
   onFileSelect: (file: File) => void;
+  onDurationChange?: (duration: number) => void;
   error?: string;
   value?: File | null;
+  duration?: number;
+  durationFormatted?: string;
 }
 
 export interface Language {

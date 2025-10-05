@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FileUploadProps } from '@/types';
+import { getAudioDuration } from '@/lib/audio-utils';
 
 export function FileUpload({ 
   label, 
@@ -11,8 +12,11 @@ export function FileUpload({
   accept, 
   maxSize, 
   onFileSelect, 
+  onDurationChange,
   error, 
-  value 
+  value,
+  duration,
+  durationFormatted
 }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -51,11 +55,21 @@ export function FileUpload({
 
     setIsUploading(true);
     
-    // Simulate upload delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    onFileSelect(file);
-    setIsUploading(false);
+    try {
+      // Get audio duration
+      const audioInfo = await getAudioDuration(file);
+      
+      // Simulate upload delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      onFileSelect(file);
+      onDurationChange?.(audioInfo.duration);
+    } catch (error) {
+      console.error('Failed to get audio duration:', error);
+      onFileSelect(file);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleClick = () => {
@@ -136,9 +150,14 @@ export function FileUpload({
             </div>
             <div>
               <p className="font-medium">{value.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {formatFileSize(value.size)}
-              </p>
+              <div className="text-sm text-muted-foreground space-y-1">
+                <p>{formatFileSize(value.size)}</p>
+                {durationFormatted && (
+                  <p className="text-[#ff0000] font-medium">
+                    Duration: {durationFormatted}
+                  </p>
+                )}
+              </div>
             </div>
             <Button
               variant="outline"

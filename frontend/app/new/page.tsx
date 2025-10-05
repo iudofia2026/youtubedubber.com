@@ -10,6 +10,7 @@ import { LanguageChecklist } from '@/components/LanguageChecklist';
 import { Navigation } from '@/components/Navigation';
 import { LANGUAGES } from '@/types';
 import { submitDubbingJob } from '@/lib/api';
+import { areDurationsEqual, formatDurationDifference, formatDuration } from '@/lib/audio-utils';
 
 export default function NewJobPage() {
   const router = useRouter();
@@ -17,9 +18,12 @@ export default function NewJobPage() {
   const [backgroundTrack, setBackgroundTrack] = useState<File | null>(null);
   const [targetLanguages, setTargetLanguages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [voiceDuration, setVoiceDuration] = useState<number | null>(null);
+  const [backgroundDuration, setBackgroundDuration] = useState<number | null>(null);
   const [errors, setErrors] = useState<{
     voiceTrack?: string;
     targetLanguages?: string;
+    durationMismatch?: string;
     general?: string;
   }>({});
 
@@ -32,6 +36,14 @@ export default function NewJobPage() {
 
     if (targetLanguages.length === 0) {
       newErrors.targetLanguages = 'Please select at least one target language';
+    }
+
+    // Check duration mismatch if both tracks are present
+    if (voiceTrack && backgroundTrack && voiceDuration && backgroundDuration) {
+      if (!areDurationsEqual(voiceDuration, backgroundDuration)) {
+        const diff = formatDurationDifference(voiceDuration, backgroundDuration);
+        newErrors.durationMismatch = `Track durations don't match. Difference: ${diff}`;
+      }
     }
 
     setErrors(newErrors);
@@ -112,8 +124,11 @@ export default function NewJobPage() {
               accept="audio/*"
               maxSize={100}
               onFileSelect={setVoiceTrack}
+              onDurationChange={setVoiceDuration}
               error={errors.voiceTrack}
               value={voiceTrack}
+              duration={voiceDuration}
+              durationFormatted={voiceDuration ? formatDuration(voiceDuration) : undefined}
             />
           </div>
 
@@ -124,12 +139,47 @@ export default function NewJobPage() {
               accept="audio/*"
               maxSize={100}
               onFileSelect={setBackgroundTrack}
+              onDurationChange={setBackgroundDuration}
               value={backgroundTrack}
+              duration={backgroundDuration}
+              durationFormatted={backgroundDuration ? formatDuration(backgroundDuration) : undefined}
             />
             <p className="text-sm text-muted-foreground mt-2">
               Optional background music or ambient audio to be dubbed along with the voice track.
             </p>
           </div>
+
+          {/* Duration Comparison */}
+          {voiceTrack && backgroundTrack && voiceDuration && backgroundDuration && (
+            <motion.div
+              className="p-4 bg-muted/50 border border-border rounded-lg"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <h3 className="text-sm font-medium mb-3">Track Duration Comparison</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="text-center">
+                  <p className="text-muted-foreground">Voice Track</p>
+                  <p className="font-mono text-lg">{formatDuration(voiceDuration)}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-muted-foreground">Background Track</p>
+                  <p className="font-mono text-lg">{formatDuration(backgroundDuration)}</p>
+                </div>
+              </div>
+              <div className="mt-3 text-center">
+                {areDurationsEqual(voiceDuration, backgroundDuration) ? (
+                  <p className="text-green-600 dark:text-green-400 font-medium">
+                    ✅ Tracks match perfectly
+                  </p>
+                ) : (
+                  <p className="text-yellow-600 dark:text-yellow-400 font-medium">
+                    ⚠️ Duration difference: {formatDurationDifference(voiceDuration, backgroundDuration)}
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          )}
 
           {/* Language Selection */}
           <div>
@@ -140,6 +190,22 @@ export default function NewJobPage() {
               error={errors.targetLanguages}
             />
           </div>
+
+          {/* Duration Mismatch Warning */}
+          {errors.durationMismatch && (
+            <motion.div
+              className="flex items-center space-x-2 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <AlertCircle className="w-5 h-5" />
+              <div>
+                <p className="font-medium">Duration Mismatch</p>
+                <p className="text-sm">{errors.durationMismatch}</p>
+                <p className="text-xs mt-1">Please ensure both tracks have the same duration for proper dubbing.</p>
+              </div>
+            </motion.div>
+          )}
 
           {/* General Error */}
           {errors.general && (
@@ -205,7 +271,7 @@ export default function NewJobPage() {
               <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
               <p>
                 <strong>Background Track:</strong> Optional background music or ambient audio. 
-                This will be dubbed along with the voice track.
+                This will be dubbed along with the voice track. <strong>Must match the voice track duration.</strong>
               </p>
             </div>
             <div className="flex items-start space-x-3">
