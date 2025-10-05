@@ -14,21 +14,23 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <motion.section
-          className="py-20 sm:py-32"
+          className="py-20 sm:py-32 relative overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="text-center">
+          {/* YouTube-style background accent */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#ff0000]/5 via-transparent to-[#ff0000]/5 pointer-events-none"></div>
+          <div className="text-center relative z-10">
             <motion.h1
               className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              YouTube Multilingual
+              <span className="text-[#ff0000] drop-shadow-sm">YouTube</span> Multilingual
               <br />
-              <span className="text-primary">Dubber</span>
+              <span className="text-[#ff0000] drop-shadow-sm">Dubber</span>
             </motion.h1>
             
             <motion.p
@@ -57,7 +59,7 @@ export default function Home() {
             >
               <Link href="/new">
                 <motion.button
-                  className="inline-flex items-center space-x-3 bg-primary text-primary-foreground px-8 py-4 text-lg font-semibold hover:bg-primary/90 transition-colors duration-200"
+                  className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-semibold hover:bg-[#cc0000] transition-colors duration-200 shadow-lg"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -71,11 +73,13 @@ export default function Home() {
 
         {/* Features Section */}
         <motion.section
-          className="py-20 sm:py-32 border-t border-border"
+          className="py-20 sm:py-32 border-t border-[#ff0000]/20 relative"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
         >
+          {/* Subtle YouTube accent */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-[#ff0000] to-transparent"></div>
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
               Why Choose Our Platform?
@@ -112,8 +116,8 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 1.2 + index * 0.2 }}
                 >
-                  <div className="w-16 h-16 bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <Icon className="w-8 h-8 text-primary" />
+                  <div className="w-16 h-16 bg-[#ff0000]/10 flex items-center justify-center mx-auto mb-4 border border-[#ff0000]/20">
+                    <Icon className="w-8 h-8 text-[#ff0000]" />
                   </div>
                   <h3 className="text-xl font-semibold text-foreground mb-3">
                     {feature.title}
@@ -129,11 +133,13 @@ export default function Home() {
 
         {/* CTA Section */}
         <motion.section
-          className="py-20 sm:py-32 border-t border-border"
+          className="py-20 sm:py-32 border-t border-[#ff0000]/20 relative"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.6 }}
         >
+          {/* YouTube-style accent line */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-[#ff0000] to-transparent"></div>
           <div className="text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
               Ready to Get Started?
@@ -143,7 +149,7 @@ export default function Home() {
             </p>
             <Link href="/new">
               <motion.button
-                className="inline-flex items-center space-x-3 bg-primary text-primary-foreground px-8 py-4 text-lg font-semibold hover:bg-primary/90 transition-colors duration-200"
+                className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-semibold hover:bg-[#cc0000] transition-colors duration-200 shadow-lg"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
