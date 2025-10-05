@@ -129,7 +129,7 @@ export default function NewJobPage() {
 
 
         {/* Step Content */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -569,7 +569,7 @@ export default function NewJobPage() {
 
                   {/* Language Selection Component */}
                   <motion.div
-                    className="max-w-2xl mx-auto"
+                    className="max-w-4xl mx-auto"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.8 }}
