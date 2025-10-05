@@ -468,26 +468,6 @@ export default function NewJobPage() {
                         Add background music or ambient audio (optional)
                       </motion.p>
                       
-                      {/* Inline Info Tags */}
-                      <motion.div
-                        className="flex items-center space-x-4 text-xs text-muted-foreground"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 1.2 }}
-                      >
-                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
-                          <span>🎵</span>
-                          <span>Optional</span>
-                        </span>
-                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
-                          <span>⏱️</span>
-                          <span>Match duration</span>
-                        </span>
-                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
-                          <span>🎶</span>
-                          <span>Will be dubbed</span>
-                        </span>
-                      </motion.div>
                     </div>
                   </motion.div>
 
@@ -696,26 +676,6 @@ export default function NewJobPage() {
                         Select languages for multilingual dubbing
                       </motion.p>
                       
-                      {/* Inline Info Tags */}
-                      <motion.div
-                        className="flex items-center space-x-4 text-xs text-muted-foreground"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 1.2 }}
-                      >
-                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
-                          <span>🌍</span>
-                          <span>Multiple select</span>
-                        </span>
-                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
-                          <span>🎯</span>
-                          <span>Separate versions</span>
-                        </span>
-                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
-                          <span>⚡</span>
-                          <span>More = longer</span>
-                        </span>
-                      </motion.div>
                     </div>
                   </motion.div>
 
