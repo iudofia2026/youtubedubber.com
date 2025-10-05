@@ -9,7 +9,7 @@ export interface FileUploadProps {
   onDurationChange?: (duration: number) => void;
   error?: string;
   value?: File | null;
-  duration?: number;
+  duration?: number | null;
   durationFormatted?: string;
 }
 
@@ -37,6 +37,8 @@ export interface ProgressBarProps {
   progress: number; // 0-100
   status: string;
   isComplete: boolean;
+  showPercentage?: boolean;
+  animated?: boolean;
 }
 
 export interface DubbingJobData {

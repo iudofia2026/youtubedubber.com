@@ -278,7 +278,7 @@ export default function NewJobPage() {
               <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
               <p>
                 <strong>Processing Time:</strong> Most jobs complete within 5-15 minutes. 
-                You'll be redirected to a status page where you can monitor progress.
+                You&apos;ll be redirected to a status page where you can monitor progress.
               </p>
             </div>
           </div>

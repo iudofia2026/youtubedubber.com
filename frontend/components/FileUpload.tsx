@@ -164,7 +164,7 @@ export function FileUpload({
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
-                onFileSelect(null as any);
+                onFileSelect(null as unknown as File);
               }}
             >
               Remove

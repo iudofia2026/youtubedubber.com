@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, DM_Mono, Roboto } from "next/font/google";
+import { DM_Sans, IBM_Plex_Mono, Roboto } from "next/font/google";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -8,9 +8,10 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-const dmMono = DM_Mono({
-  variable: "--font-dm-mono",
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -34,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${dmSans.variable} ${dmMono.variable} ${roboto.variable} antialiased`}
+        className={`${dmSans.variable} ${ibmPlexMono.variable} ${roboto.variable} antialiased`}
       >
         {children}
       </body>

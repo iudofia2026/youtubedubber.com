@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mic, Globe, Zap } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
+import { YouTubeIcon } from '@/components/YouTubeIcon';
 
 export default function Home() {
   return (
@@ -28,7 +29,9 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              <span className="text-[#ff0000] youtube-font">YouTube</span> Multilingual
+              <span className="inline-flex items-center text-[#ff0000]">
+                <YouTubeIcon size={48} className="mr-2 sm:mr-3 sm:w-16 sm:h-16 w-12 h-12" />
+              </span> Multilingual
               <br />
               <span className="text-[#ff0000]">Dubber</span>
             </motion.h1>

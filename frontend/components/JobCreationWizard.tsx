@@ -5,9 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FileUpload } from './FileUpload';
 import { LanguageSelect } from './LanguageSelect';
+import { LANGUAGES } from '@/types';
 
 interface JobCreationWizardProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: { voiceTrack: File; backgroundTrack?: File; targetLanguage: string }) => void;
 }
 
 const steps = [
@@ -147,10 +148,11 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
                 <LanguageSelect
                   value={formData.targetLanguage}
                   onChange={(language) => setFormData(prev => ({ ...prev, targetLanguage: language }))}
+                  languages={LANGUAGES}
                 />
                 <div className="text-center text-sm text-muted-foreground">
                   <p>🌍 Choose the language for your dubbing</p>
-                  <p>We'll generate natural-sounding speech in this language</p>
+                  <p>We&apos;ll generate natural-sounding speech in this language</p>
                 </div>
               </div>
             )}
