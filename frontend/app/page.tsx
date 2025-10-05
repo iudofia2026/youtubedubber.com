@@ -11,10 +11,10 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <Navigation currentPath="/" />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main>
         {/* Hero Section */}
         <motion.section
-          className="py-20 sm:py-32 relative overflow-hidden"
+          className="py-20 sm:py-32 relative overflow-hidden px-4 sm:px-6 lg:px-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -73,13 +73,11 @@ export default function Home() {
 
         {/* Features Section */}
         <motion.section
-          className="py-20 sm:py-32 border-t border-[#ff0000]/20 relative"
+          className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
         >
-          {/* Subtle YouTube accent */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-[#ff0000] to-transparent"></div>
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
               Why Choose Our Platform?
@@ -133,13 +131,11 @@ export default function Home() {
 
         {/* CTA Section */}
         <motion.section
-          className="py-20 sm:py-32 border-t border-[#ff0000]/20 relative"
+          className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.6 }}
         >
-          {/* YouTube-style accent line */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-[#ff0000] to-transparent"></div>
           <div className="text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
               Ready to Get Started?
