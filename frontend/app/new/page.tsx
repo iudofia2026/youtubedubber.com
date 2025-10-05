@@ -289,26 +289,6 @@ export default function NewJobPage() {
                         Upload your voice-only audio file for multilingual dubbing
                       </motion.p>
                       
-                      {/* Inline Info Tags */}
-                      <motion.div
-                        className="flex items-center space-x-4 text-xs text-muted-foreground"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 1.2 }}
-                      >
-                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
-                          <span>🎤</span>
-                          <span>MP3, WAV, M4A</span>
-                        </span>
-                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
-                          <span>📏</span>
-                          <span>Max 100MB</span>
-                        </span>
-                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
-                          <span>⏱️</span>
-                          <span>5-15 min</span>
-                        </span>
-                      </motion.div>
                     </div>
                   </motion.div>
 
@@ -338,24 +318,186 @@ export default function NewJobPage() {
 
               {/* Step 2: Background Track Upload */}
               {currentStep === 2 && (
-                <div className="text-center space-y-8">
+                <div className="space-y-6">
+                  {/* Creative Horizontal Header with Music Icon Left */}
                   <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="w-32 h-32 mx-auto bg-[#ff0000]/10 rounded-full flex items-center justify-center"
+                    className="flex items-center justify-center space-x-6 max-w-2xl mx-auto"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
                   >
-                    <Music className="w-16 h-16 text-[#ff0000]" />
+                    {/* Animated Music Icon Section */}
+                    <motion.div
+                      className="relative flex-shrink-0"
+                      initial={{ scale: 0.8, opacity: 0, x: -20 }}
+                      animate={{ scale: 1, opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      {/* Animated background rings */}
+                      <motion.div
+                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/20 rounded-full"
+                        animate={{ 
+                          scale: [1, 1.3, 1],
+                          opacity: [0.3, 0.1, 0.3]
+                        }}
+                        transition={{ 
+                          duration: 2.5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                      <motion.div
+                        className="absolute inset-0 w-16 h-16 bg-[#ff0000]/10 rounded-full"
+                        animate={{ 
+                          scale: [1, 1.5, 1],
+                          opacity: [0.2, 0.05, 0.2]
+                        }}
+                        transition={{ 
+                          duration: 2.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: 0.8
+                        }}
+                      />
+                      {/* Main icon container */}
+                      <div className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center shadow-lg">
+                        <motion.div
+                          animate={{ 
+                            y: [0, -1, 0],
+                            rotate: [0, 1, 0]
+                          }}
+                          transition={{ 
+                            duration: 4,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <Music className="w-8 h-8 text-white" />
+                        </motion.div>
+                      </div>
+                    </motion.div>
+                    
+                    {/* Text Content with Creative Layout */}
+                    <div className="flex-1 text-left space-y-2">
+                      <motion.div
+                        className="flex items-baseline space-x-3"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.6 }}
+                      >
+                        <h2 className="text-2xl font-bold text-foreground">
+                          Background Track
+                        </h2>
+                        
+                        {/* Cool Animated Music Element */}
+                        <motion.div
+                          className="relative flex items-center"
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ 
+                            duration: 0.8, 
+                            delay: 1,
+                            type: "spring",
+                            stiffness: 200,
+                            damping: 15
+                          }}
+                        >
+                          {/* Animated Music Notes */}
+                          <div className="flex items-center space-x-1">
+                            {[0, 1, 2].map((i) => (
+                              <motion.div
+                                key={i}
+                                className="text-[#ff0000] text-lg"
+                                animate={{
+                                  y: [0, -3, 0],
+                                  rotate: [0, 5, 0]
+                                }}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  delay: i * 0.3,
+                                  ease: "easeInOut"
+                                }}
+                              >
+                                ♪
+                              </motion.div>
+                            ))}
+                          </div>
+                          
+                          {/* Pulsing Dot */}
+                          <motion.div
+                            className="ml-2 w-2 h-2 bg-[#ff0000] rounded-full"
+                            animate={{
+                              scale: [1, 1.5, 1],
+                              opacity: [0.6, 1, 0.6]
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                          
+                          {/* Rotating Ring */}
+                          <motion.div
+                            className="absolute -inset-2 border border-[#ff0000]/30 rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{
+                              duration: 4,
+                              repeat: Infinity,
+                              ease: "linear"
+                            }}
+                          />
+                        </motion.div>
+                        
+                        <motion.div
+                          className="h-1 w-8 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full"
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ duration: 0.8, delay: 1.2 }}
+                        />
+                      </motion.div>
+                      
+                      <motion.p 
+                        className="text-base text-muted-foreground leading-relaxed max-w-md"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.8 }}
+                      >
+                        Add background music or ambient audio (optional)
+                      </motion.p>
+                      
+                      {/* Inline Info Tags */}
+                      <motion.div
+                        className="flex items-center space-x-4 text-xs text-muted-foreground"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 1.2 }}
+                      >
+                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
+                          <span>🎵</span>
+                          <span>Optional</span>
+                        </span>
+                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
+                          <span>⏱️</span>
+                          <span>Match duration</span>
+                        </span>
+                        <span className="flex items-center space-x-1 bg-muted/40 px-2 py-1 rounded-full">
+                          <span>🎶</span>
+                          <span>Will be dubbed</span>
+                        </span>
+                      </motion.div>
+                    </div>
                   </motion.div>
-                  
-                  <div className="space-y-4">
-                    <h2 className="text-3xl font-bold text-foreground">Background Track (Optional)</h2>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                      Add background music or ambient audio that will be dubbed along with your voice track.
-                    </p>
-                  </div>
 
-                  <div className="max-w-md mx-auto">
+                  {/* File Upload Component */}
+                  <motion.div
+                    className="max-w-2xl mx-auto"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                  >
                     <FileUpload
                       label="Background Track (Optional)"
                       accept="audio/*"
@@ -366,13 +508,7 @@ export default function NewJobPage() {
                       duration={backgroundDuration}
                       durationFormatted={backgroundDuration ? formatDuration(backgroundDuration) : undefined}
                     />
-                  </div>
-
-                  <div className="text-sm text-muted-foreground space-y-2">
-                    <p>🎵 This step is completely optional</p>
-                    <p>⏱️ Must match voice track duration if provided</p>
-                    <p>🎶 Background music will be dubbed too</p>
-                  </div>
+                  </motion.div>
 
                   {/* Duration Comparison */}
                   {voiceTrack && backgroundTrack && voiceDuration && backgroundDuration && (
