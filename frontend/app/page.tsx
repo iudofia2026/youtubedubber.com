@@ -87,7 +87,7 @@ export default function Home() {
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            or learn more
+            learn more
           </motion.p>
           <motion.div
             className="text-muted-foreground/60"
