@@ -162,8 +162,8 @@ export default function Home() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ 
-                    duration: 0.8, 
-                    delay: 1.8 + index * 0.2,
+                    duration: 1.2, 
+                    delay: 1.8 + index * 0.3,
                     ease: "easeOut"
                   }}
                   whileHover={{ 
@@ -176,11 +176,11 @@ export default function Home() {
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ 
-                      duration: 0.6, 
-                      delay: 2.0 + index * 0.2,
+                      duration: 0.8, 
+                      delay: 2.0 + index * 0.3,
                       type: "spring",
-                      stiffness: 200,
-                      damping: 15
+                      stiffness: 150,
+                      damping: 20
                     }}
                     whileHover={{ 
                       scale: 1.1,
@@ -191,11 +191,11 @@ export default function Home() {
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       transition={{ 
-                        duration: 0.6, 
-                        delay: 2.2 + index * 0.2,
+                        duration: 0.8, 
+                        delay: 2.2 + index * 0.3,
                         type: "spring",
-                        stiffness: 200,
-                        damping: 15
+                        stiffness: 150,
+                        damping: 20
                       }}
                     >
                       <Icon className="w-7 h-7 text-[#ff0000]" />
@@ -206,8 +206,8 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ 
-                      duration: 0.6, 
-                      delay: 2.4 + index * 0.2,
+                      duration: 0.8, 
+                      delay: 2.4 + index * 0.3,
                       ease: "easeOut"
                     }}
                   >
@@ -218,8 +218,8 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ 
-                      duration: 0.6, 
-                      delay: 2.6 + index * 0.2,
+                      duration: 0.8, 
+                      delay: 2.6 + index * 0.3,
                       ease: "easeOut"
                     }}
                   >
