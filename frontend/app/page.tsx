@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mic, Globe, Zap } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
-import { YouTubeIcon } from '@/components/YouTubeIcon';
+import { YTdubberIcon } from '@/components/YTdubberIcon';
 
 export default function Home() {
   return (
@@ -30,7 +30,7 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
               <span className="inline-flex items-center text-[#ff0000]">
-                <YouTubeIcon size={48} className="mr-2 sm:mr-3 sm:w-16 sm:h-16 w-12 h-12" />
+                <YTdubberIcon size={80} className="mr-3 sm:mr-4 sm:w-24 sm:h-24 w-20 h-20" />
                 Dubber
               </span>
             </motion.h1>
