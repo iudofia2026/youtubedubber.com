@@ -649,7 +649,7 @@ export default function NewJobPage() {
 
           {/* Navigation Buttons */}
           <motion.div
-            className="flex justify-between mt-8"
+            className="flex flex-col sm:flex-row justify-between mt-8 gap-3 sm:gap-0 mobile-button-group"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
