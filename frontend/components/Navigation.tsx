@@ -92,10 +92,18 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+    // Close jobs dropdown when opening mobile menu
+    if (!isMobileMenuOpen) {
+      setIsJobsDropdownOpen(false);
+    }
   };
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const closeJobsDropdown = () => {
+    setIsJobsDropdownOpen(false);
   };
 
   return (
@@ -180,7 +188,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                               }
                             `}
-                            onClick={() => setIsJobsDropdownOpen(false)}
+                            onClick={closeJobsDropdown}
                           >
                             <Icon className="w-4 h-4" />
                             <span>{item.name}</span>

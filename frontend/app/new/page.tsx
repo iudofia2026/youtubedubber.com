@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { FileUpload } from '@/components/FileUpload';
 import { LanguageChecklist } from '@/components/LanguageChecklist';
 import { Navigation } from '@/components/Navigation';
+import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { LANGUAGES } from '@/types';
 import { submitDubbingJob } from '@/lib/api';
 import { areDurationsEqual, formatDurationDifference, formatDuration } from '@/lib/audio-utils';
@@ -111,21 +112,49 @@ export default function NewJobPage() {
       <Navigation currentPath="/new" />
       
       <main className="px-4 sm:px-6 lg:px-8 py-4">
-        {/* Header */}
+        {/* Breadcrumbs */}
         <motion.div
-          className="mb-4"
+          className="mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Link
-            href="/"
-            className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Home</span>
-          </Link>
+          <Breadcrumbs items={breadcrumbConfigs.newJob} />
+        </motion.div>
+
+        {/* Header */}
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <Link
+              href="/"
+              className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
+              <span>Back to Home</span>
+            </Link>
+            
+            <Link
+              href="/jobs"
+              className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group"
+            >
+              <span>View Jobs</span>
+              <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+            </Link>
+          </div>
           
+          <div className="text-center">
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 tracking-tight">
+              Create New Job
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Upload your audio files and select target languages for dubbing
+            </p>
+          </div>
         </motion.div>
 
 

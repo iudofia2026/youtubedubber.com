@@ -3,11 +3,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Download, CheckCircle, Clock, Globe, Users, Zap } from 'lucide-react';
+import { ArrowLeft, Download, CheckCircle, Clock, Globe, Users, Zap, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { ProgressBar } from '@/components/ProgressBar';
 import { IndividualLanguageProgress } from '@/components/IndividualLanguageProgress';
 import { Navigation } from '@/components/Navigation';
+import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { simulateJobProgress } from '@/lib/api';
 import { JobStatus, GetJobStatusResponse } from '@/types';
 
@@ -111,20 +112,40 @@ export default function JobStatusPage() {
       <Navigation currentPath="/jobs" />
       
       <main className="px-4 sm:px-6 lg:px-8 py-8">
+        {/* Breadcrumbs */}
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Breadcrumbs items={breadcrumbConfigs.jobDetail(jobId)} />
+        </motion.div>
+
         {/* Header */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <Link
-            href="/"
-            className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Home</span>
-          </Link>
+          <div className="flex items-center justify-between mb-6">
+            <Link
+              href="/jobs"
+              className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
+              <span>Back to Jobs</span>
+            </Link>
+            
+            <Link
+              href="/new"
+              className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group"
+            >
+              <span>New Job</span>
+              <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+            </Link>
+          </div>
           
           <div className="flex items-center justify-between">
             <div>

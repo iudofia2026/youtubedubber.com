@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Mic, Globe, Zap, DollarSign } from 'lucide-react';
+import { ArrowRight, Mic, Globe, Zap, DollarSign, BarChart3 } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
 
@@ -57,6 +57,7 @@ export default function Home() {
             </motion.p>
             
             <motion.div
+              className="flex flex-col sm:flex-row items-center justify-center gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
@@ -69,6 +70,17 @@ export default function Home() {
                 >
                   <span>Start Dubbing</span>
                   <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </Link>
+              
+              <Link href="/jobs">
+                <motion.button
+                  className="inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <BarChart3 className="w-5 h-5" />
+                  <span>View Jobs</span>
                 </motion.button>
               </Link>
             </motion.div>
