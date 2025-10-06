@@ -93,6 +93,28 @@ getJobStatus(jobId: string, targetLanguages: string[]): Promise<GetJobStatusResp
 simulateJobProgress(jobId, languages, onProgress, onComplete): () => void
 ```
 
+### Backend Processing Requirements
+
+The backend must perform the following core workflow:
+
+1. **File Validation & Alignment**
+   - Confirm voice track and background track are the same length
+   - Validate audio formats and quality
+   - Reject jobs if tracks don't match in duration
+
+2. **Audio Processing Pipeline**
+   - Extract speech from voice track (speech-to-text)
+   - Translate transcript to each target language
+   - Generate AI voice in target language (voice cloning/TTS)
+   - Align generated voice with original timing
+   - Mix translated voice with background track
+   - Export properly timed audio files
+
+3. **Output Generation**
+   - Per-language voice-only tracks (clean speech)
+   - Per-language full mix tracks (voice + background)
+   - Maintain exact timing alignment with original
+
 ### Expected Backend API Endpoints
 
 #### 1. Job Submission
@@ -101,15 +123,16 @@ POST /api/jobs
 Content-Type: multipart/form-data
 
 {
-  "voice_file": File,
-  "background_file": File,
-  "languages": string[]
+  "voice_file": File,        # Voice-only audio track
+  "background_file": File,   # Background music/SFX track
+  "languages": string[]      # Target language codes
 }
 
 Response:
 {
   "job_id": "abc123def",
-  "status": "uploading",
+  "status": "validating",
+  "message": "Validating audio files...",
   "estimated_duration": 300
 }
 ```
@@ -121,7 +144,7 @@ GET /api/jobs/{job_id}
 Response:
 {
   "id": "abc123def",
-  "status": "processing",
+  "status": "processing",  # validating | processing | generating | finalizing | complete | error
   "progress": 45,
   "message": "Generating Spanish dub...",
   "languages": [
@@ -130,7 +153,7 @@ Response:
       "language_name": "Spanish",
       "status": "generating",
       "progress": 60,
-      "message": "Generating voice...",
+      "message": "Mixing voice with background...",
       "estimated_time_remaining": 120,
       "download_url": "/api/jobs/abc123def/download?lang=es&type=full"
     }
@@ -138,7 +161,8 @@ Response:
   "total_languages": 3,
   "completed_languages": 1,
   "started_at": "2024-01-01T12:00:00Z",
-  "estimated_completion": "2024-01-01T12:05:00Z"
+  "estimated_completion": "2024-01-01T12:05:00Z",
+  "validation_error": null  # If tracks don't match length
 }
 ```
 
@@ -147,9 +171,23 @@ Response:
 GET /api/jobs/{job_id}/download?lang={lang_code}&type={file_type}
 
 Where file_type is one of:
-- "voice" (voice-only track)
-- "full" (full mix with background)
-- "captions" (SRT/VTT file)
+- "voice" (voice-only track in target language)
+- "full" (full mix: translated voice + background track)
+- "captions" (SRT/VTT file with translated subtitles)
+```
+
+#### 4. Validation Error Response
+```http
+POST /api/jobs
+# If voice and background tracks don't match length
+
+Response:
+{
+  "error": "duration_mismatch",
+  "message": "Voice track (120s) and background track (115s) must be the same length",
+  "voice_duration": 120.5,
+  "background_duration": 115.2
+}
 ```
 
 ### Environment Configuration
@@ -178,6 +216,14 @@ export const submitDubbingJob = async (data: DubbingJobData): Promise<SubmitJobR
     method: 'POST',
     body: formData,
   });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    if (error.error === 'duration_mismatch') {
+      throw new Error(`Audio tracks must be the same length. Voice: ${error.voice_duration}s, Background: ${error.background_duration}s`);
+    }
+    throw new Error(error.message || 'Failed to submit job');
+  }
   
   return response.json();
 };
