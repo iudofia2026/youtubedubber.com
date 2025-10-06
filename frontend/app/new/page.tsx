@@ -95,7 +95,8 @@ export default function NewJobPage() {
       };
 
       const result = await submitDubbingJob(jobData);
-      router.push(`/jobs/${result.jobId}`);
+      const languagesParam = targetLanguages.join(',');
+      router.push(`/jobs/${result.jobId}?languages=${languagesParam}`);
     } catch (error) {
       setErrors({
         general: 'Failed to submit job. Please try again.',

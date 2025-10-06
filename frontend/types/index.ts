@@ -47,11 +47,28 @@ export interface DubbingJobData {
   targetLanguages: string[];
 }
 
+export interface LanguageProgress {
+  languageCode: string;
+  languageName: string;
+  flag: string;
+  status: 'pending' | 'processing' | 'generating' | 'finalizing' | 'complete' | 'error';
+  progress: number; // 0-100
+  message: string;
+  estimatedTimeRemaining?: number; // in seconds
+  fileSize?: number; // in bytes
+  downloadUrl?: string;
+}
+
 export interface JobStatus {
   id: string;
   status: 'uploading' | 'processing' | 'generating' | 'finalizing' | 'complete';
   progress: number;
   message: string;
+  languages: LanguageProgress[];
+  totalLanguages: number;
+  completedLanguages: number;
+  startedAt: string;
+  estimatedCompletion?: string;
 }
 
 export interface NavigationProps {
@@ -68,6 +85,11 @@ export interface GetJobStatusResponse {
   status: JobStatus['status'];
   progress: number;
   message: string;
+  languages: LanguageProgress[];
+  totalLanguages: number;
+  completedLanguages: number;
+  startedAt: string;
+  estimatedCompletion?: string;
 }
 
 // Language options

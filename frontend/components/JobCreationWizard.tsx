@@ -39,7 +39,13 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
   };
 
   const handleSubmit = () => {
-    onSubmit(formData);
+    if (formData.voiceTrack) {
+      onSubmit({
+        voiceTrack: formData.voiceTrack,
+        backgroundTrack: formData.backgroundTrack || undefined,
+        targetLanguage: formData.targetLanguage
+      });
+    }
   };
 
   const isStepValid = (step: number) => {
