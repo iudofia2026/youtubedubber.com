@@ -30,7 +30,7 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
               <span className="inline-flex items-center text-[#ff0000]">
-                <YTdubberIcon size={80} className="mr-3 sm:mr-4 sm:w-24 sm:h-24 w-20 h-20" />
+                <YTdubberIcon size={80} className="mr-2 sm:mr-3 sm:w-24 sm:h-24 w-20 h-20" />
                 Dubber
               </span>
             </motion.h1>
