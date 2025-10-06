@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle, Play, Pause, Scissors, Volume2, VolumeX } from 'lucide-react';
@@ -28,6 +28,10 @@ export default function NewJobPage() {
     durationMismatch?: string;
     general?: string;
   }>({});
+  
+  // Refs for auto-scroll functionality
+  const instructionsRef = useRef<HTMLDivElement>(null);
+  const [hasAutoScrolled, setHasAutoScrolled] = useState(false);
 
   const steps = [
     { id: 0, title: 'Audio Setup', description: 'Prepare your audio files', icon: Scissors },
@@ -35,6 +39,21 @@ export default function NewJobPage() {
     { id: 2, title: 'Background Track', description: 'Add background music (optional)', icon: Music },
     { id: 3, title: 'Target Languages', description: 'Select languages for dubbing', icon: Globe },
   ];
+
+  // Auto-scroll to instructions after initial load
+  useEffect(() => {
+    if (currentStep === 0 && !hasAutoScrolled && instructionsRef.current) {
+      const timer = setTimeout(() => {
+        instructionsRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+        setHasAutoScrolled(true);
+      }, 2000); // Wait 2 seconds before scrolling
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, hasAutoScrolled]);
 
   const validateStep = useCallback((step: number) => {
     if (step === 0) {
@@ -192,11 +211,37 @@ export default function NewJobPage() {
                     <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                       Before we can create multilingual dubs, you'll need to split your video's audio into two separate MP3 files
                     </p>
+                    
+                    {/* Auto-scroll indicator */}
+                    <motion.div
+                      className="mt-6 flex flex-col items-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 1.5 }}
+                    >
+                      <motion.p
+                        className="text-sm text-muted-foreground mb-2"
+                        animate={{ opacity: [0.5, 1, 0.5] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        Scroll down for detailed instructions
+                      </motion.p>
+                      <motion.div
+                        className="text-muted-foreground/60"
+                        animate={{ y: [0, 8, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </motion.div>
+                    </motion.div>
                   </motion.div>
 
 
                   {/* Enhanced Instructions - Centerpiece */}
                   <motion.div
+                    ref={instructionsRef}
                     className="max-w-5xl mx-auto"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
