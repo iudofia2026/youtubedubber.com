@@ -110,10 +110,10 @@ export default function NewJobPage() {
     <div className="min-h-screen bg-background">
       <Navigation currentPath="/new" />
       
-      <main className="px-4 sm:px-6 lg:px-8 py-8">
+      <main className="px-4 sm:px-6 lg:px-8 py-4">
         {/* Header */}
         <motion.div
-          className="mb-8"
+          className="mb-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -138,7 +138,7 @@ export default function NewJobPage() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="min-h-[400px] flex flex-col justify-center"
+              className="min-h-[300px] flex flex-col justify-start"
             >
               {/* Step 1: Voice Track Upload */}
               {currentStep === 1 && (
@@ -589,7 +589,7 @@ export default function NewJobPage() {
 
           {/* Progress Steps */}
           <motion.div
-            className="mt-12 mb-8"
+            className="mt-8 mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -649,7 +649,7 @@ export default function NewJobPage() {
 
           {/* Navigation Buttons */}
           <motion.div
-            className="flex justify-between mt-12"
+            className="flex justify-between mt-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
