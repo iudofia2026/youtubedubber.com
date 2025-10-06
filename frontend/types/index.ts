@@ -71,6 +71,29 @@ export interface JobStatus {
   estimatedCompletion?: string;
 }
 
+// Job interface for job history
+export interface Job {
+  id: string;
+  status: 'pending' | 'processing' | 'complete' | 'error';
+  progress: number; // 0-100
+  message: string;
+  createdAt: string;
+  updatedAt: string;
+  voiceTrackDuration: number; // in seconds
+  targetLanguages: string[];
+  backgroundTrack?: boolean;
+  completedLanguages?: number;
+  totalLanguages?: number;
+  estimatedCompletion?: string;
+  downloadUrls?: {
+    [languageCode: string]: {
+      voice: string;
+      full: string;
+      captions?: string;
+    };
+  };
+}
+
 export interface NavigationProps {
   currentPath: string;
 }
