@@ -827,6 +827,7 @@ lib/
   - Interactive elements with hover effects and smooth animations
   - Maintains consistent branding with YouTube red accent colors
   - Clean, minimalist design matching site aesthetic
+  - **Simplified Visual Elements**: Removed specific text labels ("Your Video Audio", "Voice Only", "Background Only") and file names ("voice_only.mp3", "background.mp3") for cleaner visual presentation
 
 - **Simplified Header**: Removed static "Create New Job" title and subtitle
   - Page now starts directly with step content for cleaner layout

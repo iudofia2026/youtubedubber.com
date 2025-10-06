@@ -281,8 +281,6 @@ export default function NewJobPage() {
                               ))}
                             </motion.div>
                             
-                            <h3 className="text-xl font-bold text-foreground mb-2">Your Video Audio</h3>
-                            <p className="text-sm text-muted-foreground">Mixed voice + background</p>
                           </div>
                         </motion.div>
 
@@ -435,12 +433,6 @@ export default function NewJobPage() {
                                 ))}
                               </motion.div>
                               
-                              <h4 className="text-lg font-bold text-foreground mb-2">Voice Only</h4>
-                              <p className="text-sm text-muted-foreground mb-3">Clean speech track</p>
-                              <div className="flex items-center justify-center space-x-2 text-xs text-[#ff0000] font-mono bg-[#ff0000]/10 px-3 py-1 rounded">
-                                <Volume2 className="w-3 h-3" />
-                                <span>voice_only.mp3</span>
-                              </div>
                             </div>
                           </motion.div>
 
@@ -511,12 +503,6 @@ export default function NewJobPage() {
                                 ))}
                               </motion.div>
                               
-                              <h4 className="text-lg font-bold text-foreground mb-2">Background Only</h4>
-                              <p className="text-sm text-muted-foreground mb-3">Music & sound effects</p>
-                              <div className="flex items-center justify-center space-x-2 text-xs text-[#ff0000] font-mono bg-[#ff0000]/10 px-3 py-1 rounded">
-                                <VolumeX className="w-3 h-3" />
-                                <span>background.mp3</span>
-                              </div>
                             </div>
                           </motion.div>
                         </div>
