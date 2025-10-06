@@ -32,6 +32,10 @@ export default function NewJobPage() {
   // Refs for auto-scroll functionality
   const instructionsRef = useRef<HTMLDivElement>(null);
   const [hasAutoScrolled, setHasAutoScrolled] = useState(false);
+  
+  // State for checking if user has past jobs
+  const [hasPastJobs, setHasPastJobs] = useState<boolean | null>(null);
+  const [isCheckingJobs, setIsCheckingJobs] = useState(true);
 
   const steps = [
     { id: 0, title: 'Audio Setup', description: 'Prepare your audio files', icon: Scissors },
@@ -39,6 +43,36 @@ export default function NewJobPage() {
     { id: 2, title: 'Background Track', description: 'Add background music (optional)', icon: Music },
     { id: 3, title: 'Target Languages', description: 'Select languages for dubbing', icon: Globe },
   ];
+
+  // Function to check if user has past jobs
+  const checkPastJobs = useCallback(async () => {
+    setIsCheckingJobs(true);
+    try {
+      // Simulate API call to check for past jobs
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Mock data - in real app, this would be an API call
+      // For now, we'll use localStorage to simulate user state
+      const hasJobs = localStorage.getItem('ytdubber_has_jobs') === 'true';
+      setHasPastJobs(hasJobs);
+      
+      // If user has past jobs, start at step 1 (Voice Track)
+      if (hasJobs) {
+        setCurrentStep(1);
+      }
+    } catch (error) {
+      console.error('Error checking past jobs:', error);
+      // Default to showing instructions if there's an error
+      setHasPastJobs(false);
+    } finally {
+      setIsCheckingJobs(false);
+    }
+  }, []);
+
+  // Check for past jobs on component mount
+  useEffect(() => {
+    checkPastJobs();
+  }, [checkPastJobs]);
 
   // Custom smooth scroll function with duration control
   const smoothScrollToElement = (element: HTMLElement, duration: number = 2000) => {
@@ -66,9 +100,9 @@ export default function NewJobPage() {
     requestAnimationFrame(animation);
   };
 
-  // Auto-scroll to instructions after initial load
+  // Auto-scroll to instructions after initial load (only for first-time users)
   useEffect(() => {
-    if (currentStep === 0 && !hasAutoScrolled && instructionsRef.current) {
+    if (currentStep === 0 && !hasAutoScrolled && instructionsRef.current && hasPastJobs === false) {
       const timer = setTimeout(() => {
         smoothScrollToElement(instructionsRef.current!, 3000); // 3 seconds duration
         setHasAutoScrolled(true);
@@ -76,7 +110,7 @@ export default function NewJobPage() {
 
       return () => clearTimeout(timer);
     }
-  }, [currentStep, hasAutoScrolled]);
+  }, [currentStep, hasAutoScrolled, hasPastJobs]);
 
   const validateStep = useCallback((step: number) => {
     if (step === 0) {
@@ -93,6 +127,25 @@ export default function NewJobPage() {
 
     return true;
   }, [voiceTrack, targetLanguages]);
+
+  // Show loading state while checking for past jobs
+  if (isCheckingJobs) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation currentPath="/new" />
+        <main className="px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <div className="w-8 h-8 border-2 border-[#ff0000] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-muted-foreground">Loading...</p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   const isStepValid = useMemo(() => {
     return validateStep(currentStep);
@@ -120,10 +173,12 @@ export default function NewJobPage() {
   }, [isStepValid, currentStep, steps.length]);
 
   const prevStep = useCallback(() => {
-    if (currentStep > 1) {
+    // For returning users, don't allow going back to step 0 (audio setup)
+    const minStep = hasPastJobs ? 1 : 0;
+    if (currentStep > minStep) {
       setCurrentStep(currentStep - 1);
     }
-  }, [currentStep]);
+  }, [currentStep, hasPastJobs]);
 
   const handleSubmit = useCallback(async () => {
     if (!isFinalStepValid) {
@@ -143,6 +198,10 @@ export default function NewJobPage() {
       };
 
       const result = await submitDubbingJob(jobData);
+      
+      // Mark that user now has jobs (for future visits)
+      localStorage.setItem('ytdubber_has_jobs', 'true');
+      
       const languagesParam = targetLanguages.join(',');
       router.push(`/jobs/${result.jobId}?languages=${languagesParam}`);
     } catch (error) {
@@ -208,8 +267,8 @@ export default function NewJobPage() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="min-h-[300px] flex flex-col justify-start"
             >
-              {/* Step 0: Audio Setup Introduction */}
-              {currentStep === 0 && (
+              {/* Step 0: Audio Setup Introduction - Only for first-time users */}
+              {currentStep === 0 && hasPastJobs === false && (
                 <div className="space-y-8">
                   {/* Main Header */}
                   <motion.div
@@ -445,6 +504,27 @@ export default function NewJobPage() {
               {/* Step 1: Voice Track Upload */}
               {currentStep === 1 && (
                 <div className="space-y-6">
+                  {/* Welcome back message for returning users */}
+                  {hasPastJobs && (
+                    <motion.div
+                      className="max-w-2xl mx-auto mb-6 p-4 bg-[#ff0000]/10 border border-[#ff0000]/20 rounded-lg"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 bg-[#ff0000] rounded-full flex items-center justify-center">
+                          <span className="text-white text-sm font-bold">✓</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">Welcome back!</p>
+                          <p className="text-xs text-muted-foreground">
+                            Since you've created jobs before, we'll skip the audio preparation guide and go straight to uploading.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
                   {/* Creative Horizontal Header with Icon Left */}
                   <motion.div
                     className="flex items-center justify-center space-x-6 max-w-2xl mx-auto"
@@ -897,10 +977,13 @@ export default function NewJobPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="flex items-center justify-center space-x-8">
-              {steps.map((step, index) => {
+              {steps
+                .filter(step => hasPastJobs ? step.id !== 0 : true) // Hide step 0 for returning users
+                .map((step, index) => {
                 const Icon = step.icon;
                 const isActive = currentStep === step.id;
                 const isCompleted = currentStep > step.id;
+                const displayIndex = hasPastJobs ? index + 1 : index; // Adjust numbering for returning users
                 
                 return (
                   <div key={step.id} className="flex items-center">
@@ -930,7 +1013,7 @@ export default function NewJobPage() {
                         <p className={`text-sm font-medium ${
                           isActive || isCompleted ? 'text-foreground' : 'text-muted-foreground'
                         }`}>
-                          {step.title}
+                          {hasPastJobs && step.id === 1 ? 'Step 1: ' : ''}{step.title}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {step.description}
