@@ -36,6 +36,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${dmSans.variable} ${ibmPlexMono.variable} ${roboto.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
         {children}
       </body>

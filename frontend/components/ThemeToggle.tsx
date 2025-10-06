@@ -5,8 +5,10 @@ import { motion } from 'framer-motion';
 
 export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // Check for saved theme preference or default to light mode
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -29,6 +31,15 @@ export default function ThemeToggle() {
       localStorage.setItem('theme', 'light');
     }
   };
+
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="fixed top-4 right-4 z-50 w-12 h-12 rounded-full bg-card border-2 border-border shadow-lg flex items-center justify-center">
+        <div className="w-6 h-6 bg-muted rounded-sm" />
+      </div>
+    );
+  }
 
   return (
     <motion.button
