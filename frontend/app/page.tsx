@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Mic, Globe, Zap } from 'lucide-react';
+import { ArrowRight, Mic, Globe, Zap, DollarSign } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
 
@@ -131,7 +131,7 @@ export default function Home() {
             </motion.p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
                 icon: Mic,
@@ -147,6 +147,11 @@ export default function Home() {
                 icon: Zap,
                 title: 'Fast Processing',
                 description: 'Get your dubbed content ready in minutes, not hours. Our optimized pipeline delivers results quickly.',
+              },
+              {
+                icon: DollarSign,
+                title: 'Best Value Pricing',
+                description: 'Premium quality dubbing at unbeatable prices. We offer the best value compared to competitors like Rask and HeyGen.',
               },
             ].map((feature, index) => {
               const Icon = feature.icon;
