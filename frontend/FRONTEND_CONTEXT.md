@@ -320,3 +320,58 @@ When the backend is ready:
 - Ready to connect to real backend API
 
 **Next Steps**: Replace mock API calls with real backend integration once backend is deployed.
+
+---
+
+## 🔄 Recent Updates & Changes
+
+### Branding & Visual Updates
+- **Logo Replacement**: Replaced YouTube branding with custom YTdubber logo throughout the app
+- **Favicon**: Updated favicon.ico with YTdubber logo (32x32 PNG)
+- **Navigation**: Updated to "YT Dubber" branding while maintaining YouTube-style typography
+- **Page Title**: Browser tab now displays "YT Dubber"
+- **Homepage Hero**: Updated to "YouTube [YTdubber Icon] Dubber" with larger icon (80px)
+
+### Content & Copy Updates
+- **Hero Description**: Changed "let our AI" to "let us" for more personal touch
+- **Punctuation**: Removed period from main description for cleaner look
+- **Scroll Indicator**: Simplified "or learn more" to "learn more"
+
+### Features Section Enhancements
+- **Layout**: Changed from 3-column to 2x2 grid layout for better visual balance
+- **New Feature**: Added "Best Value Pricing" feature highlighting competitive pricing vs Rask/HeyGen
+- **Icon**: Added DollarSign icon for pricing feature
+- **Animation**: Slowed down feature card animations for more elegant, premium feel
+  - Duration increased from 0.6-0.8s to 0.8-1.2s
+  - Delay spacing increased from 0.2s to 0.3s between cards
+  - Spring physics adjusted for smoother motion
+
+### Technical Improvements
+- **Scroll-Triggered Animations**: Added `useInView` hook for features section
+  - Animations now trigger when section comes into view (not just on page load)
+  - Animations replay when scrolling back up and down
+  - Set margin: -100px for earlier trigger point
+- **Hydration Fixes**: Resolved Next.js hydration errors
+  - Added `suppressHydrationWarning={true}` to body tag for browser extension attributes
+  - Added proper hydration protection to ThemeToggle component
+  - Fixed server/client mismatch issues
+
+### File Organization
+- **Context Documentation**: Moved FRONTEND_CONTEXT.md to frontend/ directory
+- **MCP Organization**: Moved all MCP-related files to dedicated mcp/ folder
+- **Cleanup**: Removed temporary YTdubber files from desktop after successful integration
+
+### Backend Integration Specifications
+- **Updated Requirements**: Clarified exact backend processing workflow
+  - File validation and length matching requirements
+  - Speech-to-text → translation → AI voice generation → mixing pipeline
+  - Proper error handling for duration mismatches
+- **API Contract**: Detailed expected endpoints and response formats
+- **Error Handling**: Added validation error responses for track length mismatches
+
+### Current Status
+- **Frontend**: ✅ Complete and ready for backend integration
+- **Animations**: ✅ Smooth, scroll-triggered animations working
+- **Branding**: ✅ Consistent YTdubber branding throughout
+- **Responsive**: ✅ Works on all screen sizes
+- **Performance**: ✅ Optimized with proper hydration handling
