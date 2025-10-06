@@ -55,7 +55,11 @@ frontend/
 
 ### Key Pages
 1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, feature showcase, CTAs
-2. **Upload** (`/new`): 3-step wizard for file uploads and language selection
+2. **Upload** (`/new`): 4-step wizard starting with audio preparation guide, then file uploads and language selection
+   - **Step 0**: Audio Setup - Animated visual guide explaining how to split video audio into voice and background tracks
+   - **Step 1**: Voice Track Upload - Upload voice-only audio file
+   - **Step 2**: Background Track Upload - Upload background music/ambient audio (optional)
+   - **Step 3**: Target Languages - Select languages for dubbing
 3. **Job Status** (`/jobs/[id]`): Real-time progress tracking with per-language details
 4. **Jobs List** (`/jobs`): Empty state (ready for job history)
 
@@ -694,7 +698,14 @@ lib/
    - Create download history view
    - **Effort**: 3-4 hours, **Impact**: High (completes user journey)
 
-**Current Status**: Foundation complete + error handling + job management implemented. Ready for next phase of high-impact features.
+**Current Status**: Foundation complete + error handling + job management + enhanced upload flow implemented. Ready for next phase of high-impact features.
+
+**Latest Updates**:
+- ✅ **Audio Preparation Guide**: New intro screen explaining audio splitting requirement
+- ✅ **Enhanced Upload Flow**: 4-step wizard with clear visual guidance
+- ✅ **Simplified UI**: Removed static headers for cleaner user experience
+- ✅ **Mobile Optimization**: Responsive design for all screen sizes
+- ✅ **Documentation**: Updated frontend context with latest changes
 
 ---
 
@@ -808,3 +819,23 @@ lib/
   - Proper z-index management to ensure content appears above gradients
   - Responsive design that works across all screen sizes
   - Enhanced visual cohesion between hero, features, and CTA sections
+
+### Upload Page Enhancements (Latest Update)
+- **New Intro Screen (Step 0)**: Added comprehensive audio preparation guide
+  - Animated visual explanation showing video splitting into voice and background tracks
+  - Step-by-step instructions for audio editing software
+  - Interactive elements with hover effects and smooth animations
+  - Maintains consistent branding with YouTube red accent colors
+  - Clean, minimalist design matching site aesthetic
+
+- **Simplified Header**: Removed static "Create New Job" title and subtitle
+  - Page now starts directly with step content for cleaner layout
+  - Focuses user attention on the audio preparation process
+  - Reduces visual clutter and improves user flow
+
+- **Enhanced User Experience**: 
+  - Clear explanation of audio splitting requirement before upload
+  - Visual demonstration of the splitting process
+  - Professional instructions for common audio editing software
+  - Smooth transitions between all 4 steps
+  - Mobile-optimized responsive design
