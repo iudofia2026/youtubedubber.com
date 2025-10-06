@@ -1,13 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { ArrowRight, Mic, Globe, Zap, DollarSign } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
 
 export default function Home() {
+  const featuresRef = useRef(null);
+  const isInView = useInView(featuresRef, { once: false, margin: "-100px" });
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation currentPath="/" />
@@ -102,21 +105,22 @@ export default function Home() {
 
         {/* Features Section */}
         <motion.section
+          ref={featuresRef}
           className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.8, delay: 1 }}
         >
           <motion.div 
             className="text-center mb-8"
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.8, delay: 1.2 }}
           >
             <motion.h2 
               className="text-3xl sm:text-4xl font-bold text-foreground mb-3 tracking-tight"
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.8, delay: 1.4 }}
             >
               Why Choose Our Platform?
@@ -124,7 +128,7 @@ export default function Home() {
             <motion.p 
               className="text-lg text-muted-foreground max-w-2xl mx-auto font-light"
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.8, delay: 1.6 }}
             >
               Professional-quality dubbing made simple and accessible
@@ -160,7 +164,7 @@ export default function Home() {
                   key={feature.title}
                   className="text-center p-4"
                   initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ 
                     duration: 1.2, 
                     delay: 1.8 + index * 0.3,
@@ -174,7 +178,7 @@ export default function Home() {
                   <motion.div 
                     className="w-14 h-14 bg-[#ff0000]/10 flex items-center justify-center mx-auto mb-3 border border-[#ff0000]/20"
                     initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
+                    animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
                     transition={{ 
                       duration: 0.8, 
                       delay: 2.0 + index * 0.3,
@@ -189,7 +193,7 @@ export default function Home() {
                   >
                     <motion.div
                       initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
+                      animate={isInView ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 }}
                       transition={{ 
                         duration: 0.8, 
                         delay: 2.2 + index * 0.3,
@@ -204,7 +208,7 @@ export default function Home() {
                   <motion.h3 
                     className="text-lg font-semibold text-foreground mb-2 tracking-tight"
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                     transition={{ 
                       duration: 0.8, 
                       delay: 2.4 + index * 0.3,
@@ -216,7 +220,7 @@ export default function Home() {
                   <motion.p 
                     className="text-muted-foreground font-light leading-relaxed"
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                     transition={{ 
                       duration: 0.8, 
                       delay: 2.6 + index * 0.3,
