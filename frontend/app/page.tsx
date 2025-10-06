@@ -137,13 +137,6 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
           >
-            {/* Decorative accent line */}
-            <motion.div 
-              className="w-16 h-1 bg-gradient-to-r from-transparent via-[#ff0000] to-transparent mx-auto mb-6"
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 1, delay: 1.4, ease: "easeOut" }}
-            />
             
             <motion.div
               className="relative inline-block"
@@ -208,32 +201,6 @@ export default function Home() {
                 </motion.span>
               </motion.p>
               
-              {/* Decorative dots */}
-              <motion.div 
-                className="flex justify-center space-x-2 mt-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 2.4 }}
-              >
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="w-2 h-2 bg-[#ff0000]/30 rounded-full"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ 
-                      duration: 0.3, 
-                      delay: 2.6 + i * 0.1,
-                      type: "spring",
-                      stiffness: 200
-                    }}
-                    whileHover={{ 
-                      scale: 1.5,
-                      backgroundColor: "#ff0000"
-                    }}
-                  />
-                ))}
-              </motion.div>
             </motion.div>
           </motion.div>
 
