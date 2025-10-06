@@ -234,7 +234,7 @@ export default function NewJobPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.8 }}
                       >
-                        Upload your voice-only audio file for multilingual dubbing
+                        Upload your voice-only audio file first
                       </motion.p>
                       
                     </div>
