@@ -53,7 +53,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
                 <YTdubberIcon size={32} className="w-8 h-8" />
               </div>
               <span className="text-xl font-bold text-foreground">
-                <span className="youtube-font">YouTube</span> Multilingual Dubber
+                <span className="youtube-font">YouTube</span> Dubber
               </span>
             </Link>
           </div>
