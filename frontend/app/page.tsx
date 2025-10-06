@@ -29,8 +29,6 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            {/* Enhanced hero gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#ff0000]/10 via-[#ff0000]/5 to-[#ff0000]/8 pointer-events-none"></div>
           <div className="text-center relative z-10">
             <motion.h1
               className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight"
