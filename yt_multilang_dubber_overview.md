@@ -58,16 +58,37 @@ Pricing strategy: **$0.99/min** with volume tiers at $0.79–$0.89/min (≥10% m
 
 ## 5. Front-End (Main Branch)
 
-- **Framework:** Next.js 14 (App Router, TypeScript)
-- **Styling:** Tailwind + shadcn/ui components
-- **Motion:** Framer Motion micro-interactions (premium feel)
-- **Design:** sharp, geometric, minimalist, grid-based layout
-- **Color Palette:** near-white background, near-black text, one accent color, neutral grays (colorblind-friendly)
+- **Framework:** Next.js 15.5.4 (App Router, TypeScript 5.9.3)
+- **Styling:** Tailwind CSS 4 + shadcn/ui components + custom design system
+- **Motion:** Framer Motion 12.23.22 micro-interactions (premium feel)
+- **Design:** Sharp, geometric, minimalist, grid-based layout with zero border radius
+- **Color Palette:** 
+  - Light mode: `#ffffff` background, `#333333` text, `#ff0000` YouTube red accent
+  - Dark mode: `#0f0f0f` background, `#ffffff` text, `#ff0000` accent
+  - Colorblind-friendly with high contrast ratios
+- **Typography:** DM Sans (primary), IBM Plex Mono (monospace), Roboto (YouTube branding)
 - **Pages:**
-  - **Home** – intro & CTA
-  - **/new** – upload form (voice, background, language select, submit)
-  - **/jobs/[id]** – job status page with progress and download links (mocked until backend ready)
-- **Mock Mode:** If `NEXT_PUBLIC_API_URL` is empty, simulate API responses so the UI is viewable immediately.
+  - **Home** (`/`) – Hero section with animated features, YouTube branding, CTA
+  - **Upload** (`/new`) – 3-step wizard: voice track → background track → language selection
+  - **Jobs** (`/jobs`) – Job listing page with empty state
+  - **Job Status** (`/jobs/[id]`) – Real-time progress with individual language tracking
+- **Key Components:**
+  - `FileUpload` – Drag & drop with validation, duration extraction, file size limits
+  - `IndividualLanguageProgress` – Per-language progress cards with download buttons
+  - `LanguageChecklist` – Multi-select with search, flags, and validation
+  - `ProgressBar` – Animated progress with status indicators
+  - `Navigation` – Responsive nav with YouTube branding
+- **Audio Processing:**
+  - Client-side duration extraction and validation
+  - Duration mismatch detection between voice/background tracks
+  - Support for multiple audio formats (audio/*)
+  - File size validation (100MB limit)
+- **Mock Mode:** Comprehensive API simulation with realistic progress tracking
+- **Development Tools:**
+  - ESLint 9 with Next.js config
+  - Turbopack for fast builds
+  - TypeScript strict mode
+  - MCP server integration for deliberate thinking
 
 ---
 
