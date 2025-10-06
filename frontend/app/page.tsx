@@ -53,7 +53,7 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
             >
               Upload your voice and background audio tracks, select your target language, 
-              and let us create professional-quality multilingual dubs for your content.
+              and let us create professional-quality multilingual dubs for your content
             </motion.p>
             
             <motion.div
