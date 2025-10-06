@@ -132,27 +132,109 @@ export default function Home() {
           {/* Subtle background overlay for features */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#ff0000]/0.5 to-transparent pointer-events-none"></div>
           <motion.div 
-            className="text-center mb-8 relative z-10"
+            className="text-center mb-12 relative z-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
           >
-            <motion.h2 
-              className="text-3xl sm:text-4xl font-bold text-foreground mb-3 tracking-tight"
+            {/* Decorative accent line */}
+            <motion.div 
+              className="w-16 h-1 bg-gradient-to-r from-transparent via-[#ff0000] to-transparent mx-auto mb-6"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1, delay: 1.4, ease: "easeOut" }}
+            />
+            
+            <motion.div
+              className="relative inline-block"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.4 }}
             >
-              Why Choose Our Platform?
-            </motion.h2>
-            <motion.p 
-              className="text-lg text-muted-foreground max-w-2xl mx-auto font-light"
+              <motion.h2 
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 tracking-tight relative"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.6 }}
+              >
+                <span className="relative">
+                  Why Choose Our Platform?
+                  {/* Subtle text shadow for depth */}
+                  <motion.span 
+                    className="absolute inset-0 text-[#ff0000]/20 blur-sm -z-10"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1, delay: 2 }}
+                  >
+                    Why Choose Our Platform?
+                  </motion.span>
+                </span>
+              </motion.h2>
+            </motion.div>
+            
+            <motion.div
+              className="relative max-w-3xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.6 }}
+              transition={{ duration: 0.8, delay: 1.8 }}
             >
-              Professional-quality dubbing made simple and accessible
-            </motion.p>
+              <motion.p 
+                className="text-lg sm:text-xl text-muted-foreground font-light leading-relaxed relative"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 2.0 }}
+              >
+                <motion.span
+                  className="inline-block"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  Professional-quality dubbing
+                </motion.span>
+                <motion.span 
+                  className="text-[#ff0000] font-medium mx-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 2.2 }}
+                >
+                  made simple
+                </motion.span>
+                <motion.span
+                  className="inline-block"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  and accessible
+                </motion.span>
+              </motion.p>
+              
+              {/* Decorative dots */}
+              <motion.div 
+                className="flex justify-center space-x-2 mt-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 2.4 }}
+              >
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-2 h-2 bg-[#ff0000]/30 rounded-full"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ 
+                      duration: 0.3, 
+                      delay: 2.6 + i * 0.1,
+                      type: "spring",
+                      stiffness: 200
+                    }}
+                    whileHover={{ 
+                      scale: 1.5,
+                      backgroundColor: "#ff0000"
+                    }}
+                  />
+                ))}
+              </motion.div>
+            </motion.div>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
