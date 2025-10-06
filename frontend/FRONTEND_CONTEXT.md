@@ -323,6 +323,309 @@ When the backend is ready:
 
 ---
 
+## 🚀 **FRONTEND EXPANSION REQUIREMENTS**
+
+Based on the backend architecture and business requirements, the frontend needs significant expansion to support the complete YT Dubber platform.
+
+### **🎯 Critical UI/UX Features Needed**
+
+#### **1. Authentication System** 🔐
+- **User Registration/Login** with Subabase Auth integration
+- **JWT token management** for secure API calls
+- **Protected routes** (jobs, dashboard, billing)
+- **User profile management** and account settings
+- **Password reset** and email verification flows
+
+#### **2. Payment Integration** 💳
+- **Stripe integration** for subscription/pay-per-use billing
+- **Pricing tiers** and plan selection UI
+- **Usage tracking** and billing dashboard
+- **Payment history** and invoice management
+- **Credit/payment method** management
+- **Subscription management** (upgrade/downgrade/cancel)
+
+#### **3. Enhanced Job Management** 📋
+- **Job history page** (`/jobs`) - currently shows empty state
+- **Job details with audit trail** and processing logs
+- **Job deletion/cancellation** functionality
+- **Job sharing** and collaboration features
+- **Export job data** for billing/records
+- **Job search and filtering** capabilities
+
+#### **4. Real-time Features** ⚡
+- **WebSocket/SSE integration** for live job updates
+- **Real-time progress tracking** (replace current simulation)
+- **Live notifications** for job completion
+- **Queue status** and estimated wait times
+- **Real-time error notifications** and recovery options
+
+#### **5. Advanced File Management** 📁
+- **File preview** with audio player before upload
+- **Upload progress** with pause/resume functionality
+- **File validation** with detailed error messages
+- **Batch upload** capabilities for multiple files
+- **File history** and re-upload options
+- **Cloud storage** integration for file persistence
+
+#### **6. Download & Export System** ⬇️
+- **Multiple download formats**:
+  - Voice-only tracks per language
+  - Full-mix tracks (voice + background)
+  - SRT/VTT caption files
+  - Manifest JSON with metadata
+- **Bulk download** for multiple languages
+- **Download history** and re-download links
+- **File expiration** warnings (48-hour retention)
+- **Download progress** and resume capability
+
+#### **7. User Dashboard** 📊
+- **Usage analytics** and processing statistics
+- **Cost tracking** per job/language
+- **Processing history** with search/filter
+- **Account settings** and preferences
+- **API usage** and limits display
+- **Performance metrics** and insights
+
+#### **8. Error Handling & Recovery** 🚨
+- **Upload failure recovery** with retry options
+- **Processing error handling** with detailed messages
+- **Network failure** graceful degradation
+- **File corruption** detection and re-upload prompts
+- **Rate limiting** user feedback and queuing
+- **Error boundary** components for crash recovery
+
+#### **9. Mobile Optimization** 📱
+- **Mobile-first** responsive design improvements
+- **Touch-friendly** file upload interface
+- **Mobile-specific** UI patterns and gestures
+- **Offline capability** for viewing completed jobs
+- **Progressive Web App** features
+- **Mobile payment** optimization
+
+#### **10. Admin/Support Features** 🛠️
+- **Support ticket** system integration
+- **Help documentation** and tutorials
+- **FAQ** section with search
+- **Contact/support** forms
+- **Status page** for service health
+- **Live chat** or support widget
+
+### **🎨 New Components Required**
+
+#### **Authentication Components:**
+- `AuthForm.tsx` - Login/register forms with validation
+- `AuthProvider.tsx` - Context for authentication state
+- `ProtectedRoute.tsx` - Route protection wrapper
+- `UserProfile.tsx` - Account management interface
+
+#### **Payment Components:**
+- `PaymentForm.tsx` - Stripe payment integration
+- `BillingDashboard.tsx` - Usage and billing display
+- `PricingTiers.tsx` - Plan selection interface
+- `PaymentHistory.tsx` - Transaction history
+- `SubscriptionManager.tsx` - Plan management
+
+#### **Job Management Components:**
+- `JobHistory.tsx` - List of past jobs with filtering
+- `JobDetails.tsx` - Detailed job view with audit trail
+- `JobCard.tsx` - Individual job display component
+- `JobFilters.tsx` - Search and filter interface
+- `JobActions.tsx` - Delete/cancel/share actions
+
+#### **File Management Components:**
+- `FilePreview.tsx` - Audio file preview player
+- `UploadProgress.tsx` - Enhanced upload progress
+- `FileValidator.tsx` - Client-side validation
+- `BatchUpload.tsx` - Multiple file upload
+- `FileManager.tsx` - File history and management
+
+#### **Download Components:**
+- `DownloadManager.tsx` - File download interface
+- `DownloadCard.tsx` - Individual download item
+- `BulkDownload.tsx` - Multiple file download
+- `DownloadHistory.tsx` - Download tracking
+- `FileExpiration.tsx` - Retention warnings
+
+#### **Real-time Components:**
+- `NotificationSystem.tsx` - Real-time notifications
+- `ProgressTracker.tsx` - Enhanced progress display
+- `QueueStatus.tsx` - Processing queue information
+- `LiveUpdates.tsx` - WebSocket/SSE integration
+- `ErrorNotifications.tsx` - Error alert system
+
+#### **Dashboard Components:**
+- `UserDashboard.tsx` - Main dashboard interface
+- `UsageAnalytics.tsx` - Statistics and metrics
+- `CostTracker.tsx` - Billing and usage tracking
+- `SettingsPanel.tsx` - User preferences
+- `AccountSettings.tsx` - Account management
+
+#### **Utility Components:**
+- `ErrorBoundary.tsx` - Error handling wrapper
+- `LoadingStates.tsx` - Various loading indicators
+- `EmptyStates.tsx` - Empty state displays
+- `ConfirmDialog.tsx` - Confirmation modals
+- `ToastNotifications.tsx` - Toast message system
+
+### **📄 New Pages Required**
+
+#### **Authentication Pages:**
+- `/auth/login` - User login page
+- `/auth/register` - User registration page
+- `/auth/forgot-password` - Password reset
+- `/auth/verify-email` - Email verification
+
+#### **User Pages:**
+- `/dashboard` - Main user dashboard
+- `/billing` - Payment and usage management
+- `/settings` - User preferences and account
+- `/profile` - User profile management
+
+#### **Job Pages:**
+- `/jobs` - Enhanced job history (currently empty)
+- `/jobs/[id]/details` - Detailed job view
+- `/jobs/[id]/downloads` - Download management
+- `/jobs/create` - Enhanced job creation
+
+#### **Support Pages:**
+- `/help` - Help documentation and tutorials
+- `/support` - Support ticket system
+- `/faq` - Frequently asked questions
+- `/status` - Service status page
+
+### **🔧 Implementation Priority & Next Steps**
+
+#### **Phase 1 - Critical Foundation (Week 1-2)**
+1. **Authentication System**
+   - Set up Subabase Auth integration
+   - Create login/register forms
+   - Implement JWT token management
+   - Add protected route wrapper
+
+2. **Real API Integration**
+   - Replace all mock functions in `lib/api.ts`
+   - Implement proper error handling
+   - Add loading states for API calls
+   - Test with backend endpoints
+
+3. **Enhanced Job Management**
+   - Build job history page (`/jobs`)
+   - Add job details view
+   - Implement job actions (delete/cancel)
+   - Add search and filtering
+
+#### **Phase 2 - Core Features (Week 3-4)**
+1. **Payment Integration**
+   - Integrate Stripe for billing
+   - Create pricing tiers UI
+   - Build billing dashboard
+   - Add payment history
+
+2. **Real-time Updates**
+   - Implement WebSocket/SSE
+   - Replace progress simulation
+   - Add live notifications
+   - Build queue status display
+
+3. **Download System**
+   - Create download manager
+   - Add multiple format support
+   - Implement bulk downloads
+   - Add file expiration warnings
+
+#### **Phase 3 - Advanced Features (Week 5-6)**
+1. **User Dashboard**
+   - Build analytics dashboard
+   - Add usage tracking
+   - Create settings panel
+   - Implement account management
+
+2. **Error Handling**
+   - Add error boundaries
+   - Implement retry mechanisms
+   - Create error notifications
+   - Add recovery flows
+
+3. **Mobile Optimization**
+   - Improve responsive design
+   - Add touch interactions
+   - Optimize for mobile
+   - Test PWA features
+
+#### **Phase 4 - Polish & Admin (Week 7-8)**
+1. **Support Features**
+   - Add help documentation
+   - Create FAQ section
+   - Implement support tickets
+   - Add status page
+
+2. **Admin Tools**
+   - Build admin dashboard
+   - Add user management
+   - Create system monitoring
+   - Implement analytics
+
+### **🛠️ Technical Implementation Notes**
+
+#### **Environment Variables Needed:**
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_key
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
+```
+
+#### **New Dependencies Required:**
+```json
+{
+  "@supabase/supabase-js": "^2.38.0",
+  "@stripe/stripe-js": "^2.1.0",
+  "stripe": "^14.0.0",
+  "socket.io-client": "^4.7.0",
+  "react-hot-toast": "^2.4.0",
+  "react-hook-form": "^7.47.0",
+  "zod": "^3.22.0"
+}
+```
+
+#### **File Structure Updates:**
+```
+app/
+├── auth/                 # Authentication pages
+├── dashboard/           # User dashboard
+├── billing/            # Payment management
+├── settings/           # User settings
+├── help/              # Support pages
+└── admin/             # Admin panel
+
+components/
+├── auth/              # Authentication components
+├── payment/           # Payment components
+├── jobs/              # Job management components
+├── downloads/         # Download components
+├── dashboard/         # Dashboard components
+└── admin/             # Admin components
+
+lib/
+├── auth.ts            # Authentication utilities
+├── stripe.ts          # Payment integration
+├── websocket.ts       # Real-time communication
+└── analytics.ts       # Usage tracking
+```
+
+### **🎯 Immediate Next Steps for Any Agent**
+
+1. **Start with Authentication** - This is the foundation for everything else
+2. **Replace Mock API** - Connect to real backend endpoints
+3. **Build Job History** - Enhance the empty `/jobs` page
+4. **Add Payment Integration** - Essential for monetization
+5. **Implement Real-time Updates** - Replace current simulation
+
+**Current Status**: Frontend foundation is complete, ready for major expansion to support full platform functionality.
+
+---
+
 ## 🔄 Recent Updates & Changes
 
 ### Branding & Visual Updates
