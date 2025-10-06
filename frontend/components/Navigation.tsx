@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Home, Plus, BarChart3, ChevronDown, Clock, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { NavigationProps } from '@/types';
@@ -13,6 +13,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isJobsDropdownOpen, setIsJobsDropdownOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -49,31 +50,31 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
       name: 'All Jobs',
       href: '/jobs',
       icon: BarChart3,
-      current: pathname === '/jobs',
+      current: pathname === '/jobs' && !searchParams.get('status'),
     },
     {
       name: 'Processing',
       href: '/jobs?status=processing',
       icon: Loader2,
-      current: pathname === '/jobs' && new URLSearchParams(window.location.search).get('status') === 'processing',
+      current: pathname === '/jobs' && searchParams.get('status') === 'processing',
     },
     {
       name: 'Completed',
       href: '/jobs?status=complete',
       icon: CheckCircle,
-      current: pathname === '/jobs' && new URLSearchParams(window.location.search).get('status') === 'complete',
+      current: pathname === '/jobs' && searchParams.get('status') === 'complete',
     },
     {
       name: 'Pending',
       href: '/jobs?status=pending',
       icon: Clock,
-      current: pathname === '/jobs' && new URLSearchParams(window.location.search).get('status') === 'pending',
+      current: pathname === '/jobs' && searchParams.get('status') === 'pending',
     },
     {
       name: 'Errors',
       href: '/jobs?status=error',
       icon: AlertCircle,
-      current: pathname === '/jobs' && new URLSearchParams(window.location.search).get('status') === 'error',
+      current: pathname === '/jobs' && searchParams.get('status') === 'error',
     },
   ];
 

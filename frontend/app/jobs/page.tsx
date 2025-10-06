@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -149,14 +149,20 @@ export default function JobsPage() {
         </motion.div>
 
         {/* Job History Component */}
-        <JobHistory
-          jobs={jobs}
-          loading={loading}
-          onRefresh={handleRefresh}
-          onViewJob={handleViewJob}
-          onDownloadJob={handleDownloadJob}
-          onDeleteJob={handleDeleteJob}
-        />
+        <Suspense fallback={
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+          </div>
+        }>
+          <JobHistory
+            jobs={jobs}
+            loading={loading}
+            onRefresh={handleRefresh}
+            onViewJob={handleViewJob}
+            onDownloadJob={handleDownloadJob}
+            onDeleteJob={handleDeleteJob}
+          />
+        </Suspense>
       </main>
     </div>
   );

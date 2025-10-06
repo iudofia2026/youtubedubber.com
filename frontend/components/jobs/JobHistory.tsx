@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,11 +28,29 @@ export function JobHistory({
   onDownloadJob,
   onDeleteJob
 }: JobHistoryProps) {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<JobStatus>('all');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [filteredJobs, setFilteredJobs] = useState<Job[]>(jobs);
   const { error: showError } = useToastHelpers();
+
+  // Initialize filters from URL parameters
+  useEffect(() => {
+    const status = searchParams.get('status') as JobStatus;
+    const search = searchParams.get('search');
+    const sort = searchParams.get('sort') as SortOption;
+
+    if (status && ['all', 'pending', 'processing', 'complete', 'error'].includes(status)) {
+      setStatusFilter(status);
+    }
+    if (search) {
+      setSearchQuery(search);
+    }
+    if (sort && ['newest', 'oldest', 'status', 'duration'].includes(sort)) {
+      setSortBy(sort);
+    }
+  }, [searchParams]);
 
   // Filter and sort jobs
   useEffect(() => {
@@ -70,10 +89,57 @@ export function JobHistory({
     setFilteredJobs(filtered);
   }, [jobs, searchQuery, statusFilter, sortBy]);
 
+  const updateURL = (newParams: { status?: JobStatus; search?: string; sort?: SortOption }) => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    if (newParams.status !== undefined) {
+      if (newParams.status === 'all') {
+        params.delete('status');
+      } else {
+        params.set('status', newParams.status);
+      }
+    }
+    
+    if (newParams.search !== undefined) {
+      if (newParams.search === '') {
+        params.delete('search');
+      } else {
+        params.set('search', newParams.search);
+      }
+    }
+    
+    if (newParams.sort !== undefined) {
+      if (newParams.sort === 'newest') {
+        params.delete('sort');
+      } else {
+        params.set('sort', newParams.sort);
+      }
+    }
+    
+    const newURL = params.toString() ? `?${params.toString()}` : '';
+    window.history.replaceState(null, '', `/jobs${newURL}`);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    updateURL({ search: query });
+  };
+
+  const handleStatusChange = (status: JobStatus) => {
+    setStatusFilter(status);
+    updateURL({ status });
+  };
+
+  const handleSortChange = (sort: SortOption) => {
+    setSortBy(sort);
+    updateURL({ sort });
+  };
+
   const handleClearFilters = () => {
     setSearchQuery('');
     setStatusFilter('all');
     setSortBy('newest');
+    updateURL({ status: 'all', search: '', sort: 'newest' });
   };
 
   const handleDeleteJob = async (jobId: string) => {
@@ -167,11 +233,11 @@ export function JobHistory({
       {/* Filters */}
       <JobFilters
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={handleSearchChange}
         statusFilter={statusFilter}
-        onStatusChange={setStatusFilter}
+        onStatusChange={handleStatusChange}
         sortBy={sortBy}
-        onSortChange={setSortBy}
+        onSortChange={handleSortChange}
         onClearFilters={handleClearFilters}
       />
 
