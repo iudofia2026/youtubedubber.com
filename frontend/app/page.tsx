@@ -237,103 +237,185 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-            {[
-              {
-                icon: Mic,
-                title: 'High-Quality Audio',
-                description: 'Advanced AI processing ensures natural-sounding voice dubbing with perfect timing and intonation.',
-              },
-              {
-                icon: Globe,
-                title: 'Multiple Languages',
-                description: 'Support for 12+ languages including English, Spanish, French, German, Japanese, and more.',
-              },
-              {
-                icon: Zap,
-                title: 'Fast Processing',
-                description: 'Get your dubbed content ready in minutes, not hours. Our optimized pipeline delivers results quickly.',
-              },
-              {
-                icon: DollarSign,
-                title: 'Best Value Pricing',
-                description: 'Premium quality dubbing at unbeatable prices. We offer the best value compared to competitors like Rask and HeyGen.',
-              },
-            ].map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <motion.div
-                  key={feature.title}
-                  className="text-center p-4"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ 
-                    duration: 1.2, 
-                    delay: 1.8 + index * 0.3,
-                    ease: "easeOut"
-                  }}
-                  whileHover={{ 
-                    y: -5,
-                    transition: { duration: 0.3, ease: "easeOut" }
-                  }}
-                >
-                  <motion.div 
-                    className="w-14 h-14 bg-[#ff0000]/10 flex items-center justify-center mx-auto mb-3 border border-[#ff0000]/20"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ 
-                      duration: 0.8, 
-                      delay: 2.0 + index * 0.3,
-                      type: "spring",
-                      stiffness: 150,
-                      damping: 20
-                    }}
-                    whileHover={{ 
-                      scale: 1.1,
-                      transition: { duration: 0.3, ease: "easeOut" }
-                    }}
-                  >
-                    <motion.div
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ 
-                        duration: 0.8, 
-                        delay: 2.2 + index * 0.3,
-                        type: "spring",
-                        stiffness: 150,
-                        damping: 20
-                      }}
+          {/* Creative Features Layout */}
+          <div className="relative z-10">
+            {/* Main Features Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+              {/* High-Quality Audio - Left Side */}
+              <motion.div
+                className="group relative"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1, delay: 1.8, ease: "easeOut" }}
+                whileHover={{ y: -8 }}
+              >
+                <div className="relative bg-gradient-to-br from-[#ff0000]/5 to-transparent p-8 rounded-2xl border border-[#ff0000]/10 backdrop-blur-sm">
+                  {/* Decorative corner accent */}
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-[#ff0000]/20 to-transparent rounded-bl-2xl"></div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <motion.div 
+                      className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-[#ff0000]/20 to-[#ff0000]/10 rounded-xl flex items-center justify-center border border-[#ff0000]/30"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      <Icon className="w-7 h-7 text-[#ff0000]" />
+                      <Mic className="w-8 h-8 text-[#ff0000]" />
                     </motion.div>
-                  </motion.div>
-                  <motion.h3 
-                    className="text-lg font-semibold text-foreground mb-2 tracking-tight"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.8, 
-                      delay: 2.4 + index * 0.3,
-                      ease: "easeOut"
-                    }}
-                  >
-                    {feature.title}
-                  </motion.h3>
-                  <motion.p 
-                    className="text-muted-foreground font-light leading-relaxed"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.8, 
-                      delay: 2.6 + index * 0.3,
-                      ease: "easeOut"
-                    }}
-                  >
-                    {feature.description}
-                  </motion.p>
-                </motion.div>
-              );
-            })}
+                    
+                    <div className="flex-1">
+                      <motion.h3 
+                        className="text-2xl font-bold text-foreground mb-3 tracking-tight"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 2.0 }}
+                      >
+                        High-Quality Audio
+                      </motion.h3>
+                      <motion.p 
+                        className="text-muted-foreground font-light leading-relaxed text-lg"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 2.2 }}
+                      >
+                        Advanced AI processing ensures natural-sounding voice dubbing with perfect timing and intonation.
+                      </motion.p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Multiple Languages - Right Side */}
+              <motion.div
+                className="group relative"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1, delay: 2.0, ease: "easeOut" }}
+                whileHover={{ y: -8 }}
+              >
+                <div className="relative bg-gradient-to-bl from-[#ff0000]/5 to-transparent p-8 rounded-2xl border border-[#ff0000]/10 backdrop-blur-sm">
+                  {/* Decorative corner accent */}
+                  <div className="absolute top-0 left-0 w-20 h-20 bg-gradient-to-br from-[#ff0000]/20 to-transparent rounded-br-2xl"></div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <motion.div 
+                      className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-[#ff0000]/20 to-[#ff0000]/10 rounded-xl flex items-center justify-center border border-[#ff0000]/30"
+                      whileHover={{ scale: 1.1, rotate: -5 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Globe className="w-8 h-8 text-[#ff0000]" />
+                    </motion.div>
+                    
+                    <div className="flex-1">
+                      <motion.h3 
+                        className="text-2xl font-bold text-foreground mb-3 tracking-tight"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 2.2 }}
+                      >
+                        Multiple Languages
+                      </motion.h3>
+                      <motion.p 
+                        className="text-muted-foreground font-light leading-relaxed text-lg"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 2.4 }}
+                      >
+                        Support for 12+ languages including English, Spanish, French, German, Japanese, and more.
+                      </motion.p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Bottom Row - Centered Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Fast Processing */}
+              <motion.div
+                className="group relative"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 2.2, ease: "easeOut" }}
+                whileHover={{ y: -8 }}
+              >
+                <div className="relative bg-gradient-to-tr from-[#ff0000]/5 to-transparent p-8 rounded-2xl border border-[#ff0000]/10 backdrop-blur-sm">
+                  {/* Decorative corner accent */}
+                  <div className="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-tl from-[#ff0000]/20 to-transparent rounded-tl-2xl"></div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <motion.div 
+                      className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-[#ff0000]/20 to-[#ff0000]/10 rounded-xl flex items-center justify-center border border-[#ff0000]/30"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Zap className="w-8 h-8 text-[#ff0000]" />
+                    </motion.div>
+                    
+                    <div className="flex-1">
+                      <motion.h3 
+                        className="text-2xl font-bold text-foreground mb-3 tracking-tight"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 2.4 }}
+                      >
+                        Fast Processing
+                      </motion.h3>
+                      <motion.p 
+                        className="text-muted-foreground font-light leading-relaxed text-lg"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 2.6 }}
+                      >
+                        Get your dubbed content ready in minutes, not hours. Our optimized pipeline delivers results quickly.
+                      </motion.p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Best Value Pricing */}
+              <motion.div
+                className="group relative"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 2.4, ease: "easeOut" }}
+                whileHover={{ y: -8 }}
+              >
+                <div className="relative bg-gradient-to-tl from-[#ff0000]/5 to-transparent p-8 rounded-2xl border border-[#ff0000]/10 backdrop-blur-sm">
+                  {/* Decorative corner accent */}
+                  <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-[#ff0000]/20 to-transparent rounded-tr-2xl"></div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <motion.div 
+                      className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-[#ff0000]/20 to-[#ff0000]/10 rounded-xl flex items-center justify-center border border-[#ff0000]/30"
+                      whileHover={{ scale: 1.1, rotate: -5 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <DollarSign className="w-8 h-8 text-[#ff0000]" />
+                    </motion.div>
+                    
+                    <div className="flex-1">
+                      <motion.h3 
+                        className="text-2xl font-bold text-foreground mb-3 tracking-tight"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 2.6 }}
+                      >
+                        Best Value Pricing
+                      </motion.h3>
+                      <motion.p 
+                        className="text-muted-foreground font-light leading-relaxed text-lg"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 2.8 }}
+                      >
+                        Premium quality dubbing at unbeatable prices. We offer the best value compared to competitors like Rask and HeyGen.
+                      </motion.p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </motion.section>
 
