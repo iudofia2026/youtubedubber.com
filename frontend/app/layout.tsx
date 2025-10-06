@@ -23,7 +23,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "YouTube Multilingual Dubber",
+  title: "YT Dubber",
   description: "Transform your content with AI-powered multilingual dubbing",
 };
 
