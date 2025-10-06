@@ -80,10 +80,11 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
 
   return (
     <motion.div
-      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow duration-200"
+      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-200 touch-manipulation"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2 }}
     >
       {/* Header */}
@@ -148,13 +149,17 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
       )}
 
       {/* Actions */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700 gap-3">
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onView?.(job.id)}
-            className="flex items-center space-x-1"
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              onView?.(job.id);
+            }}
+            className="flex items-center space-x-1 touch-manipulation flex-1 sm:flex-none"
           >
             <Eye className="w-4 h-4" />
             <span>View</span>
@@ -165,7 +170,11 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
               variant="outline"
               size="sm"
               onClick={() => onDownload?.(job.id)}
-              className="flex items-center space-x-1"
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                onDownload?.(job.id);
+              }}
+              className="flex items-center space-x-1 touch-manipulation flex-1 sm:flex-none"
             >
               <Download className="w-4 h-4" />
               <span>Download</span>
@@ -177,7 +186,11 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
           variant="ghost"
           size="sm"
           onClick={() => onDelete?.(job.id)}
-          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            onDelete?.(job.id);
+          }}
+          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 touch-manipulation self-end sm:self-auto"
         >
           <Trash2 className="w-4 h-4" />
         </Button>

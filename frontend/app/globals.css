@@ -150,4 +150,53 @@
     font-weight: 700;
     letter-spacing: -0.02em;
   }
+  
+  /* Mobile touch optimizations */
+  @media (max-width: 768px) {
+    /* Improve touch targets */
+    button, a, input, select, textarea {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Prevent zoom on input focus */
+    input, select, textarea {
+      font-size: 16px;
+    }
+    
+    /* Better touch feedback */
+    .touch-manipulation {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Improve scrolling on mobile */
+    .overflow-auto {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Better button spacing on mobile */
+    .mobile-button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .mobile-button-group > * {
+      width: 100%;
+    }
+  }
+  
+  /* Desktop-specific styles remain unchanged */
+  @media (min-width: 769px) {
+    .mobile-button-group {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+    }
+    
+    .mobile-button-group > * {
+      width: auto;
+    }
+  }
 }

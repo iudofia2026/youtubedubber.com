@@ -49,7 +49,7 @@ export function JobFilters({
   return (
     <div className="space-y-4">
       {/* Search and Filter Toggle */}
-      <div className="flex items-center space-x-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
@@ -57,14 +57,18 @@ export function JobFilters({
             placeholder="Search jobs by ID or language..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base touch-manipulation"
           />
         </div>
         
         <Button
           variant="outline"
           onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-          className={`flex items-center space-x-2 ${isFiltersOpen ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            setIsFiltersOpen(!isFiltersOpen);
+          }}
+          className={`flex items-center justify-center space-x-2 touch-manipulation py-3 sm:py-2 ${isFiltersOpen ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
         >
           <Filter className="w-4 h-4" />
           <span>Filters</span>
@@ -97,8 +101,12 @@ export function JobFilters({
                   <button
                     key={option.value}
                     onClick={() => onStatusChange(option.value as JobStatus)}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      onStatusChange(option.value as JobStatus);
+                    }}
                     className={`
-                      flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200
+                      flex items-center space-x-2 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 touch-manipulation
                       ${statusFilter === option.value
                         ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
                         : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
@@ -126,7 +134,7 @@ export function JobFilters({
             <select
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value as SortOption)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base touch-manipulation"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -143,7 +151,11 @@ export function JobFilters({
                 variant="ghost"
                 size="sm"
                 onClick={onClearFilters}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  onClearFilters();
+                }}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 touch-manipulation py-3 sm:py-2"
               >
                 <X className="w-4 h-4 mr-1" />
                 Clear Filters

@@ -12,21 +12,29 @@ import { YTdubberIcon } from '@/components/YTdubberIcon';
 export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isJobsDropdownOpen, setIsJobsDropdownOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Ensure we're on the client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsJobsDropdownOpen(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
     };
   }, []);
 
@@ -50,31 +58,31 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
       name: 'All Jobs',
       href: '/jobs',
       icon: BarChart3,
-      current: pathname === '/jobs' && !searchParams.get('status'),
+      current: isClient && pathname === '/jobs' && !searchParams.get('status'),
     },
     {
       name: 'Processing',
       href: '/jobs?status=processing',
       icon: Loader2,
-      current: pathname === '/jobs' && searchParams.get('status') === 'processing',
+      current: isClient && pathname === '/jobs' && searchParams.get('status') === 'processing',
     },
     {
       name: 'Completed',
       href: '/jobs?status=complete',
       icon: CheckCircle,
-      current: pathname === '/jobs' && searchParams.get('status') === 'complete',
+      current: isClient && pathname === '/jobs' && searchParams.get('status') === 'complete',
     },
     {
       name: 'Pending',
       href: '/jobs?status=pending',
       icon: Clock,
-      current: pathname === '/jobs' && searchParams.get('status') === 'pending',
+      current: isClient && pathname === '/jobs' && searchParams.get('status') === 'pending',
     },
     {
       name: 'Errors',
       href: '/jobs?status=error',
       icon: AlertCircle,
-      current: pathname === '/jobs' && searchParams.get('status') === 'error',
+      current: isClient && pathname === '/jobs' && searchParams.get('status') === 'error',
     },
   ];
 
@@ -129,6 +137,10 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsJobsDropdownOpen(!isJobsDropdownOpen)}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    setIsJobsDropdownOpen(!isJobsDropdownOpen);
+                  }}
                   className={`
                     flex items-center space-x-2 px-3 py-2 text-sm font-medium transition-colors duration-200
                     ${pathname.startsWith('/jobs')
@@ -185,8 +197,12 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
           <div className="md:hidden">
             <motion.button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary"
+              className="inline-flex items-center justify-center p-3 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary touch-manipulation"
               onClick={toggleMobileMenu}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                toggleMobileMenu();
+              }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -218,18 +234,23 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
               <motion.div
                 key={item.name}
                 whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.2 }}
               >
                 <Link
                   href={item.href}
                   className={`
-                    flex items-center space-x-3 px-3 py-2 text-base font-medium transition-colors duration-200
+                    flex items-center space-x-3 px-4 py-3 text-base font-medium transition-colors duration-200 touch-manipulation
                     ${item.current
                       ? 'text-primary bg-accent'
                       : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                     }
                   `}
                   onClick={closeMobileMenu}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    closeMobileMenu();
+                  }}
                 >
                   <Icon className="w-5 h-5" />
                   <span>{item.name}</span>
@@ -249,18 +270,23 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
                 <motion.div
                   key={item.name}
                   whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.2 }}
                 >
                   <Link
                     href={item.href}
                     className={`
-                      flex items-center space-x-3 px-3 py-2 text-base font-medium transition-colors duration-200
+                      flex items-center space-x-3 px-4 py-3 text-base font-medium transition-colors duration-200 touch-manipulation
                       ${item.current
                         ? 'text-primary bg-accent'
                         : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                       }
                     `}
                     onClick={closeMobileMenu}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      closeMobileMenu();
+                    }}
                   >
                     <Icon className="w-5 h-5" />
                     <span>{item.name}</span>

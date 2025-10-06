@@ -657,7 +657,11 @@ export default function NewJobPage() {
             <motion.button
               onClick={prevStep}
               disabled={currentStep === 1}
-              className={`inline-flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                if (currentStep > 1) prevStep();
+              }}
+              className={`inline-flex items-center justify-center space-x-2 px-6 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation ${
                 currentStep === 1
                   ? 'bg-muted text-muted-foreground cursor-not-allowed'
                   : 'bg-card text-foreground hover:bg-muted border border-border'
@@ -673,7 +677,11 @@ export default function NewJobPage() {
               <motion.button
                 onClick={nextStep}
                 disabled={!isStepValid}
-                className={`inline-flex items-center space-x-2 px-8 py-3 rounded-lg font-medium transition-all duration-200 ${
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  if (isStepValid) nextStep();
+                }}
+                className={`inline-flex items-center justify-center space-x-2 px-8 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation ${
                   isStepValid
                     ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]'
                     : 'bg-muted text-muted-foreground cursor-not-allowed'
@@ -688,7 +696,11 @@ export default function NewJobPage() {
               <motion.button
                 onClick={handleSubmit}
                 disabled={isSubmitting || !isFinalStepValid}
-                className={`inline-flex items-center space-x-2 px-8 py-3 rounded-lg font-medium transition-all duration-200 ${
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  if (!isSubmitting && isFinalStepValid) handleSubmit();
+                }}
+                className={`inline-flex items-center justify-center space-x-2 px-8 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation ${
                   isSubmitting || !isFinalStepValid
                     ? 'bg-muted text-muted-foreground cursor-not-allowed'
                     : 'bg-[#ff0000] text-white hover:bg-[#cc0000]'

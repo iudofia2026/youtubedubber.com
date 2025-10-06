@@ -122,7 +122,7 @@ export function FileUpload({
       
       <motion.div
         className={`
-          relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
+          relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center cursor-pointer touch-manipulation
           transition-all duration-300
           ${isDragOver 
             ? 'border-[var(--youtube-red)] bg-red-50 dark:bg-red-900/10' 
@@ -134,6 +134,10 @@ export function FileUpload({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={handleClick}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          handleClick();
+        }}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         animate={{
@@ -184,6 +188,12 @@ export function FileUpload({
                 e.stopPropagation();
                 onFileSelect(null as unknown as File);
               }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onFileSelect(null as unknown as File);
+              }}
+              className="touch-manipulation"
             >
               Remove
             </Button>

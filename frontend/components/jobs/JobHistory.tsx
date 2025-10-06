@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,15 +28,19 @@ export function JobHistory({
   onDownloadJob,
   onDeleteJob
 }: JobHistoryProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<JobStatus>('all');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [filteredJobs, setFilteredJobs] = useState<Job[]>(jobs);
+  const [isInitialized, setIsInitialized] = useState(false);
   const { error: showError } = useToastHelpers();
 
-  // Initialize filters from URL parameters
+  // Initialize filters from URL parameters (client-side only)
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const status = searchParams.get('status') as JobStatus;
     const search = searchParams.get('search');
     const sort = searchParams.get('sort') as SortOption;
@@ -50,10 +54,14 @@ export function JobHistory({
     if (sort && ['newest', 'oldest', 'status', 'duration'].includes(sort)) {
       setSortBy(sort);
     }
+    
+    setIsInitialized(true);
   }, [searchParams]);
 
   // Filter and sort jobs
   useEffect(() => {
+    if (!isInitialized) return;
+    
     let filtered = [...jobs];
 
     // Search filter
@@ -87,9 +95,11 @@ export function JobHistory({
     });
 
     setFilteredJobs(filtered);
-  }, [jobs, searchQuery, statusFilter, sortBy]);
+  }, [jobs, searchQuery, statusFilter, sortBy, isInitialized]);
 
   const updateURL = (newParams: { status?: JobStatus; search?: string; sort?: SortOption }) => {
+    if (typeof window === 'undefined') return;
+    
     const params = new URLSearchParams(searchParams.toString());
     
     if (newParams.status !== undefined) {
@@ -117,7 +127,7 @@ export function JobHistory({
     }
     
     const newURL = params.toString() ? `?${params.toString()}` : '';
-    window.history.replaceState(null, '', `/jobs${newURL}`);
+    router.replace(`/jobs${newURL}`, { scroll: false });
   };
 
   const handleSearchChange = (query: string) => {
@@ -165,7 +175,7 @@ export function JobHistory({
 
   const statusCounts = getStatusCounts();
 
-  if (loading) {
+  if (loading || !isInitialized) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
