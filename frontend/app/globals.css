@@ -144,6 +144,52 @@
     transition: background-image 0.5s ease;
   }
   
+  /* Custom subtle animations for background gradients */
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+  
+  @keyframes float-slow {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(1deg);
+    }
+  }
+  
+  @keyframes drift-slow {
+    0%, 100% {
+      transform: translateX(0px) translateY(0px);
+    }
+    25% {
+      transform: translateX(10px) translateY(-5px);
+    }
+    50% {
+      transform: translateX(-5px) translateY(10px);
+    }
+    75% {
+      transform: translateX(-10px) translateY(-5px);
+    }
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse-slow 8s ease-in-out infinite;
+  }
+  
+  .animate-float-slow {
+    animation: float-slow 12s ease-in-out infinite;
+  }
+  
+  .animate-drift-slow {
+    animation: drift-slow 15s ease-in-out infinite;
+  }
+  
   /* YouTube font for brand text */
   .youtube-font {
     font-family: var(--font-roboto), sans-serif;

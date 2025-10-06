@@ -11,11 +11,14 @@ export default function Home() {
   return (
     <div className="min-h-screen relative">
       {/* Seamless gradient background covering entire page */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[#ff0000]/8 via-[#ff0000]/3 via-[#ff0000]/2 to-[#ff0000]/6 pointer-events-none z-0"></div>
+      <div className="fixed inset-0 bg-gradient-to-b from-[#ff0000]/3 via-[#ff0000]/1 via-[#ff0000]/0.5 to-[#ff0000]/2 pointer-events-none z-0"></div>
       
-      {/* Additional gradient layers for depth */}
-      <div className="fixed inset-0 bg-gradient-to-r from-transparent via-[#ff0000]/2 to-transparent pointer-events-none z-0"></div>
-      <div className="fixed inset-0 bg-gradient-to-br from-[#ff0000]/4 via-transparent via-transparent to-[#ff0000]/3 pointer-events-none z-0"></div>
+      {/* Additional gradient layers for depth with subtle animation */}
+      <div className="fixed inset-0 bg-gradient-to-r from-transparent via-[#ff0000]/0.5 to-transparent pointer-events-none z-0 animate-pulse-slow"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-[#ff0000]/1.5 via-transparent via-transparent to-[#ff0000]/1 pointer-events-none z-0 animate-float-slow"></div>
+      
+      {/* Subtle animated accent layer */}
+      <div className="fixed inset-0 bg-gradient-to-tl from-transparent via-[#ff0000]/0.3 to-transparent pointer-events-none z-0 animate-drift-slow"></div>
       
       {/* Content with proper z-index */}
       <div className="relative z-10">
@@ -127,7 +130,7 @@ export default function Home() {
           transition={{ duration: 0.8, delay: 1 }}
         >
           {/* Subtle background overlay for features */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#ff0000]/2 to-transparent pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#ff0000]/0.5 to-transparent pointer-events-none"></div>
           <motion.div 
             className="text-center mb-8 relative z-10"
             initial={{ opacity: 0, y: 20 }}
@@ -260,7 +263,7 @@ export default function Home() {
           transition={{ duration: 0.8, delay: 1.6 }}
         >
           {/* Enhanced gradient overlay for CTA */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#ff0000]/3 to-[#ff0000]/5 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#ff0000]/1 to-[#ff0000]/1.5 pointer-events-none"></div>
           <motion.div 
             className="text-center relative z-10"
             initial={{ opacity: 0, y: 20 }}
