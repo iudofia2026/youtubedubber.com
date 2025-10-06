@@ -237,77 +237,103 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          {/* Minimalist Features */}
-          <div className="relative z-10 max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {[
-                {
-                  icon: Mic,
-                  title: 'High-Quality Audio',
-                  description: 'Advanced AI processing ensures natural-sounding voice dubbing with perfect timing and intonation.',
-                },
-                {
-                  icon: Globe,
-                  title: 'Multiple Languages',
-                  description: 'Support for 12+ languages including English, Spanish, French, German, Japanese, and more.',
-                },
-                {
-                  icon: Zap,
-                  title: 'Fast Processing',
-                  description: 'Get your dubbed content ready in minutes, not hours. Our optimized pipeline delivers results quickly.',
-                },
-                {
-                  icon: DollarSign,
-                  title: 'Best Value Pricing',
-                  description: 'Premium quality dubbing at unbeatable prices. We offer the best value compared to competitors like Rask and HeyGen.',
-                },
-              ].map((feature, index) => {
-                const Icon = feature.icon;
-                return (
-                  <motion.div
-                    key={feature.title}
-                    className="group"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                icon: Mic,
+                title: 'High-Quality Audio',
+                description: 'Advanced AI processing ensures natural-sounding voice dubbing with perfect timing and intonation.',
+              },
+              {
+                icon: Globe,
+                title: 'Multiple Languages',
+                description: 'Support for 12+ languages including English, Spanish, French, German, Japanese, and more.',
+              },
+              {
+                icon: Zap,
+                title: 'Fast Processing',
+                description: 'Get your dubbed content ready in minutes, not hours. Our optimized pipeline delivers results quickly.',
+              },
+              {
+                icon: DollarSign,
+                title: 'Best Value Pricing',
+                description: 'Premium quality dubbing at unbeatable prices. We offer the best value compared to competitors like Rask and HeyGen.',
+              },
+            ].map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <motion.div
+                  key={feature.title}
+                  className="text-center p-4"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 1.2, 
+                    delay: 1.8 + index * 0.3,
+                    ease: "easeOut"
+                  }}
+                  whileHover={{ 
+                    y: -5,
+                    transition: { duration: 0.3, ease: "easeOut" }
+                  }}
+                >
+                  <motion.div 
+                    className="w-14 h-14 bg-[#ff0000]/10 flex items-center justify-center mx-auto mb-3 border border-[#ff0000]/20"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ 
+                      duration: 0.8, 
+                      delay: 2.0 + index * 0.3,
+                      type: "spring",
+                      stiffness: 150,
+                      damping: 20
+                    }}
+                    whileHover={{ 
+                      scale: 1.1,
+                      transition: { duration: 0.3, ease: "easeOut" }
+                    }}
+                  >
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ 
+                        duration: 0.8, 
+                        delay: 2.2 + index * 0.3,
+                        type: "spring",
+                        stiffness: 150,
+                        damping: 20
+                      }}
+                    >
+                      <Icon className="w-7 h-7 text-[#ff0000]" />
+                    </motion.div>
+                  </motion.div>
+                  <motion.h3 
+                    className="text-lg font-semibold text-foreground mb-2 tracking-tight"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ 
-                      duration: 0.6, 
-                      delay: 1.8 + index * 0.1,
+                      duration: 0.8, 
+                      delay: 2.4 + index * 0.3,
                       ease: "easeOut"
                     }}
-                    whileHover={{ y: -2 }}
                   >
-                    <div className="flex items-start space-x-4 p-6">
-                      <motion.div 
-                        className="flex-shrink-0 w-10 h-10 text-[#ff0000]"
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Icon className="w-10 h-10" />
-                      </motion.div>
-                      
-                      <div className="flex-1">
-                        <motion.h3 
-                          className="text-lg font-semibold text-foreground mb-2"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.4, delay: 2.0 + index * 0.1 }}
-                        >
-                          {feature.title}
-                        </motion.h3>
-                        <motion.p 
-                          className="text-muted-foreground leading-relaxed"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.4, delay: 2.1 + index * 0.1 }}
-                        >
-                          {feature.description}
-                        </motion.p>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+                    {feature.title}
+                  </motion.h3>
+                  <motion.p 
+                    className="text-muted-foreground font-light leading-relaxed"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 0.8, 
+                      delay: 2.6 + index * 0.3,
+                      ease: "easeOut"
+                    }}
+                  >
+                    {feature.description}
+                  </motion.p>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.section>
 
