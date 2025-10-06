@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { DM_Sans, IBM_Plex_Mono, Roboto } from "next/font/google";
 import "./globals.css";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { ToastProvider } from "@/components/ToastNotifications";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -38,7 +40,11 @@ export default function RootLayout({
         className={`${dmSans.variable} ${ibmPlexMono.variable} ${roboto.variable} antialiased`}
         suppressHydrationWarning={true}
       >
-        {children}
+        <ErrorBoundary>
+          <ToastProvider>
+            {children}
+          </ToastProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

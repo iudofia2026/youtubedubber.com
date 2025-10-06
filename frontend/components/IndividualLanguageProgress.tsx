@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Clock, AlertCircle, Download, Loader2 } from 'lucide-react';
 import { LanguageProgress } from '@/types';
+import { JobProgress } from '@/components/LoadingStates';
 
 interface IndividualLanguageProgressProps {
   language: LanguageProgress;
@@ -100,25 +101,12 @@ export function IndividualLanguageProgress({ language, onDownload }: IndividualL
       </div>
 
       {/* Progress Bar */}
-      <div className="space-y-2">
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">
-            {language.message}
-          </span>
-          <span className="text-sm font-mono text-foreground">
-            {Math.round(language.progress)}%
-          </span>
-        </div>
-        
-        <div className="w-full bg-muted h-2 relative overflow-hidden">
-          <motion.div
-            className={`h-full ${getProgressBarColor()}`}
-            initial={{ width: 0 }}
-            animate={{ width: `${Math.max(0, Math.min(100, language.progress))}%` }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          />
-        </div>
-      </div>
+      <JobProgress
+        progress={language.progress}
+        stage={language.status}
+        message={language.message}
+        isComplete={language.status === 'complete'}
+      />
 
       {/* Additional Info */}
       <div className="flex justify-between items-center text-sm text-muted-foreground">

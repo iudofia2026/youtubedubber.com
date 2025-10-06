@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FileUploadProps } from '@/types';
 import { getAudioDuration } from '@/lib/audio-utils';
+import { useToastHelpers } from '@/components/ToastNotifications';
+import { LoadingSpinner, UploadProgress } from '@/components/LoadingStates';
 
 export function FileUpload({ 
   label, 
@@ -20,7 +22,10 @@ export function FileUpload({
 }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState<'uploading' | 'processing' | 'validating'>('uploading');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { success, error: showError } = useToastHelpers();
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -45,30 +50,54 @@ export function FileUpload({
   const handleFileSelect = async (file: File) => {
     // Validate file type
     if (!accept.split(',').some(type => file.type.match(type.trim()))) {
+      showError('Invalid file type', `Please select a file with one of these formats: ${accept}`);
       return;
     }
 
     // Validate file size (convert MB to bytes)
     if (file.size > maxSize * 1024 * 1024) {
+      showError('File too large', `File size must be less than ${maxSize}MB`);
       return;
     }
 
     setIsUploading(true);
+    setUploadProgress(0);
+    setUploadStatus('uploading');
     
     try {
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 100);
+
       // Get audio duration
+      setUploadStatus('validating');
       const audioInfo = await getAudioDuration(file);
       
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Complete upload
+      setUploadProgress(100);
+      setUploadStatus('processing');
+      
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       onFileSelect(file);
       onDurationChange?.(audioInfo.duration);
+      
+      success('File uploaded successfully', `${file.name} is ready for processing`);
     } catch (error) {
-      console.error('Failed to get audio duration:', error);
+      console.error('Failed to process file:', error);
+      showError('Upload failed', 'There was an error processing your file. Please try again.');
       onFileSelect(file);
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -121,22 +150,11 @@ export function FileUpload({
         />
 
         {isUploading ? (
-          <motion.div
-            className="space-y-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <motion.div
-              className="w-12 h-12 mx-auto"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            >
-              <svg className="w-full h-full text-[var(--youtube-red)]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-            </motion.div>
-            <p className="text-sm text-muted-foreground">Uploading...</p>
-          </motion.div>
+          <UploadProgress
+            progress={uploadProgress}
+            fileName={value?.name || 'Uploading...'}
+            status={uploadStatus}
+          />
         ) : value ? (
           <motion.div
             className="space-y-4"

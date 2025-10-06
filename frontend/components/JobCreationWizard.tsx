@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { FileUpload } from './FileUpload';
 import { LanguageSelect } from './LanguageSelect';
 import { LANGUAGES } from '@/types';
+import { useToastHelpers } from '@/components/ToastNotifications';
+import { LoadingButton } from '@/components/LoadingStates';
 
 interface JobCreationWizardProps {
   onSubmit: (data: { voiceTrack: File; backgroundTrack?: File; targetLanguage: string }) => void;
@@ -20,13 +22,26 @@ const steps = [
 
 export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     voiceTrack: null as File | null,
     backgroundTrack: null as File | null,
     targetLanguage: '',
   });
+  const { success, error: showError } = useToastHelpers();
 
   const nextStep = () => {
+    // Validate current step before proceeding
+    if (currentStep === 1 && !formData.voiceTrack) {
+      showError('Voice track required', 'Please upload a voice track before proceeding.');
+      return;
+    }
+    
+    if (currentStep === 3 && !formData.targetLanguage) {
+      showError('Language selection required', 'Please select a target language before proceeding.');
+      return;
+    }
+
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
@@ -38,13 +53,32 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
     }
   };
 
-  const handleSubmit = () => {
-    if (formData.voiceTrack) {
-      onSubmit({
+  const handleSubmit = async () => {
+    if (!formData.voiceTrack) {
+      showError('Voice track required', 'Please upload a voice track to continue.');
+      return;
+    }
+
+    if (!formData.targetLanguage) {
+      showError('Language selection required', 'Please select a target language to continue.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      await onSubmit({
         voiceTrack: formData.voiceTrack,
         backgroundTrack: formData.backgroundTrack || undefined,
         targetLanguage: formData.targetLanguage
       });
+      
+      success('Job submitted successfully', 'Your dubbing job has been queued for processing.');
+    } catch (error) {
+      console.error('Failed to submit job:', error);
+      showError('Submission failed', 'There was an error submitting your job. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -222,13 +256,14 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
             Next
           </Button>
         ) : (
-          <Button
+          <LoadingButton
+            loading={isSubmitting}
             onClick={handleSubmit}
             disabled={!isStepValid(4)}
             className="px-6 bg-[var(--youtube-red)] hover:bg-[var(--youtube-red-dark)]"
           >
             Submit Job
-          </Button>
+          </LoadingButton>
         )}
       </div>
     </div>
