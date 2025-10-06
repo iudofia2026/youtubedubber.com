@@ -40,16 +40,39 @@ export default function NewJobPage() {
     { id: 3, title: 'Target Languages', description: 'Select languages for dubbing', icon: Globe },
   ];
 
+  // Custom smooth scroll function with duration control
+  const smoothScrollToElement = (element: HTMLElement, duration: number = 2000) => {
+    const targetPosition = element.offsetTop - window.innerHeight / 2 + element.offsetHeight / 2;
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    let startTime: number | null = null;
+
+    const animation = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+      
+      // Easing function for smooth animation (ease-in-out)
+      const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+      const easedProgress = easeInOutCubic(progress);
+      
+      window.scrollTo(0, startPosition + distance * easedProgress);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animation);
+      }
+    };
+
+    requestAnimationFrame(animation);
+  };
+
   // Auto-scroll to instructions after initial load
   useEffect(() => {
     if (currentStep === 0 && !hasAutoScrolled && instructionsRef.current) {
       const timer = setTimeout(() => {
-        instructionsRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
+        smoothScrollToElement(instructionsRef.current!, 3000); // 3 seconds duration
         setHasAutoScrolled(true);
-      }, 2000); // Wait 2 seconds before scrolling
+      }, 2500); // Wait 2.5 seconds before scrolling
 
       return () => clearTimeout(timer);
     }
@@ -222,9 +245,9 @@ export default function NewJobPage() {
                       <motion.p
                         className="text-sm text-muted-foreground mb-2"
                         animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                       >
-                        Scroll down for detailed instructions
+                        Detailed instructions will appear below
                       </motion.p>
                       <motion.div
                         className="text-muted-foreground/60"
