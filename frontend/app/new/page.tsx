@@ -15,7 +15,7 @@ import { areDurationsEqual, formatDurationDifference, formatDuration } from '@/l
 
 export default function NewJobPage() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
   const [voiceTrack, setVoiceTrack] = useState<File | null>(null);
   const [backgroundTrack, setBackgroundTrack] = useState<File | null>(null);
   const [targetLanguages, setTargetLanguages] = useState<string[]>([]);
