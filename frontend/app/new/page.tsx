@@ -194,86 +194,183 @@ export default function NewJobPage() {
                     </p>
                   </motion.div>
 
-                  {/* Animated Visual Explanation */}
+                  {/* Interactive Audio Wave Visualization */}
                   <motion.div
-                    className="max-w-5xl mx-auto"
+                    className="max-w-6xl mx-auto"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.6 }}
                   >
-                    <div className="relative bg-gradient-to-br from-card to-muted/30 border border-border rounded-lg p-8 overflow-hidden">
-                      {/* Background Pattern */}
-                      <div className="absolute inset-0 opacity-5">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/10 to-transparent" />
-                        <div className="absolute inset-0 bg-gradient-to-l from-[#ff0000]/10 to-transparent" />
-                      </div>
+                    <div className="relative">
+                      {/* Main Audio Wave Container */}
+                      <div className="relative bg-gradient-to-br from-[#ff0000]/5 to-[#ff0000]/10 border border-[#ff0000]/20 rounded-lg p-8 overflow-hidden">
+                        {/* Animated Background Waves */}
+                        <div className="absolute inset-0 opacity-20">
+                          {[...Array(12)].map((_, i) => (
+                            <motion.div
+                              key={i}
+                              className="absolute h-1 bg-gradient-to-r from-[#ff0000] to-transparent"
+                              style={{
+                                left: `${i * 8}%`,
+                                top: `${20 + (i % 4) * 20}%`,
+                                width: '60px',
+                              }}
+                              animate={{
+                                scaleX: [0, 1, 0],
+                                opacity: [0, 0.8, 0],
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: i * 0.2,
+                              }}
+                            />
+                          ))}
+                        </div>
 
-                      {/* Main Visual Container */}
-                      <div className="relative z-10">
-                        {/* Original Video */}
+                        {/* Original Video Wave */}
                         <motion.div
-                          className="text-center mb-8"
+                          className="text-center mb-12"
                           initial={{ opacity: 0, scale: 0.9 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.6, delay: 0.8 }}
                         >
-                          <div className="inline-flex items-center justify-center w-24 h-16 bg-gradient-to-r from-[#ff0000] to-[#cc0000] rounded-lg shadow-lg mb-4">
-                            <Play className="w-8 h-8 text-white" />
+                          <div className="relative inline-block">
+                            {/* Video Icon with Pulse */}
+                            <motion.div
+                              className="relative w-20 h-20 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-lg shadow-lg flex items-center justify-center mb-4"
+                              animate={{
+                                boxShadow: [
+                                  "0 0 0px #ff0000",
+                                  "0 0 20px #ff0000",
+                                  "0 0 0px #ff0000",
+                                ],
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                              }}
+                            >
+                              <Play className="w-10 h-10 text-white" />
+                            </motion.div>
+                            
+                            {/* Animated Waveform */}
+                            <motion.div
+                              className="flex items-center justify-center space-x-1 mb-4"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 1 }}
+                            >
+                              {[...Array(20)].map((_, i) => (
+                                <motion.div
+                                  key={i}
+                                  className="w-1 bg-gradient-to-t from-[#ff0000] to-[#ff6666] rounded-full"
+                                  animate={{
+                                    height: [4, Math.random() * 20 + 8, 4],
+                                    opacity: [0.3, 1, 0.3],
+                                  }}
+                                  transition={{
+                                    duration: 1.5,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                    delay: i * 0.05,
+                                  }}
+                                />
+                              ))}
+                            </motion.div>
+                            
+                            <h3 className="text-xl font-bold text-foreground mb-2">Your Video Audio</h3>
+                            <p className="text-sm text-muted-foreground">Mixed voice + background</p>
                           </div>
-                          <h3 className="text-lg font-semibold text-foreground mb-2">Your Original Video</h3>
-                          <p className="text-sm text-muted-foreground">Contains both voice and background audio</p>
                         </motion.div>
 
-                        {/* Split Animation */}
+                        {/* Split Animation with Visual Separation */}
                         <motion.div
-                          className="flex items-center justify-center mb-8"
+                          className="flex items-center justify-center mb-12"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ duration: 0.6, delay: 1.2 }}
                         >
-                          {/* Scissors Animation */}
+                          {/* Left Scissors */}
                           <motion.div
-                            className="relative"
+                            className="relative z-10"
                             animate={{
-                              x: [0, 20, 0],
-                              rotate: [0, 5, 0]
+                              x: [0, 15, 0],
+                              rotate: [0, 8, 0],
                             }}
                             transition={{
-                              duration: 2,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                          >
-                            <Scissors className="w-8 h-8 text-[#ff0000]" />
-                          </motion.div>
-                          
-                          {/* Split Line */}
-                          <motion.div
-                            className="w-16 h-1 bg-gradient-to-r from-transparent via-[#ff0000] to-transparent mx-4"
-                            initial={{ scaleX: 0 }}
-                            animate={{ scaleX: 1 }}
-                            transition={{ duration: 1, delay: 1.5 }}
-                          />
-                          
-                          <motion.div
-                            className="relative"
-                            animate={{
-                              x: [0, -20, 0],
-                              rotate: [0, -5, 0]
-                            }}
-                            transition={{
-                              duration: 2,
+                              duration: 1.5,
                               repeat: Infinity,
                               ease: "easeInOut",
-                              delay: 0.5
                             }}
                           >
-                            <Scissors className="w-8 h-8 text-[#ff0000]" />
+                            <Scissors className="w-6 h-6 text-[#ff0000]" />
+                          </motion.div>
+                          
+                          {/* Animated Split Line */}
+                          <motion.div
+                            className="relative mx-8"
+                            initial={{ width: 0 }}
+                            animate={{ width: "120px" }}
+                            transition={{ duration: 1, delay: 1.5 }}
+                          >
+                            <motion.div
+                              className="h-1 bg-gradient-to-r from-transparent via-[#ff0000] to-transparent"
+                              animate={{
+                                opacity: [0.3, 1, 0.3],
+                              }}
+                              transition={{
+                                duration: 1,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                              }}
+                            />
+                            
+                            {/* Split Effect Particles */}
+                            {[...Array(6)].map((_, i) => (
+                              <motion.div
+                                key={i}
+                                className="absolute w-1 h-1 bg-[#ff0000] rounded-full"
+                                style={{
+                                  left: `${i * 20}%`,
+                                  top: '-2px',
+                                }}
+                                animate={{
+                                  y: [0, -10, 0],
+                                  opacity: [0, 1, 0],
+                                }}
+                                transition={{
+                                  duration: 0.8,
+                                  repeat: Infinity,
+                                  ease: "easeOut",
+                                  delay: i * 0.1,
+                                }}
+                              />
+                            ))}
+                          </motion.div>
+                          
+                          {/* Right Scissors */}
+                          <motion.div
+                            className="relative z-10"
+                            animate={{
+                              x: [0, -15, 0],
+                              rotate: [0, -8, 0],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                              delay: 0.3,
+                            }}
+                          >
+                            <Scissors className="w-6 h-6 text-[#ff0000]" />
                           </motion.div>
                         </motion.div>
 
-                        {/* Split Results */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* Split Results with Animated Waves */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                           {/* Voice Track */}
                           <motion.div
                             className="text-center"
@@ -281,29 +378,69 @@ export default function NewJobPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 1.8 }}
                           >
-                            <motion.div
-                              className="inline-flex items-center justify-center w-20 h-16 bg-gradient-to-r from-[#ff0000] to-[#cc0000] rounded-lg shadow-lg mb-4"
-                              whileHover={{ scale: 1.05 }}
-                            >
+                            <div className="relative">
+                              {/* Voice Wave Icon */}
                               <motion.div
+                                className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-lg shadow-lg flex items-center justify-center mb-4 mx-auto"
+                                whileHover={{ scale: 1.05 }}
                                 animate={{
-                                  scale: [1, 1.2, 1],
-                                  opacity: [0.7, 1, 0.7]
+                                  boxShadow: [
+                                    "0 0 0px #ff0000",
+                                    "0 0 15px #ff0000",
+                                    "0 0 0px #ff0000",
+                                  ],
                                 }}
                                 transition={{
-                                  duration: 1.5,
+                                  duration: 2,
                                   repeat: Infinity,
-                                  ease: "easeInOut"
+                                  ease: "easeInOut",
                                 }}
                               >
-                                <Mic className="w-8 h-8 text-white" />
+                                <motion.div
+                                  animate={{
+                                    scale: [1, 1.1, 1],
+                                  }}
+                                  transition={{
+                                    duration: 1.5,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                  }}
+                                >
+                                  <Mic className="w-8 h-8 text-white" />
+                                </motion.div>
                               </motion.div>
-                            </motion.div>
-                            <h4 className="text-lg font-semibold text-foreground mb-2">Voice Track</h4>
-                            <p className="text-sm text-muted-foreground mb-3">Clean speech only</p>
-                            <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
-                              <Volume2 className="w-4 h-4" />
-                              <span>voice_only.mp3</span>
+                              
+                              {/* Voice Waveform */}
+                              <motion.div
+                                className="flex items-center justify-center space-x-1 mb-4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 2 }}
+                              >
+                                {[...Array(12)].map((_, i) => (
+                                  <motion.div
+                                    key={i}
+                                    className="w-1 bg-gradient-to-t from-[#ff0000] to-[#ff6666] rounded-full"
+                                    animate={{
+                                      height: [4, Math.random() * 15 + 6, 4],
+                                      opacity: [0.4, 1, 0.4],
+                                    }}
+                                    transition={{
+                                      duration: 1.2,
+                                      repeat: Infinity,
+                                      ease: "easeInOut",
+                                      delay: i * 0.08,
+                                    }}
+                                  />
+                                ))}
+                              </motion.div>
+                              
+                              <h4 className="text-lg font-bold text-foreground mb-2">Voice Only</h4>
+                              <p className="text-sm text-muted-foreground mb-3">Clean speech track</p>
+                              <div className="flex items-center justify-center space-x-2 text-xs text-[#ff0000] font-mono bg-[#ff0000]/10 px-3 py-1 rounded">
+                                <Volume2 className="w-3 h-3" />
+                                <span>voice_only.mp3</span>
+                              </div>
                             </div>
                           </motion.div>
 
@@ -314,30 +451,72 @@ export default function NewJobPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 2.0 }}
                           >
-                            <motion.div
-                              className="inline-flex items-center justify-center w-20 h-16 bg-gradient-to-r from-[#ff0000] to-[#cc0000] rounded-lg shadow-lg mb-4"
-                              whileHover={{ scale: 1.05 }}
-                            >
+                            <div className="relative">
+                              {/* Music Wave Icon */}
                               <motion.div
+                                className="relative w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-lg shadow-lg flex items-center justify-center mb-4 mx-auto"
+                                whileHover={{ scale: 1.05 }}
                                 animate={{
-                                  y: [0, -2, 0],
-                                  rotate: [0, 3, 0]
+                                  boxShadow: [
+                                    "0 0 0px #ff0000",
+                                    "0 0 15px #ff0000",
+                                    "0 0 0px #ff0000",
+                                  ],
                                 }}
                                 transition={{
                                   duration: 2,
                                   repeat: Infinity,
                                   ease: "easeInOut",
-                                  delay: 0.5
+                                  delay: 0.5,
                                 }}
                               >
-                                <Music className="w-8 h-8 text-white" />
+                                <motion.div
+                                  animate={{
+                                    y: [0, -2, 0],
+                                    rotate: [0, 5, 0],
+                                  }}
+                                  transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                    delay: 0.5,
+                                  }}
+                                >
+                                  <Music className="w-8 h-8 text-white" />
+                                </motion.div>
                               </motion.div>
-                            </motion.div>
-                            <h4 className="text-lg font-semibold text-foreground mb-2">Background Track</h4>
-                            <p className="text-sm text-muted-foreground mb-3">Music, SFX, ambient audio</p>
-                            <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
-                              <VolumeX className="w-4 h-4" />
-                              <span>background.mp3</span>
+                              
+                              {/* Background Waveform */}
+                              <motion.div
+                                className="flex items-center justify-center space-x-1 mb-4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 2.2 }}
+                              >
+                                {[...Array(12)].map((_, i) => (
+                                  <motion.div
+                                    key={i}
+                                    className="w-1 bg-gradient-to-t from-[#ff0000] to-[#ff6666] rounded-full"
+                                    animate={{
+                                      height: [4, Math.random() * 12 + 4, 4],
+                                      opacity: [0.3, 0.8, 0.3],
+                                    }}
+                                    transition={{
+                                      duration: 1.5,
+                                      repeat: Infinity,
+                                      ease: "easeInOut",
+                                      delay: i * 0.1,
+                                    }}
+                                  />
+                                ))}
+                              </motion.div>
+                              
+                              <h4 className="text-lg font-bold text-foreground mb-2">Background Only</h4>
+                              <p className="text-sm text-muted-foreground mb-3">Music & sound effects</p>
+                              <div className="flex items-center justify-center space-x-2 text-xs text-[#ff0000] font-mono bg-[#ff0000]/10 px-3 py-1 rounded">
+                                <VolumeX className="w-3 h-3" />
+                                <span>background.mp3</span>
+                              </div>
                             </div>
                           </motion.div>
                         </div>
