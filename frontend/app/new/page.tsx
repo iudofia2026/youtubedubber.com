@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle, Play, Pause, Scissors, Volume2, VolumeX } from 'lucide-react';
 import Link from 'next/link';
 import { FileUpload } from '@/components/FileUpload';
 import { LanguageChecklist } from '@/components/LanguageChecklist';
@@ -30,12 +30,17 @@ export default function NewJobPage() {
   }>({});
 
   const steps = [
+    { id: 0, title: 'Audio Setup', description: 'Prepare your audio files', icon: Scissors },
     { id: 1, title: 'Voice Track', description: 'Upload your voice-only audio file', icon: Mic },
     { id: 2, title: 'Background Track', description: 'Add background music (optional)', icon: Music },
     { id: 3, title: 'Target Languages', description: 'Select languages for dubbing', icon: Globe },
   ];
 
   const validateStep = useCallback((step: number) => {
+    if (step === 0) {
+      return true; // Intro step is always valid
+    }
+
     if (step === 1 && !voiceTrack) {
       return false;
     }
@@ -169,6 +174,246 @@ export default function NewJobPage() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="min-h-[300px] flex flex-col justify-start"
             >
+              {/* Step 0: Audio Setup Introduction */}
+              {currentStep === 0 && (
+                <div className="space-y-8">
+                  {/* Main Header */}
+                  <motion.div
+                    className="text-center max-w-4xl mx-auto"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
+                    <motion.div
+                      className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full mb-6 shadow-lg"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <Scissors className="w-10 h-10 text-white" />
+                    </motion.div>
+                    
+                    <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight">
+                      Prepare Your Audio Files
+                    </h2>
+                    <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                      Before we can create multilingual dubs, you'll need to split your video's audio into two separate MP3 files
+                    </p>
+                  </motion.div>
+
+                  {/* Animated Visual Explanation */}
+                  <motion.div
+                    className="max-w-5xl mx-auto"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                  >
+                    <div className="relative bg-gradient-to-br from-card to-muted/30 border border-border rounded-lg p-8 overflow-hidden">
+                      {/* Background Pattern */}
+                      <div className="absolute inset-0 opacity-5">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/10 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-l from-[#ff0000]/10 to-transparent" />
+                      </div>
+
+                      {/* Main Visual Container */}
+                      <div className="relative z-10">
+                        {/* Original Video */}
+                        <motion.div
+                          className="text-center mb-8"
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.6, delay: 0.8 }}
+                        >
+                          <div className="inline-flex items-center justify-center w-24 h-16 bg-gradient-to-r from-[#ff0000] to-[#cc0000] rounded-lg shadow-lg mb-4">
+                            <Play className="w-8 h-8 text-white" />
+                          </div>
+                          <h3 className="text-lg font-semibold text-foreground mb-2">Your Original Video</h3>
+                          <p className="text-sm text-muted-foreground">Contains both voice and background audio</p>
+                        </motion.div>
+
+                        {/* Split Animation */}
+                        <motion.div
+                          className="flex items-center justify-center mb-8"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.6, delay: 1.2 }}
+                        >
+                          {/* Scissors Animation */}
+                          <motion.div
+                            className="relative"
+                            animate={{
+                              x: [0, 20, 0],
+                              rotate: [0, 5, 0]
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          >
+                            <Scissors className="w-8 h-8 text-[#ff0000]" />
+                          </motion.div>
+                          
+                          {/* Split Line */}
+                          <motion.div
+                            className="w-16 h-1 bg-gradient-to-r from-transparent via-[#ff0000] to-transparent mx-4"
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            transition={{ duration: 1, delay: 1.5 }}
+                          />
+                          
+                          <motion.div
+                            className="relative"
+                            animate={{
+                              x: [0, -20, 0],
+                              rotate: [0, -5, 0]
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                              delay: 0.5
+                            }}
+                          >
+                            <Scissors className="w-8 h-8 text-[#ff0000]" />
+                          </motion.div>
+                        </motion.div>
+
+                        {/* Split Results */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          {/* Voice Track */}
+                          <motion.div
+                            className="text-center"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 1.8 }}
+                          >
+                            <motion.div
+                              className="inline-flex items-center justify-center w-20 h-16 bg-gradient-to-r from-[#ff0000] to-[#cc0000] rounded-lg shadow-lg mb-4"
+                              whileHover={{ scale: 1.05 }}
+                            >
+                              <motion.div
+                                animate={{
+                                  scale: [1, 1.2, 1],
+                                  opacity: [0.7, 1, 0.7]
+                                }}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              >
+                                <Mic className="w-8 h-8 text-white" />
+                              </motion.div>
+                            </motion.div>
+                            <h4 className="text-lg font-semibold text-foreground mb-2">Voice Track</h4>
+                            <p className="text-sm text-muted-foreground mb-3">Clean speech only</p>
+                            <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
+                              <Volume2 className="w-4 h-4" />
+                              <span>voice_only.mp3</span>
+                            </div>
+                          </motion.div>
+
+                          {/* Background Track */}
+                          <motion.div
+                            className="text-center"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 2.0 }}
+                          >
+                            <motion.div
+                              className="inline-flex items-center justify-center w-20 h-16 bg-gradient-to-r from-[#ff0000] to-[#cc0000] rounded-lg shadow-lg mb-4"
+                              whileHover={{ scale: 1.05 }}
+                            >
+                              <motion.div
+                                animate={{
+                                  y: [0, -2, 0],
+                                  rotate: [0, 3, 0]
+                                }}
+                                transition={{
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "easeInOut",
+                                  delay: 0.5
+                                }}
+                              >
+                                <Music className="w-8 h-8 text-white" />
+                              </motion.div>
+                            </motion.div>
+                            <h4 className="text-lg font-semibold text-foreground mb-2">Background Track</h4>
+                            <p className="text-sm text-muted-foreground mb-3">Music, SFX, ambient audio</p>
+                            <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
+                              <VolumeX className="w-4 h-4" />
+                              <span>background.mp3</span>
+                            </div>
+                          </motion.div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Instructions */}
+                  <motion.div
+                    className="max-w-3xl mx-auto"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 1.0 }}
+                  >
+                    <div className="bg-muted/50 border border-border rounded-lg p-6">
+                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+                        <div className="w-2 h-2 bg-[#ff0000] rounded-full mr-3" />
+                        How to Split Your Audio
+                      </h3>
+                      <div className="space-y-3 text-sm text-muted-foreground">
+                        <div className="flex items-start space-x-3">
+                          <span className="flex-shrink-0 w-6 h-6 bg-[#ff0000] text-white text-xs rounded-full flex items-center justify-center font-bold">1</span>
+                          <p>Use any audio editing software (Audacity, Adobe Audition, DaVinci Resolve, etc.)</p>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <span className="flex-shrink-0 w-6 h-6 bg-[#ff0000] text-white text-xs rounded-full flex items-center justify-center font-bold">2</span>
+                          <p>Export your video's audio as an MP3 file</p>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <span className="flex-shrink-0 w-6 h-6 bg-[#ff0000] text-white text-xs rounded-full flex items-center justify-center font-bold">3</span>
+                          <p>Create two separate tracks: one with only voice, one with only background audio</p>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <span className="flex-shrink-0 w-6 h-6 bg-[#ff0000] text-white text-xs rounded-full flex items-center justify-center font-bold">4</span>
+                          <p>Export both as MP3 files with the same duration</p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Call to Action */}
+                  <motion.div
+                    className="text-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 1.2 }}
+                  >
+                    <p className="text-lg text-foreground mb-6">
+                      Ready to upload your split audio files?
+                    </p>
+                    <motion.div
+                      className="inline-flex items-center space-x-2 text-[#ff0000] font-medium"
+                      animate={{
+                        x: [0, 5, 0]
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <span>Let's get started</span>
+                      <ArrowRight className="w-5 h-5" />
+                    </motion.div>
+                  </motion.div>
+                </div>
+              )}
+
               {/* Step 1: Voice Track Upload */}
               {currentStep === 1 && (
                 <div className="space-y-6">
@@ -685,18 +930,18 @@ export default function NewJobPage() {
           >
             <motion.button
               onClick={prevStep}
-              disabled={currentStep === 1}
+              disabled={currentStep === 0}
               onTouchEnd={(e) => {
                 e.preventDefault();
-                if (currentStep > 1) prevStep();
+                if (currentStep > 0) prevStep();
               }}
               className={`inline-flex items-center justify-center space-x-2 px-6 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation ${
-                currentStep === 1
+                currentStep === 0
                   ? 'bg-muted text-muted-foreground cursor-not-allowed'
                   : 'bg-card text-foreground hover:bg-muted border border-border'
               }`}
-              whileHover={currentStep > 1 ? { scale: 1.05 } : {}}
-              whileTap={currentStep > 1 ? { scale: 0.95 } : {}}
+              whileHover={currentStep > 0 ? { scale: 1.05 } : {}}
+              whileTap={currentStep > 0 ? { scale: 0.95 } : {}}
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Previous</span>

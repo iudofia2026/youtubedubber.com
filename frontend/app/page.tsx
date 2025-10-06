@@ -9,19 +9,28 @@ import { YTdubberIcon } from '@/components/YTdubberIcon';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation currentPath="/" />
+    <div className="min-h-screen relative">
+      {/* Seamless gradient background covering entire page */}
+      <div className="fixed inset-0 bg-gradient-to-b from-[#ff0000]/8 via-[#ff0000]/3 via-[#ff0000]/2 to-[#ff0000]/6 pointer-events-none z-0"></div>
       
-      <main>
-        {/* Hero Section */}
-        <motion.section
-          className="py-20 sm:py-32 relative overflow-hidden px-4 sm:px-6 lg:px-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          {/* YouTube-style background accent */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#ff0000]/5 via-transparent to-[#ff0000]/5 pointer-events-none"></div>
+      {/* Additional gradient layers for depth */}
+      <div className="fixed inset-0 bg-gradient-to-r from-transparent via-[#ff0000]/2 to-transparent pointer-events-none z-0"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-[#ff0000]/4 via-transparent via-transparent to-[#ff0000]/3 pointer-events-none z-0"></div>
+      
+      {/* Content with proper z-index */}
+      <div className="relative z-10">
+        <Navigation currentPath="/" />
+        
+        <main>
+          {/* Hero Section */}
+          <motion.section
+            className="py-20 sm:py-32 relative overflow-hidden px-4 sm:px-6 lg:px-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Enhanced hero gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#ff0000]/10 via-[#ff0000]/5 to-[#ff0000]/8 pointer-events-none"></div>
           <div className="text-center relative z-10">
             <motion.h1
               className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight"
@@ -114,13 +123,15 @@ export default function Home() {
 
         {/* Features Section */}
         <motion.section
-          className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8"
+          className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 relative"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
         >
+          {/* Subtle background overlay for features */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#ff0000]/2 to-transparent pointer-events-none"></div>
           <motion.div 
-            className="text-center mb-8"
+            className="text-center mb-8 relative z-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
@@ -143,7 +154,7 @@ export default function Home() {
             </motion.p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
             {[
               {
                 icon: Mic,
@@ -245,13 +256,15 @@ export default function Home() {
 
         {/* CTA Section */}
         <motion.section
-          className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8"
+          className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 relative"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.6 }}
         >
+          {/* Enhanced gradient overlay for CTA */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#ff0000]/3 to-[#ff0000]/5 pointer-events-none"></div>
           <motion.div 
-            className="text-center"
+            className="text-center relative z-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.8 }}
@@ -315,7 +328,8 @@ export default function Home() {
             </motion.div>
           </motion.div>
         </motion.section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
