@@ -106,7 +106,7 @@ YT Dubber transforms single-language YouTube content into multilingual masterpie
 
 ### **Key Pages**
 - **Homepage** (`/`): Hero section with features showcase
-- **Upload** (`/new`): 3-step wizard for file uploads and language selection
+- **Upload** (`/new`): 4-step wizard starting with audio preparation guide, then file uploads and language selection
 - **Job Status** (`/jobs/[id]`): Real-time progress tracking with per-language details
 - **Jobs List** (`/jobs`): Job history and management (ready for backend integration)
 

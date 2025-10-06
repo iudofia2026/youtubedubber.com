@@ -69,7 +69,7 @@ Pricing strategy: **$0.99/min** with volume tiers at $0.79–$0.89/min (≥10% m
 - **Typography:** DM Sans (primary), IBM Plex Mono (monospace), Roboto (YouTube branding)
 - **Pages:**
   - **Home** (`/`) – Hero section with animated features, YouTube branding, CTA
-  - **Upload** (`/new`) – 3-step wizard: voice track → background track → language selection
+  - **Upload** (`/new`) – 4-step wizard: audio preparation guide → voice track → background track → language selection
   - **Jobs** (`/jobs`) – Job listing page with empty state
   - **Job Status** (`/jobs/[id]`) – Real-time progress with individual language tracking
 - **Key Components:**
