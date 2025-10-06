@@ -195,64 +195,182 @@ export default function NewJobPage() {
                   </motion.div>
 
 
-                  {/* Instructions */}
+                  {/* Enhanced Instructions - Centerpiece */}
                   <motion.div
-                    className="max-w-3xl mx-auto"
-                    initial={{ opacity: 0, y: 20 }}
+                    className="max-w-5xl mx-auto"
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 1.0 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
                   >
-                    <div className="bg-muted/50 border border-border rounded-lg p-6">
-                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
-                        <div className="w-2 h-2 bg-[#ff0000] rounded-full mr-3" />
-                        How to Split Your Audio
-                      </h3>
-                      <div className="space-y-3 text-sm text-muted-foreground">
-                        <div className="flex items-start space-x-3">
-                          <span className="flex-shrink-0 w-6 h-6 bg-[#ff0000] text-white text-xs rounded-full flex items-center justify-center font-bold">1</span>
-                          <p>Use any audio editing software (Audacity, Adobe Audition, DaVinci Resolve, etc.)</p>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <span className="flex-shrink-0 w-6 h-6 bg-[#ff0000] text-white text-xs rounded-full flex items-center justify-center font-bold">2</span>
-                          <p>Export your video's audio as an MP3 file</p>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <span className="flex-shrink-0 w-6 h-6 bg-[#ff0000] text-white text-xs rounded-full flex items-center justify-center font-bold">3</span>
-                          <p>Create two separate tracks: one with only voice, one with only background audio</p>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <span className="flex-shrink-0 w-6 h-6 bg-[#ff0000] text-white text-xs rounded-full flex items-center justify-center font-bold">4</span>
-                          <p>Export both as MP3 files with the same duration</p>
-                        </div>
+                    {/* Main Container with Enhanced Styling */}
+                    <div className="relative bg-gradient-to-br from-[#ff0000]/5 via-[#ff0000]/3 to-[#ff0000]/8 border-2 border-[#ff0000]/20 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
+                      {/* Decorative Background Elements */}
+                      <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                        <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#ff0000]/10 rounded-full blur-xl" />
+                        <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#ff0000]/5 rounded-full blur-2xl" />
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[#ff0000]/3 rounded-full blur-3xl" />
                       </div>
+                      
+                      {/* Header Section */}
+                      <motion.div
+                        className="text-center mb-8 relative z-10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.8 }}
+                      >
+                        <motion.div
+                          className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-2xl mb-4 shadow-lg"
+                          whileHover={{ scale: 1.05, rotate: 5 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Scissors className="w-8 h-8 text-white" />
+                        </motion.div>
+                        
+                        <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 tracking-tight">
+                          How to Split Your Audio
+                        </h3>
+                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                          Follow these steps to prepare your audio files for multilingual dubbing
+                        </p>
+                      </motion.div>
+
+                      {/* Enhanced Step Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                        {/* Step 1 */}
+                        <motion.div
+                          className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-[#ff0000]/20 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.6, delay: 1.0 }}
+                          whileHover={{ y: -5 }}
+                        >
+                          <div className="flex items-start space-x-4">
+                            <motion.div
+                              className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
+                              whileHover={{ rotate: 10 }}
+                            >
+                              <span className="text-white font-bold text-lg">1</span>
+                            </motion.div>
+                            <div className="flex-1">
+                              <h4 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[#ff0000] transition-colors duration-300">
+                                Import Your Video
+                              </h4>
+                              <p className="text-muted-foreground leading-relaxed">
+                                Use any audio editing software (Audacity, Adobe Audition, DaVinci Resolve, etc.) and import your video file
+                              </p>
+                            </div>
+                          </div>
+                          {/* Decorative line */}
+                          <div className="absolute bottom-0 left-6 right-6 h-1 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </motion.div>
+
+                        {/* Step 2 */}
+                        <motion.div
+                          className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-[#ff0000]/20 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.6, delay: 1.2 }}
+                          whileHover={{ y: -5 }}
+                        >
+                          <div className="flex items-start space-x-4">
+                            <motion.div
+                              className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
+                              whileHover={{ rotate: 10 }}
+                            >
+                              <span className="text-white font-bold text-lg">2</span>
+                            </motion.div>
+                            <div className="flex-1">
+                              <h4 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[#ff0000] transition-colors duration-300">
+                                Split the Audio
+                              </h4>
+                              <p className="text-muted-foreground leading-relaxed">
+                                Create two separate tracks: one with only voice, one with only background audio
+                              </p>
+                            </div>
+                          </div>
+                          {/* Decorative line */}
+                          <div className="absolute bottom-0 left-6 right-6 h-1 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </motion.div>
+
+                        {/* Step 3 */}
+                        <motion.div
+                          className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-[#ff0000]/20 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.6, delay: 1.4 }}
+                          whileHover={{ y: -5 }}
+                        >
+                          <div className="flex items-start space-x-4">
+                            <motion.div
+                              className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
+                              whileHover={{ rotate: 10 }}
+                            >
+                              <span className="text-white font-bold text-lg">3</span>
+                            </motion.div>
+                            <div className="flex-1">
+                              <h4 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[#ff0000] transition-colors duration-300">
+                                Export Voice Track
+                              </h4>
+                              <p className="text-muted-foreground leading-relaxed">
+                                Export the voice-only track as an MP3 file (clean speech, no background music)
+                              </p>
+                            </div>
+                          </div>
+                          {/* Decorative line */}
+                          <div className="absolute bottom-0 left-6 right-6 h-1 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </motion.div>
+
+                        {/* Step 4 */}
+                        <motion.div
+                          className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-[#ff0000]/20 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.6, delay: 1.6 }}
+                          whileHover={{ y: -5 }}
+                        >
+                          <div className="flex items-start space-x-4">
+                            <motion.div
+                              className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
+                              whileHover={{ rotate: 10 }}
+                            >
+                              <span className="text-white font-bold text-lg">4</span>
+                            </motion.div>
+                            <div className="flex-1">
+                              <h4 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[#ff0000] transition-colors duration-300">
+                                Export Background Track
+                              </h4>
+                              <p className="text-muted-foreground leading-relaxed">
+                                Export the background track as an MP3 file with the same duration as the voice track
+                              </p>
+                            </div>
+                          </div>
+                          {/* Decorative line */}
+                          <div className="absolute bottom-0 left-6 right-6 h-1 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </motion.div>
+                      </div>
+
+                      {/* Important Note */}
+                      <motion.div
+                        className="mt-8 p-4 bg-[#ff0000]/10 border border-[#ff0000]/30 rounded-xl relative z-10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 1.8 }}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className="flex-shrink-0 w-6 h-6 bg-[#ff0000] rounded-full flex items-center justify-center">
+                            <span className="text-white text-sm font-bold">!</span>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-foreground mb-1">Important</p>
+                            <p className="text-sm text-muted-foreground">
+                              Both audio files must have the exact same duration for proper synchronization during dubbing.
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
                     </div>
                   </motion.div>
 
-                  {/* Call to Action */}
-                  <motion.div
-                    className="text-center"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 1.2 }}
-                  >
-                    <p className="text-lg text-foreground mb-6">
-                      Ready to upload your split audio files?
-                    </p>
-                    <motion.div
-                      className="inline-flex items-center space-x-2 text-[#ff0000] font-medium"
-                      animate={{
-                        x: [0, 5, 0]
-                      }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    >
-                      <span>Let's get started</span>
-                      <ArrowRight className="w-5 h-5" />
-                    </motion.div>
-                  </motion.div>
                 </div>
               )}
 
