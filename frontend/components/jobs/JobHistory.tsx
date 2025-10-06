@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,6 @@ export function JobHistory({
   onDeleteJob
 }: JobHistoryProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<JobStatus>('all');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
@@ -41,9 +40,10 @@ export function JobHistory({
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    const status = searchParams.get('status') as JobStatus;
-    const search = searchParams.get('search');
-    const sort = searchParams.get('sort') as SortOption;
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status') as JobStatus;
+    const search = urlParams.get('search');
+    const sort = urlParams.get('sort') as SortOption;
 
     if (status && ['all', 'pending', 'processing', 'complete', 'error'].includes(status)) {
       setStatusFilter(status);
@@ -56,7 +56,7 @@ export function JobHistory({
     }
     
     setIsInitialized(true);
-  }, [searchParams]);
+  }, []);
 
   // Filter and sort jobs
   useEffect(() => {
@@ -100,7 +100,7 @@ export function JobHistory({
   const updateURL = (newParams: { status?: JobStatus; search?: string; sort?: SortOption }) => {
     if (typeof window === 'undefined') return;
     
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(window.location.search);
     
     if (newParams.status !== undefined) {
       if (newParams.status === 'all') {

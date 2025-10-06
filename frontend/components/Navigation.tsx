@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Home, Plus, BarChart3, ChevronDown, Clock, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { NavigationProps } from '@/types';
@@ -13,13 +13,17 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isJobsDropdownOpen, setIsJobsDropdownOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState<string>('');
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Ensure we're on the client side
+  // Ensure we're on the client side and get current status
   useEffect(() => {
     setIsClient(true);
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      setCurrentStatus(urlParams.get('status') || '');
+    }
   }, []);
 
   // Close dropdown when clicking outside
@@ -58,31 +62,31 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
       name: 'All Jobs',
       href: '/jobs',
       icon: BarChart3,
-      current: isClient && pathname === '/jobs' && !searchParams.get('status'),
+      current: isClient && pathname === '/jobs' && !currentStatus,
     },
     {
       name: 'Processing',
       href: '/jobs?status=processing',
       icon: Loader2,
-      current: isClient && pathname === '/jobs' && searchParams.get('status') === 'processing',
+      current: isClient && pathname === '/jobs' && currentStatus === 'processing',
     },
     {
       name: 'Completed',
       href: '/jobs?status=complete',
       icon: CheckCircle,
-      current: isClient && pathname === '/jobs' && searchParams.get('status') === 'complete',
+      current: isClient && pathname === '/jobs' && currentStatus === 'complete',
     },
     {
       name: 'Pending',
       href: '/jobs?status=pending',
       icon: Clock,
-      current: isClient && pathname === '/jobs' && searchParams.get('status') === 'pending',
+      current: isClient && pathname === '/jobs' && currentStatus === 'pending',
     },
     {
       name: 'Errors',
       href: '/jobs?status=error',
       icon: AlertCircle,
-      current: isClient && pathname === '/jobs' && searchParams.get('status') === 'error',
+      current: isClient && pathname === '/jobs' && currentStatus === 'error',
     },
   ];
 
