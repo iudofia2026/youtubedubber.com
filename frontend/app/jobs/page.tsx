@@ -9,6 +9,7 @@ import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { JobHistory } from '@/components/jobs/JobHistory';
 import { Job } from '@/types';
 import { useToastHelpers } from '@/components/ToastNotifications';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -129,10 +130,11 @@ export default function JobsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation currentPath="/jobs" />
-      
-      <main className="px-4 sm:px-6 lg:px-8 py-8">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-background">
+        <Navigation currentPath="/jobs" />
+        
+        <main className="px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumbs */}
         <motion.div
           className="mb-6"
@@ -189,7 +191,8 @@ export default function JobsPage() {
           onDownloadJob={handleDownloadJob}
           onDeleteJob={handleDeleteJob}
         />
-      </main>
-    </div>
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 }

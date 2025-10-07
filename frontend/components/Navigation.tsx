@@ -4,18 +4,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Home, Plus, BarChart3, ChevronDown, Clock, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Menu, X, Home, Plus, BarChart3, ChevronDown, Clock, CheckCircle, AlertCircle, Loader2, User, LogOut } from 'lucide-react';
 import { NavigationProps } from '@/types';
 import { ThemeToggleNav } from '@/components/ThemeToggleNav';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
+import { useAuth } from '@/lib/auth-context';
+import { UserProfile } from '@/components/auth/UserProfile';
 
 export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isJobsDropdownOpen, setIsJobsDropdownOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [currentStatus, setCurrentStatus] = useState<string>('');
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const { user, signOut } = useAuth();
 
   // Ensure we're on the client side and get current status
   useEffect(() => {
@@ -26,11 +31,14 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
     }
   }, []);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsJobsDropdownOpen(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
       }
     };
 
@@ -54,6 +62,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
       href: '/new',
       icon: Plus,
       current: pathname === '/new',
+      requireAuth: true,
     },
   ];
 
@@ -106,6 +115,15 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
     setIsJobsDropdownOpen(false);
   };
 
+  const closeUserMenu = () => {
+    setIsUserMenuOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    closeUserMenu();
+  };
+
   return (
     <nav className="bg-background border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -127,6 +145,9 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
             <div className="flex items-baseline space-x-8">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
+                // Don't show auth-required items if user is not logged in
+                if (item.requireAuth && !user) return null;
+                
                 return (
                   <Link
                     key={item.name}
@@ -145,26 +166,27 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
                 );
               })}
               
-              {/* Jobs Dropdown */}
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => setIsJobsDropdownOpen(!isJobsDropdownOpen)}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    setIsJobsDropdownOpen(!isJobsDropdownOpen);
-                  }}
-                  className={`
-                    flex items-center space-x-2 px-3 py-2 text-sm font-medium transition-colors duration-200
-                    ${pathname.startsWith('/jobs')
-                      ? 'text-primary border-b-2 border-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:border-b-2 hover:border-primary/50'
-                    }
-                  `}
-                >
-                  <BarChart3 className="w-4 h-4" />
-                  <span>Jobs</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isJobsDropdownOpen ? 'rotate-180' : ''}`} />
-                </button>
+              {/* Jobs Dropdown - Only show if user is logged in */}
+              {user && (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setIsJobsDropdownOpen(!isJobsDropdownOpen)}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      setIsJobsDropdownOpen(!isJobsDropdownOpen);
+                    }}
+                    className={`
+                      flex items-center space-x-2 px-3 py-2 text-sm font-medium transition-colors duration-200
+                      ${pathname.startsWith('/jobs')
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-muted-foreground hover:text-foreground hover:border-b-2 hover:border-primary/50'
+                      }
+                    `}
+                  >
+                    <BarChart3 className="w-4 h-4" />
+                    <span>Jobs</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isJobsDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
 
                 <AnimatePresence>
                   {isJobsDropdownOpen && (
@@ -198,8 +220,66 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+                </div>
+              )}
             </div>
+            
+            {/* User Menu or Auth Buttons */}
+            {user ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    setIsUserMenuOpen(!isUserMenuOpen);
+                  }}
+                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center">
+                    {user.user_metadata?.avatar_url ? (
+                      <img
+                        src={user.user_metadata.avatar_url}
+                        alt="Profile"
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-4 h-4 text-white" />
+                    )}
+                  </div>
+                  <span className="hidden lg:block">{user.user_metadata?.full_name || 'User'}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                <AnimatePresence>
+                  {isUserMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+                    >
+                      <UserProfile onClose={closeUserMenu} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <Link
+                  href="/auth/signin"
+                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#ff0000] hover:bg-[#cc0000] rounded-lg transition-colors duration-200"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
             
             {/* Theme Toggle */}
             <ThemeToggleNav />
@@ -242,6 +322,9 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-background border-t border-border">
           {navigationItems.map((item) => {
             const Icon = item.icon;
+            // Don't show auth-required items if user is not logged in
+            if (item.requireAuth && !user) return null;
+            
             return (
               <motion.div
                 key={item.name}
@@ -271,41 +354,94 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
             );
           })}
           
-          {/* Jobs Section */}
-          <div className="border-t border-border pt-2 mt-2">
-            <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Jobs
-            </div>
-            {jobsDropdownItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={item.name}
-                  whileHover={{ x: 4 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Link
-                    href={item.href}
-                    className={`
-                      flex items-center space-x-3 px-4 py-3 text-base font-medium transition-colors duration-200 touch-manipulation
-                      ${item.current
-                        ? 'text-primary bg-accent'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                      }
-                    `}
-                    onClick={closeMobileMenu}
-                    onTouchEnd={(e) => {
-                      e.preventDefault();
-                      closeMobileMenu();
-                    }}
+          {/* Jobs Section - Only show if user is logged in */}
+          {user && (
+            <div className="border-t border-border pt-2 mt-2">
+              <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Jobs
+              </div>
+              {jobsDropdownItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={item.name}
+                    whileHover={{ x: 4 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.name}</span>
-                  </Link>
-                </motion.div>
-              );
-            })}
+                    <Link
+                      href={item.href}
+                      className={`
+                        flex items-center space-x-3 px-4 py-3 text-base font-medium transition-colors duration-200 touch-manipulation
+                        ${item.current
+                          ? 'text-primary bg-accent'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                        }
+                      `}
+                      onClick={closeMobileMenu}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        closeMobileMenu();
+                      }}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span>{item.name}</span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+          
+          {/* Auth Section */}
+          <div className="border-t border-border pt-2 mt-2">
+            {user ? (
+              <div className="px-4 py-3">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center">
+                    {user.user_metadata?.avatar_url ? (
+                      <img
+                        src={user.user_metadata.avatar_url}
+                        alt="Profile"
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-5 h-5 text-white" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">
+                      {user.user_metadata?.full_name || 'User'}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="w-full flex items-center space-x-3 px-4 py-3 text-base font-medium text-destructive hover:bg-destructive/10 transition-colors duration-200 touch-manipulation rounded-lg"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <div className="px-4 py-3 space-y-2">
+                <Link
+                  href="/auth/signin"
+                  className="block w-full text-center px-4 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-200 touch-manipulation rounded-lg"
+                  onClick={closeMobileMenu}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="block w-full text-center px-4 py-3 text-base font-medium text-white bg-[#ff0000] hover:bg-[#cc0000] transition-colors duration-200 touch-manipulation rounded-lg"
+                  onClick={closeMobileMenu}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
           
           {/* Mobile Theme Toggle */}

@@ -12,6 +12,7 @@ import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { LANGUAGES } from '@/types';
 import { submitDubbingJob } from '@/lib/api';
 import { areDurationsEqual, formatDurationDifference, formatDuration } from '@/lib/audio-utils';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function NewJobPage() {
   const router = useRouter();
@@ -214,10 +215,11 @@ export default function NewJobPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation currentPath="/new" />
-      
-      <main className="px-4 sm:px-6 lg:px-8 py-4">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-background">
+        <Navigation currentPath="/new" />
+        
+        <main className="px-4 sm:px-6 lg:px-8 py-4">
         {/* Breadcrumbs */}
         <motion.div
           className="mb-6"
@@ -291,7 +293,7 @@ export default function NewJobPage() {
                       Prepare Your Audio Files
                     </h2>
                     <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                      Before we can create multilingual dubs, you'll need to split your video's audio into two separate MP3 files
+                      Before we can create multilingual dubs, you&apos;ll need to split your video&apos;s audio into two separate MP3 files
                     </p>
                     
                     {/* Auto-scroll indicator */}
@@ -519,7 +521,7 @@ export default function NewJobPage() {
                         <div>
                           <p className="text-sm font-medium text-foreground">Welcome back!</p>
                           <p className="text-xs text-muted-foreground">
-                            Since you've created jobs before, we'll skip the audio preparation guide and go straight to uploading.
+                            Since you&apos;ve created jobs before, we&apos;ll skip the audio preparation guide and go straight to uploading.
                           </p>
                         </div>
                       </div>
@@ -1137,7 +1139,8 @@ export default function NewJobPage() {
             )}
           </AnimatePresence>
         </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 }

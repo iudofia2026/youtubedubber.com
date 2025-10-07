@@ -40,6 +40,7 @@ export function JobHistory({
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
+    // Use router to get search params to avoid hydration issues
     const urlParams = new URLSearchParams(window.location.search);
     const status = urlParams.get('status') as JobStatus;
     const search = urlParams.get('search');
@@ -127,7 +128,8 @@ export function JobHistory({
     }
     
     const newURL = params.toString() ? `?${params.toString()}` : '';
-    router.replace(`/jobs${newURL}`, { scroll: false });
+    // Use push instead of replace to ensure proper navigation
+    router.push(`/jobs${newURL}`, { scroll: false });
   };
 
   const handleSearchChange = (query: string) => {

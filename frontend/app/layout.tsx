@@ -3,6 +3,7 @@ import { DM_Sans, IBM_Plex_Mono, Roboto } from "next/font/google";
 import "./globals.css";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { ToastProvider } from "@/components/ToastNotifications";
+import { AuthProvider } from "@/lib/auth-context";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -42,7 +43,9 @@ export default function RootLayout({
       >
         <ErrorBoundary>
           <ToastProvider>
-            {children}
+            <AuthProvider>
+              {children}
+            </AuthProvider>
           </ToastProvider>
         </ErrorBoundary>
       </body>

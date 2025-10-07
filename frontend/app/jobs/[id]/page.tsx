@@ -11,6 +11,7 @@ import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { simulateJobProgress } from '@/lib/api';
 import { JobStatus, GetJobStatusResponse } from '@/types';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function JobStatusPage() {
   const params = useParams();
@@ -108,10 +109,11 @@ export default function JobStatusPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation currentPath="/jobs" />
-      
-      <main className="px-4 sm:px-6 lg:px-8 py-8">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-background">
+        <Navigation currentPath="/jobs" />
+        
+        <main className="px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumbs */}
         <motion.div
           className="mb-6"
@@ -348,7 +350,8 @@ export default function JobStatusPage() {
             </motion.button>
           </Link>
         </motion.div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 }
