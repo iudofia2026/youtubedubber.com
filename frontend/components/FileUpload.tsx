@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { FileUploadProps } from '@/types';
 import { getAudioDuration } from '@/lib/audio-utils';
 import { useToastHelpers } from '@/components/ToastNotifications';
-import { LoadingSpinner, UploadProgress } from '@/components/LoadingStates';
+import { UploadProgress } from '@/components/LoadingStates';
 import { Play, Pause, Volume2, VolumeX, RotateCcw } from 'lucide-react';
 
 export function FileUpload({ 
