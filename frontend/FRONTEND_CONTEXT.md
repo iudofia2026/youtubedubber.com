@@ -701,11 +701,13 @@ lib/
 **Current Status**: Foundation complete + error handling + job management + enhanced upload flow implemented. Ready for next phase of high-impact features.
 
 **Latest Updates**:
-- ✅ **Audio Preparation Guide**: New intro screen explaining audio splitting requirement
-- ✅ **Enhanced Upload Flow**: 4-step wizard with clear visual guidance
-- ✅ **Simplified UI**: Removed static headers for cleaner user experience
-- ✅ **Mobile Optimization**: Responsive design for all screen sizes
-- ✅ **Documentation**: Updated frontend context with latest changes
+- ✅ **Smart First-Time User Detection**: Personalized workflow based on user history
+- ✅ **Conditional Audio Guide**: Only shows for new users, returning users start at upload
+- ✅ **Enhanced Visual Design**: Stunning gradient backgrounds and interactive step cards
+- ✅ **Auto-Smooth Scroll**: Guided experience with elegant scroll animation
+- ✅ **Step Management**: Smart navigation that adapts to user type
+- ✅ **Rules of Hooks Fix**: Resolved React hook order violation
+- ✅ **Documentation**: Updated frontend context with latest features
 
 ---
 
@@ -811,6 +813,8 @@ lib/
 - **Responsive**: ✅ Works on all screen sizes
 - **Performance**: ✅ Optimized with proper hydration handling
 - **Visual Design**: ✅ Seamless gradient background implemented across entire homepage
+- **User Experience**: ✅ Smart first-time user detection with personalized workflows
+- **Step Management**: ✅ Conditional step navigation based on user history
 
 ### Recent Visual Improvements
 - **Seamless Gradient Background**: Implemented a multi-layered gradient system that flows continuously from top to bottom of the homepage
@@ -821,22 +825,29 @@ lib/
   - Enhanced visual cohesion between hero, features, and CTA sections
 
 ### Upload Page Enhancements (Latest Update)
-- **New Intro Screen (Step 0)**: Added comprehensive audio preparation guide
-  - Animated visual explanation showing video splitting into voice and background tracks
-  - Step-by-step instructions for audio editing software
-  - Interactive elements with hover effects and smooth animations
-  - Maintains consistent branding with YouTube red accent colors
-  - Clean, minimalist design matching site aesthetic
-  - **Simplified Visual Elements**: Removed specific text labels ("Your Video Audio", "Voice Only", "Background Only") and file names ("voice_only.mp3", "background.mp3") for cleaner visual presentation
+- **Smart First-Time User Detection**: Implemented intelligent user flow based on job history
+  - **First-Time Users**: See complete audio preparation guide (Step 0) with visual instructions
+  - **Returning Users**: Start directly at "Upload Voice Track" (Step 1) for faster workflow
+  - **User State Management**: Uses localStorage to track user history and personalize experience
+  - **Loading State**: Professional loading spinner while checking user history
+  - **Welcome Back Message**: Explains why audio guide was skipped for returning users
 
-- **Simplified Header**: Removed static "Create New Job" title and subtitle
-  - Page now starts directly with step content for cleaner layout
-  - Focuses user attention on the audio preparation process
-  - Reduces visual clutter and improves user flow
+- **Enhanced Audio Preparation Guide (Step 0)**: Comprehensive visual centerpiece for new users
+  - **Stunning Visual Design**: Gradient backgrounds with decorative blur elements
+  - **Interactive Step Cards**: 4-step process with hover animations and transitions
+  - **Corrected Workflow Order**: Import → Split → Export Voice → Export Background
+  - **Auto-Smooth Scroll**: Automatically scrolls to instructions after 2.5 seconds
+  - **Important Notes**: Duration synchronization requirements highlighted
+  - **Responsive Layout**: 2x2 grid that works on all screen sizes
 
-- **Enhanced User Experience**: 
-  - Clear explanation of audio splitting requirement before upload
-  - Visual demonstration of the splitting process
-  - Professional instructions for common audio editing software
-  - Smooth transitions between all 4 steps
-  - Mobile-optimized responsive design
+- **Conditional Step Navigation**: Smart step management based on user type
+  - **First-Time Users**: Full 4-step process (Audio Setup → Voice → Background → Languages)
+  - **Returning Users**: 3-step process (Voice → Background → Languages)
+  - **Step Filtering**: Progress bar only shows relevant steps for each user type
+  - **Navigation Logic**: Prevents returning users from going back to Step 0
+
+- **Simplified Visual Elements**: Clean, minimalist design
+  - Removed specific text labels and file names for cleaner presentation
+  - Focus on essential instructions and visual guidance
+  - Enhanced typography and spacing for better readability
+  - Mobile-optimized responsive design throughout
