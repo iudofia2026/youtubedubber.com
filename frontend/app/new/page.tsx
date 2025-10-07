@@ -128,25 +128,6 @@ export default function NewJobPage() {
     return true;
   }, [voiceTrack, targetLanguages]);
 
-  // Show loading state while checking for past jobs
-  if (isCheckingJobs) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navigation currentPath="/new" />
-        <main className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-center min-h-[400px]">
-              <div className="text-center">
-                <div className="w-8 h-8 border-2 border-[#ff0000] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                <p className="text-muted-foreground">Loading...</p>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
   const isStepValid = useMemo(() => {
     return validateStep(currentStep);
   }, [validateStep, currentStep]);
@@ -212,6 +193,25 @@ export default function NewJobPage() {
       setIsSubmitting(false);
     }
   }, [isFinalStepValid, voiceTrack, backgroundTrack, targetLanguages, router]);
+
+  // Show loading state while checking for past jobs (after all hooks)
+  if (isCheckingJobs) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation currentPath="/new" />
+        <main className="px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <div className="w-8 h-8 border-2 border-[#ff0000] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-muted-foreground">Loading...</p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
