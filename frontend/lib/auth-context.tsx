@@ -25,6 +25,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { success, error: showError } = useToastHelpers();
 
   useEffect(() => {
+    // Development bypass - if NEXT_PUBLIC_DEV_MODE is true, simulate authenticated user
+    if (process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+      const mockUser = {
+        id: 'dev-user-123',
+        email: 'dev@youtubedubber.com',
+        user_metadata: {
+          full_name: 'Development User'
+        },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        aud: 'authenticated',
+        role: 'authenticated',
+        app_metadata: {},
+        identities: [],
+        factors: []
+      } as User;
+      
+      setUser(mockUser);
+      setSession({
+        access_token: 'dev-token',
+        refresh_token: 'dev-refresh',
+        expires_in: 3600,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+        token_type: 'bearer',
+        user: mockUser
+      } as Session);
+      setLoading(false);
+      return;
+    }
+
     // If Supabase is not configured, skip auth initialization
     if (!isSupabaseConfigured()) {
       setLoading(false);
@@ -60,6 +90,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [success]);
 
   const signUp = async (email: string, password: string, fullName?: string) => {
+    // Development mode bypass
+    if (process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+      success('Development Mode', 'Sign up simulated in development mode.');
+      return { error: null };
+    }
+
     if (!isSupabaseConfigured()) {
       showError('Authentication not configured', 'Supabase is not configured. Please check your environment variables.');
       return { error: { message: 'Supabase not configured' } as AuthError };
@@ -94,6 +130,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
+    // Development mode bypass
+    if (process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+      success('Development Mode', 'Sign in simulated in development mode.');
+      return { error: null };
+    }
+
     if (!supabase) {
       showError('Authentication not configured', 'Supabase is not configured. Please check your environment variables.');
       return { error: { message: 'Supabase not configured' } as AuthError };
@@ -119,6 +161,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
+    // Development mode bypass
+    if (process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+      setUser(null);
+      setSession(null);
+      success('Development Mode', 'Signed out in development mode.');
+      return;
+    }
+
     if (!supabase) {
       showError('Authentication not configured', 'Supabase is not configured. Please check your environment variables.');
       return;
@@ -136,6 +186,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
+    // Development mode bypass
+    if (process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+      success('Development Mode', 'Password reset simulated in development mode.');
+      return { error: null };
+    }
+
     if (!supabase) {
       showError('Authentication not configured', 'Supabase is not configured. Please check your environment variables.');
       return { error: { message: 'Supabase not configured' } as AuthError };
@@ -161,6 +217,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateProfile = async (updates: { full_name?: string; avatar_url?: string }) => {
+    // Development mode bypass
+    if (process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+      success('Development Mode', 'Profile update simulated in development mode.');
+      return { error: null };
+    }
+
     if (!supabase) {
       showError('Authentication not configured', 'Supabase is not configured. Please check your environment variables.');
       return { error: { message: 'Supabase not configured' } as AuthError };

@@ -61,7 +61,14 @@ frontend/
    - **Step 2**: Background Track Upload - Upload background music/ambient audio (optional)
    - **Step 3**: Target Languages - Select languages for dubbing
 3. **Job Status** (`/jobs/[id]`): Real-time progress tracking with per-language details
-4. **Jobs List** (`/jobs`): Empty state (ready for job history)
+4. **Jobs List** (`/jobs`): Complete job management interface with filtering and status tracking
+5. **Authentication Pages**:
+   - **Sign In** (`/auth/signin`): User login with email/password
+   - **Sign Up** (`/auth/signup`): User registration with terms acceptance
+   - **Password Reset** (`/auth/reset-password`): Email-based password reset
+6. **Legal Pages**:
+   - **Terms of Service** (`/legal/terms`): Comprehensive terms and conditions
+   - **Privacy Policy** (`/legal/privacy`): Data protection and privacy information
 
 ## 🔧 Current Functionality
 
@@ -356,6 +363,7 @@ When the backend is ready:
 - ✅ **Background Animations** - Added subtle, performance-optimized animations to gradient background layers
 - ✅ **Visual Refinements** - Reduced gradient intensity and cleaned up decorative elements for cleaner appearance
 - ✅ **File Preview System** - Complete audio preview player with play/pause, seek, volume control, and real-time progress tracking
+- ✅ **Development Authentication Bypass** - Complete development mode for testing without Supabase setup
 
 **Next Steps**: Continue with remaining high-impact, low-effort items from the expansion roadmap.
 
@@ -670,6 +678,27 @@ lib/
 └── analytics.ts       # Usage tracking
 ```
 
+### **🚀 Development Mode Usage**
+
+#### **How to Enable Development Authentication Bypass**
+1. **Set Environment Variable**: Add `NEXT_PUBLIC_DEV_MODE=true` to `.env.local`
+2. **Start Development Server**: Run `npm run dev` (or `PORT=3011 npm run dev`)
+3. **Access App**: Visit `http://localhost:3011` - you'll be automatically signed in as "Development User"
+4. **Full Access**: All protected routes and features are immediately available
+5. **No Setup Required**: Works without Supabase configuration or database setup
+
+#### **Development User Details**
+- **Email**: `dev@youtubedubber.com`
+- **Name**: `Development User`
+- **ID**: `dev-user-123`
+- **Status**: Fully authenticated with all permissions
+
+#### **Testing Authentication Features**
+- **Sign In/Out**: Auth forms work but simulate success in development mode
+- **Profile Updates**: Profile changes are simulated with success messages
+- **Protected Routes**: All job management and upload features are accessible
+- **Navigation**: User dropdown and profile menu work normally
+
 ### **🎯 Immediate Next Steps for Any Agent**
 
 #### **✅ COMPLETED (Latest Update)**
@@ -755,6 +784,13 @@ lib/
 - **Error Boundaries**: Graceful handling of auth failures
 
 ### **🔧 Technical Implementation Details**
+
+#### **Development Mode Bypass**
+- **Environment Variable**: `NEXT_PUBLIC_DEV_MODE=true` enables development authentication bypass
+- **Mock User**: Automatically creates a development user with email `dev@youtubedubber.com`
+- **Full Functionality**: All auth operations (sign in, sign up, sign out, profile updates) work in development mode
+- **No Supabase Required**: Development mode works without Supabase configuration
+- **Production Safe**: Development mode is automatically disabled in production builds
 
 #### **Dependencies Added**
 ```json
@@ -995,6 +1031,8 @@ CREATE TABLE jobs (
 - **Visual Design**: ✅ Seamless gradient background implemented across entire homepage
 - **User Experience**: ✅ Smart first-time user detection with personalized workflows
 - **Step Management**: ✅ Conditional step navigation based on user history
+- **Legal Compliance**: ✅ Terms of Service and Privacy Policy pages implemented
+- **Footer Navigation**: ✅ Comprehensive footer with legal links and social media
 
 ### Recent Visual Improvements
 - **Seamless Gradient Background**: Implemented a multi-layered gradient system that flows continuously from top to bottom of the homepage
@@ -1003,6 +1041,13 @@ CREATE TABLE jobs (
   - Proper z-index management to ensure content appears above gradients
   - Responsive design that works across all screen sizes
   - Enhanced visual cohesion between hero, features, and CTA sections
+
+- **Enhanced Scroll Indicator**: Improved "learn more" section with better positioning and scroll-based fade-out
+  - **Closer Positioning**: Moved scroll indicator closer to hero section with reduced padding (`py-4 -mt-4`)
+  - **Scroll-Based Fade**: Added smooth fade-out effect that triggers when user scrolls down (fades over 200px of scroll)
+  - **Smooth Animation**: Maintains existing pulsing text and bouncing arrow animations
+  - **Performance Optimized**: Uses React hooks for scroll detection with proper cleanup
+  - **Responsive Design**: Works seamlessly across all screen sizes
 
 ### Upload Page Enhancements (Latest Update)
 - **Smart First-Time User Detection**: Implemented intelligent user flow based on job history
@@ -1031,3 +1076,48 @@ CREATE TABLE jobs (
   - Focus on essential instructions and visual guidance
   - Enhanced typography and spacing for better readability
   - Mobile-optimized responsive design throughout
+
+### Legal Pages and Footer Implementation (Latest Update)
+- **Terms of Service Page** (`/legal/terms`): Comprehensive legal document covering:
+  - Service description and user responsibilities
+  - Content and intellectual property rights
+  - Acceptable use policies and restrictions
+  - Payment terms and billing information
+  - Privacy and data handling practices
+  - Service availability and limitations
+  - Termination and liability clauses
+  - Governing law and contact information
+
+- **Privacy Policy Page** (`/legal/privacy`): Detailed data protection information including:
+  - Information collection practices (personal, audio, usage data)
+  - AI processing and data handling procedures
+  - Data retention policies (48-hour default retention)
+  - Information sharing and disclosure policies
+  - Data security measures and encryption
+  - User rights and choices (access, correction, deletion, portability)
+  - Cookies and tracking technologies
+  - International data transfers and compliance
+  - Children's privacy protection
+  - Contact information for privacy concerns
+
+- **Footer Component**: Comprehensive site footer with:
+  - **Brand Section**: Logo, description, and social media links
+  - **Product Links**: Features, pricing, how it works
+  - **Support Links**: Help center, contact, status page
+  - **Legal Links**: Terms of Service, Privacy Policy, Cookie Policy
+  - **Company Links**: About us, blog, careers
+  - **Bottom Section**: Copyright, quick legal links, support contact
+  - **Responsive Design**: Mobile-optimized layout with proper spacing
+  - **Animation**: Smooth scroll-triggered animations for visual appeal
+
+- **Authentication Integration**: Updated signup form with:
+  - **Terms Acceptance**: Checkbox requiring users to accept terms
+  - **Direct Links**: Links to actual Terms of Service and Privacy Policy pages
+  - **External Links**: Opens legal pages in new tabs for better UX
+  - **Validation**: Form validation ensures terms acceptance before registration
+
+- **Layout Integration**: Footer added to main layout:
+  - **Sticky Footer**: Footer stays at bottom of page using flexbox
+  - **Consistent Branding**: Matches overall design system and color scheme
+  - **Accessibility**: Proper semantic HTML and keyboard navigation
+  - **Performance**: Optimized with proper lazy loading and animations

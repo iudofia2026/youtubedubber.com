@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mic, Globe, Zap, DollarSign, BarChart3 } from 'lucide-react';
@@ -8,6 +8,17 @@ import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
 
 export default function Home() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Calculate opacity based on scroll position
+  const scrollIndicatorOpacity = Math.max(0, 1 - scrollY / 200); // Fade out over 200px of scroll
+
   return (
     <div className="min-h-screen relative">
       {/* Seamless gradient background covering entire page */}
@@ -97,12 +108,13 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* Scroll Indicator */}
+        {/* Scroll Indicator - Moved closer to hero and with fade-out effect */}
         <motion.div
-          className="flex flex-col items-center py-8"
+          className="flex flex-col items-center py-4 -mt-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.2 }}
+          style={{ opacity: scrollIndicatorOpacity }}
         >
           <motion.p
             className="text-sm text-muted-foreground mb-4"
