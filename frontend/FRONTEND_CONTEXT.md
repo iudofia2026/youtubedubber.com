@@ -55,7 +55,7 @@ frontend/
 
 ### Key Pages
 1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, "Start Dubbing" and "How it Works" buttons for non-authenticated users, credit-based pricing section, feature showcase, How it Works section, and CTAs
-2. **Features** (`/features`): Comprehensive feature showcase with comparison table and advanced capabilities
+2. **Features** (`/features`): Comprehensive feature showcase with comparison table (including YouTube native dubbing) and advanced capabilities
 3. **Pricing** (`/pricing`): Credit-based pricing plans with add-ons and FAQ section
 4. **How it Works** (`/how-it-works`): Detailed 4-step process explanation with visual guides and use cases
 5. **Upload** (`/new`): 4-step wizard starting with audio preparation guide, then file uploads and language selection
@@ -1132,6 +1132,15 @@ CREATE TABLE jobs (
 - **Footer Navigation**: ✅ Comprehensive footer with legal links and social media
 
 ### Recent Visual Improvements
+- **YouTube Native Dubbing Comparison**: Added comprehensive comparison table featuring YouTube's native dubbing capabilities
+  - **Voice Quality**: YT Dubber's AI-powered studio-grade quality vs YouTube's manual recording requirement
+  - **Processing Speed**: 2-5 minutes automated processing vs YouTube's manual recording and editing process
+  - **Language Support**: 12+ languages vs YouTube's limited 3-4 language support
+  - **Ease of Use**: Upload & AI automation vs YouTube's manual voice recording requirement
+  - **Audio Separation**: Dual track support vs YouTube's single track limitation
+  - **Pricing**: Transparent pay-per-use vs YouTube's free but labor-intensive manual process
+  - **Security**: Enterprise-grade with auto-delete vs YouTube's basic security
+
 - **Seamless Gradient Background**: Implemented a multi-layered gradient system that flows continuously from top to bottom of the homepage
   - Fixed gradient layers covering entire viewport for consistent background
   - Section-specific gradient overlays for enhanced visual depth

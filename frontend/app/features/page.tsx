@@ -126,31 +126,43 @@ export default function FeaturesPage() {
     {
       feature: 'Voice Quality',
       ytdubber: 'Studio-grade, natural-sounding',
+      youtube: 'Manual recording required',
       competitors: 'Robotic, artificial'
     },
     {
       feature: 'Processing Speed',
       ytdubber: '2-5 minutes',
+      youtube: 'Manual recording + editing',
       competitors: '15-30 minutes'
     },
     {
       feature: 'Language Support',
       ytdubber: '12+ languages',
+      youtube: '3-4 languages only',
       competitors: '5-8 languages'
     },
     {
       feature: 'Pricing',
       ytdubber: 'Pay-per-use, transparent',
+      youtube: 'Free but manual work',
       competitors: 'Subscription-based, hidden fees'
     },
     {
       feature: 'Audio Separation',
       ytdubber: 'Dual track support',
+      youtube: 'Single track only',
       competitors: 'Single track only'
+    },
+    {
+      feature: 'Ease of Use',
+      ytdubber: 'Upload & AI handles everything',
+      youtube: 'Manual voice recording required',
+      competitors: 'Complex setup process'
     },
     {
       feature: 'Security',
       ytdubber: 'Enterprise-grade, auto-delete',
+      youtube: 'Basic security',
       competitors: 'Basic security'
     }
   ];
@@ -383,7 +395,7 @@ export default function FeaturesPage() {
                   <span className="text-[#ff0000]"> YT Dubber?</span>
                 </h2>
                 <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
-                  See how we compare to other dubbing platforms in the market.
+                  See how we compare to YouTube's native dubbing and other platforms in the market.
                 </p>
               </motion.div>
 
@@ -400,7 +412,8 @@ export default function FeaturesPage() {
                       <tr>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Feature</th>
                         <th className="px-6 py-4 text-center text-sm font-semibold text-[#ff0000]">YT Dubber</th>
-                        <th className="px-6 py-4 text-center text-sm font-semibold text-muted-foreground">Competitors</th>
+                        <th className="px-6 py-4 text-center text-sm font-semibold text-blue-600">YouTube Native</th>
+                        <th className="px-6 py-4 text-center text-sm font-semibold text-muted-foreground">Other Platforms</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -418,6 +431,11 @@ export default function FeaturesPage() {
                             <div className="flex items-center justify-center space-x-2">
                               <CheckCircle className="w-4 h-4 text-[#ff0000]" />
                               <span>{item.ytdubber}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center text-sm text-blue-600">
+                            <div className="flex items-center justify-center space-x-2">
+                              <span>{item.youtube}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4 text-center text-sm text-muted-foreground">{item.competitors}</td>
