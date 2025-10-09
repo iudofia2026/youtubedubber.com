@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { JobHistory } from '@/components/jobs/JobHistory';
@@ -12,6 +13,7 @@ import { useToastHelpers } from '@/components/ToastNotifications';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function JobsPage() {
+  const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const { error: showError } = useToastHelpers();
@@ -111,7 +113,7 @@ export default function JobsPage() {
   };
 
   const handleViewJob = (jobId: string) => {
-    window.location.href = `/jobs/${jobId}`;
+    router.push(`/jobs/${jobId}`);
   };
 
   const handleDownloadJob = (jobId: string) => {
