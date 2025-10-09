@@ -327,6 +327,130 @@ export default function Home() {
           </div>
         </motion.section>
 
+        {/* How it Works Section */}
+        <motion.section
+          className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative bg-muted/30"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 tracking-tight">
+                How It
+                <span className="text-[#ff0000]"> Works</span>
+              </h2>
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
+                Transform your content in just 4 simple steps. Our AI-powered platform 
+                makes professional multilingual dubbing accessible to everyone.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[
+                {
+                  step: '01',
+                  title: 'Prepare Your Audio',
+                  description: 'Split your video audio into separate voice and background tracks for optimal dubbing quality.',
+                  icon: '🎬',
+                  color: 'from-blue-500 to-cyan-500',
+                  details: ['Import your video', 'Split audio tracks', 'Export voice track', 'Export background track']
+                },
+                {
+                  step: '02',
+                  title: 'Upload Your Files',
+                  description: 'Upload your prepared audio tracks and select your target languages for dubbing.',
+                  icon: '📤',
+                  color: 'from-purple-500 to-pink-500',
+                  details: ['Upload voice track', 'Upload background track', 'Select languages', 'Review and confirm']
+                },
+                {
+                  step: '03',
+                  title: 'AI Processing',
+                  description: 'Our advanced AI analyzes your voice and generates natural-sounding dubs in your chosen languages.',
+                  icon: '🤖',
+                  color: 'from-yellow-500 to-orange-500',
+                  details: ['Speech-to-text', 'Translation', 'Voice generation', 'Audio mixing']
+                },
+                {
+                  step: '04',
+                  title: 'Download & Use',
+                  description: 'Download your completed dubs and integrate them into your content for maximum impact.',
+                  icon: '⬇️',
+                  color: 'from-green-500 to-emerald-500',
+                  details: ['Download voice tracks', 'Download full mixes', 'Get subtitles', 'Ready to publish']
+                }
+              ].map((step, index) => (
+                <motion.div
+                  key={step.step}
+                  className="text-center group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -5 }}
+                >
+                  <motion.div
+                    className={`w-20 h-20 bg-gradient-to-r ${step.color} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}
+                    whileHover={{ rotate: 5 }}
+                  >
+                    <span className="text-4xl">{step.icon}</span>
+                  </motion.div>
+                  
+                  <div className="mb-4">
+                    <span className="text-sm font-bold text-[#ff0000] bg-[#ff0000]/10 px-3 py-1 rounded-full">
+                      Step {step.step}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-foreground mb-4 tracking-tight">
+                    {step.title}
+                  </h3>
+                  
+                  <p className="text-muted-foreground mb-6 font-light leading-relaxed">
+                    {step.description}
+                  </p>
+                  
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {step.details.map((detail, detailIndex) => (
+                      <li key={detailIndex} className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 bg-gradient-to-r ${step.color} rounded-full flex-shrink-0`}></div>
+                        <span>{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              className="text-center mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/how-it-works">
+                <motion.button
+                  className="inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span>Learn More</span>
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </Link>
+            </motion.div>
+          </div>
+        </motion.section>
+
         {/* CTA Section */}
         <motion.section
           className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 relative"
