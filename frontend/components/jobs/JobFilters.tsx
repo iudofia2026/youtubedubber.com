@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, X, Calendar, CheckCircle, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export type JobStatus = 'all' | 'pending' | 'processing' | 'complete' | 'error';
 export type SortOption = 'newest' | 'oldest' | 'status' | 'duration';
@@ -51,13 +53,13 @@ export function JobFilters({
       {/* Search and Filter Toggle */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 z-10" />
+          <Input
             type="text"
             placeholder="Search jobs by ID or language..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base touch-manipulation"
+            className="pl-10 w-full"
           />
         </div>
         
@@ -68,12 +70,12 @@ export function JobFilters({
             e.preventDefault();
             setIsFiltersOpen(!isFiltersOpen);
           }}
-          className={`flex items-center justify-center space-x-2 touch-manipulation py-3 sm:py-2 ${isFiltersOpen ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+          className={`flex items-center justify-center space-x-2 touch-manipulation ${isFiltersOpen ? 'bg-accent' : ''}`}
         >
           <Filter className="w-4 h-4" />
           <span>Filters</span>
           {hasActiveFilters && (
-            <div className="w-2 h-2 bg-blue-500 rounded-full" />
+            <div className="w-2 h-2 bg-primary rounded-full" />
           )}
         </Button>
       </div>
@@ -88,39 +90,35 @@ export function JobFilters({
         transition={{ duration: 0.2 }}
         className="overflow-hidden"
       >
-        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 space-y-4">
+        <div className="bg-muted/50 rounded-lg p-4 space-y-4">
           {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Status
             </label>
             <div className="flex flex-wrap gap-2">
               {statusOptions.map((option) => {
                 const Icon = option.icon;
                 return (
-                  <button
+                  <Button
                     key={option.value}
+                    variant={statusFilter === option.value ? "default" : "outline"}
+                    size="sm"
                     onClick={() => onStatusChange(option.value as JobStatus)}
                     onTouchEnd={(e) => {
                       e.preventDefault();
                       onStatusChange(option.value as JobStatus);
                     }}
-                    className={`
-                      flex items-center space-x-2 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 touch-manipulation
-                      ${statusFilter === option.value
-                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                        : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
-                      }
-                    `}
+                    className="flex items-center space-x-2 touch-manipulation"
                   >
                     <Icon className="w-4 h-4" />
                     <span>{option.label}</span>
                     {option.count > 0 && (
-                      <span className="bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full text-xs">
+                      <span className="bg-muted text-muted-foreground px-2 py-1 rounded-full text-xs">
                         {option.count}
                       </span>
                     )}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -128,20 +126,21 @@ export function JobFilters({
 
           {/* Sort Options */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Sort By
             </label>
-            <select
-              value={sortBy}
-              onChange={(e) => onSortChange(e.target.value as SortOption)}
-              className="w-full px-3 py-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base touch-manipulation"
-            >
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select sort option" />
+              </SelectTrigger>
+              <SelectContent>
+                {sortOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Clear Filters */}
@@ -155,7 +154,7 @@ export function JobFilters({
                   e.preventDefault();
                   onClearFilters();
                 }}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 touch-manipulation py-3 sm:py-2"
+                className="text-muted-foreground hover:text-foreground touch-manipulation"
               >
                 <X className="w-4 h-4 mr-1" />
                 Clear Filters

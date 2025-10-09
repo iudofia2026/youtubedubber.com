@@ -54,7 +54,7 @@ frontend/
 - **Aesthetic**: Sharp, geometric, minimalist (no rounded corners)
 
 ### Key Pages
-1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, credit-based pricing section, feature showcase, How it Works section, and CTAs
+1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, "Start Dubbing" and "How it Works" buttons for non-authenticated users, credit-based pricing section, feature showcase, How it Works section, and CTAs
 2. **Features** (`/features`): Comprehensive feature showcase with comparison table and advanced capabilities
 3. **Pricing** (`/pricing`): Credit-based pricing plans with add-ons and FAQ section
 4. **How it Works** (`/how-it-works`): Detailed 4-step process explanation with visual guides and use cases
