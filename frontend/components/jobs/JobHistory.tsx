@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
@@ -98,7 +98,7 @@ export function JobHistory({
     setFilteredJobs(filtered);
   }, [jobs, searchQuery, statusFilter, sortBy, isInitialized]);
 
-  const updateURL = (newParams: { status?: JobStatus; search?: string; sort?: SortOption }) => {
+  const updateURL = useCallback((newParams: { status?: JobStatus; search?: string; sort?: SortOption }) => {
     if (typeof window === 'undefined') return;
     
     const params = new URLSearchParams(window.location.search);
@@ -128,33 +128,38 @@ export function JobHistory({
     }
     
     const newURL = params.toString() ? `?${params.toString()}` : '';
-    // Use push instead of replace to ensure proper navigation
-    router.push(`/jobs${newURL}`, { scroll: false });
-  };
+    const currentURL = window.location.pathname + window.location.search;
+    const targetURL = `/jobs${newURL}`;
+    
+    // Only update URL if it's actually different
+    if (currentURL !== targetURL) {
+      router.replace(targetURL, { scroll: false });
+    }
+  }, [router]);
 
-  const handleSearchChange = (query: string) => {
+  const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
     updateURL({ search: query });
-  };
+  }, [updateURL]);
 
-  const handleStatusChange = (status: JobStatus) => {
+  const handleStatusChange = useCallback((status: JobStatus) => {
     setStatusFilter(status);
     updateURL({ status });
-  };
+  }, [updateURL]);
 
-  const handleSortChange = (sort: SortOption) => {
+  const handleSortChange = useCallback((sort: SortOption) => {
     setSortBy(sort);
     updateURL({ sort });
-  };
+  }, [updateURL]);
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     setSearchQuery('');
     setStatusFilter('all');
     setSortBy('newest');
     updateURL({ status: 'all', search: '', sort: 'newest' });
-  };
+  }, [updateURL]);
 
-  const handleDeleteJob = async (jobId: string) => {
+  const handleDeleteJob = useCallback(async (jobId: string) => {
     if (window.confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
       try {
         await onDeleteJob?.(jobId);
@@ -162,20 +167,17 @@ export function JobHistory({
         showError('Delete failed', 'There was an error deleting the job. Please try again.');
       }
     }
-  };
+  }, [onDeleteJob, showError]);
 
-  const getStatusCounts = () => {
-    const counts = {
+  const statusCounts = useMemo(() => {
+    return {
       all: jobs.length,
       pending: jobs.filter(job => job.status === 'pending').length,
       processing: jobs.filter(job => job.status === 'processing').length,
       complete: jobs.filter(job => job.status === 'complete').length,
       error: jobs.filter(job => job.status === 'error').length,
     };
-    return counts;
-  };
-
-  const statusCounts = getStatusCounts();
+  }, [jobs]);
 
   if (loading || !isInitialized) {
     return (

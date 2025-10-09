@@ -25,8 +25,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { success, error: showError } = useToastHelpers();
 
   useEffect(() => {
-    // Development bypass - if NEXT_PUBLIC_DEV_MODE is true, simulate authenticated user
-    if (process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+    // Check if dev mode should be enabled (localStorage preference overrides env var)
+    const isDevModeEnabled = () => {
+      if (typeof window === 'undefined') return false;
+      const storedPreference = localStorage.getItem('dev-mode-preference');
+      if (storedPreference !== null) {
+        return storedPreference === 'true';
+      }
+      return process.env.NEXT_PUBLIC_DEV_MODE === 'true';
+    };
+
+    // Development bypass - if dev mode is enabled, simulate authenticated user
+    if (isDevModeEnabled()) {
       const mockUser = {
         id: 'dev-user-123',
         email: 'dev@youtubedubber.com',

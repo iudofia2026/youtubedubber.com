@@ -5,6 +5,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { ToastProvider } from "@/components/ToastNotifications";
 import { AuthProvider } from "@/lib/auth-context";
 import { Footer } from "@/components/Footer";
+import { DevModeToggle } from "@/components/DevModeToggle";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -51,6 +52,8 @@ export default function RootLayout({
                 </main>
                 <Footer />
               </div>
+              {/* Dev Mode Toggle - Only show in development */}
+              {process.env.NODE_ENV === 'development' && <DevModeToggle />}
             </AuthProvider>
           </ToastProvider>
         </ErrorBoundary>

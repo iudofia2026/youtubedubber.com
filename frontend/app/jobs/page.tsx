@@ -95,7 +95,7 @@ export default function JobsPage() {
     };
 
     loadJobs();
-  }, [showError]);
+  }, []); // Remove showError from dependencies to prevent infinite re-renders
 
   const handleRefresh = async () => {
     setLoading(true);
