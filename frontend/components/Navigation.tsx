@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Home, Plus, BarChart3, ChevronDown, Clock, CheckCircle, AlertCircle, Loader2, User, LogOut, Star, DollarSign, Play } from 'lucide-react';
+import { Menu, X, Home, Plus, BarChart3, ChevronDown, Clock, CheckCircle, AlertCircle, Loader2, User, LogOut, Play } from 'lucide-react';
 import { NavigationProps } from '@/types';
 import { ThemeToggleNav } from '@/components/ThemeToggleNav';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
@@ -56,18 +56,6 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
       href: '/',
       icon: Home,
       current: pathname === '/',
-    },
-    {
-      name: 'Features',
-      href: '/features',
-      icon: Star,
-      current: pathname === '/features',
-    },
-    {
-      name: 'Pricing',
-      href: '/pricing',
-      icon: DollarSign,
-      current: pathname === '/pricing',
     },
     {
       name: 'How it Works',
