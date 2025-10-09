@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,7 @@ interface JobHistoryProps {
   onViewJob?: (jobId: string) => void;
   onDownloadJob?: (jobId: string) => void;
   onDeleteJob?: (jobId: string) => void;
+  onStatusFilterChange?: (status: JobStatus) => void;
 }
 
 export function JobHistory({
@@ -26,9 +27,12 @@ export function JobHistory({
   onRefresh,
   onViewJob,
   onDownloadJob,
-  onDeleteJob
+  onDeleteJob,
+  onStatusFilterChange
 }: JobHistoryProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<JobStatus>('all');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
@@ -36,28 +40,34 @@ export function JobHistory({
   const [isInitialized, setIsInitialized] = useState(false);
   const { error: showError } = useToastHelpers();
 
-  // Initialize filters from URL parameters (client-side only)
+  // Initialize filters from URL parameters and listen for changes
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!searchParams) return;
     
-    // Use router to get search params to avoid hydration issues
-    const urlParams = new URLSearchParams(window.location.search);
-    const status = urlParams.get('status') as JobStatus;
-    const search = urlParams.get('search');
-    const sort = urlParams.get('sort') as SortOption;
+    const status = searchParams.get('status') as JobStatus;
+    const search = searchParams.get('search');
+    const sort = searchParams.get('sort') as SortOption;
 
     if (status && ['all', 'pending', 'processing', 'complete', 'error'].includes(status)) {
       setStatusFilter(status);
+    } else {
+      setStatusFilter('all');
     }
+    
     if (search) {
       setSearchQuery(search);
+    } else {
+      setSearchQuery('');
     }
+    
     if (sort && ['newest', 'oldest', 'status', 'duration'].includes(sort)) {
       setSortBy(sort);
+    } else {
+      setSortBy('newest');
     }
     
     setIsInitialized(true);
-  }, []);
+  }, [searchParams]);
 
   // Filter and sort jobs
   useEffect(() => {
@@ -133,7 +143,7 @@ export function JobHistory({
     
     // Only update URL if it's actually different
     if (currentURL !== targetURL) {
-      router.replace(targetURL, { scroll: false });
+      router.push(targetURL, { scroll: false });
     }
   }, [router]);
 
@@ -145,7 +155,8 @@ export function JobHistory({
   const handleStatusChange = useCallback((status: JobStatus) => {
     setStatusFilter(status);
     updateURL({ status });
-  }, [updateURL]);
+    onStatusFilterChange?.(status);
+  }, [updateURL, onStatusFilterChange]);
 
   const handleSortChange = useCallback((sort: SortOption) => {
     setSortBy(sort);

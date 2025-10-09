@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, BarChart3, BarChart } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { JobHistory } from '@/components/jobs/JobHistory';
@@ -12,9 +14,24 @@ import { useToastHelpers } from '@/components/ToastNotifications';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function JobsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'processing' | 'complete' | 'error'>('all');
   const { error: showError } = useToastHelpers();
+
+  // Initialize status filter from URL parameters
+  useEffect(() => {
+    if (!searchParams) return;
+    
+    const status = searchParams.get('status') as 'all' | 'pending' | 'processing' | 'complete' | 'error';
+    if (status && ['all', 'pending', 'processing', 'complete', 'error'].includes(status)) {
+      setStatusFilter(status);
+    } else {
+      setStatusFilter('all');
+    }
+  }, [searchParams]);
 
   // Mock data for demonstration - in real app, this would come from API
   useEffect(() => {
@@ -111,7 +128,8 @@ export default function JobsPage() {
   };
 
   const handleViewJob = (jobId: string) => {
-    window.location.href = `/jobs/${jobId}`;
+    console.log('Viewing job:', jobId);
+    router.push(`/jobs/test`);
   };
 
   const handleDownloadJob = (jobId: string) => {
@@ -129,6 +147,74 @@ export default function JobsPage() {
     }
   };
 
+  const handleStatusFilterChange = (status: 'all' | 'pending' | 'processing' | 'complete' | 'error') => {
+    setStatusFilter(status);
+    
+    // Update URL to reflect the status change
+    const params = new URLSearchParams(window.location.search);
+    if (status === 'all') {
+      params.delete('status');
+    } else {
+      params.set('status', status);
+    }
+    
+    const newURL = params.toString() ? `?${params.toString()}` : '';
+    router.push(`/jobs${newURL}`, { scroll: false });
+  };
+
+  // Dynamic styling based on status filter
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return {
+          title: 'Pending Jobs',
+          description: '',
+          iconBg: 'from-yellow-500 to-orange-500',
+          accentColor: 'text-yellow-600',
+          bgGradient: 'from-yellow-500/10 via-transparent to-yellow-500/10',
+          blurColor: 'bg-yellow-500/10'
+        };
+      case 'processing':
+        return {
+          title: 'Processing Jobs',
+          description: '',
+          iconBg: 'from-blue-500 to-cyan-500',
+          accentColor: 'text-blue-600',
+          bgGradient: 'from-blue-500/10 via-transparent to-blue-500/10',
+          blurColor: 'bg-blue-500/10'
+        };
+      case 'complete':
+        return {
+          title: 'Completed Jobs',
+          description: '',
+          iconBg: 'from-green-500 to-emerald-500',
+          accentColor: 'text-green-600',
+          bgGradient: 'from-green-500/10 via-transparent to-green-500/10',
+          blurColor: 'bg-green-500/10'
+        };
+      case 'error':
+        return {
+          title: 'Failed Jobs',
+          description: '',
+          iconBg: 'from-red-500 to-pink-500',
+          accentColor: 'text-red-600',
+          bgGradient: 'from-red-500/10 via-transparent to-red-500/10',
+          blurColor: 'bg-red-500/10'
+        };
+      default:
+        return {
+          title: 'Your Jobs',
+          description: 'Manage and track your dubbing jobs',
+          iconBg: 'from-[#ff0000] to-[#cc0000]',
+          accentColor: 'text-[#ff0000]',
+          bgGradient: 'from-[#ff0000]/5 via-transparent to-[#ff0000]/5',
+          blurColor: 'bg-[#ff0000]/10'
+        };
+    }
+  };
+
+  const statusConfig = getStatusConfig(statusFilter);
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-background">
@@ -145,39 +231,100 @@ export default function JobsPage() {
           <Breadcrumbs items={breadcrumbConfigs.jobs} />
         </motion.div>
 
-        {/* Header with Actions */}
+        {/* Creative Header with Visual Distinction */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 tracking-tight">
-                Your Jobs
-              </h1>
-              <p className="text-lg text-muted-foreground">
-                Manage and track your dubbing jobs
-              </p>
-            </div>
+          {/* Animated Background Pattern */}
+          <div className="relative mb-8">
+            <motion.div 
+              className={`absolute inset-0 bg-gradient-to-r ${statusConfig.bgGradient} rounded-2xl`}
+              key={statusFilter}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            />
+            <motion.div
+              className={`absolute top-0 left-0 w-64 h-64 ${statusConfig.blurColor} rounded-full blur-3xl`}
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3],
+                x: [0, 50, 0]
+              }}
+              transition={{ duration: 4, repeat: Infinity }}
+            />
+            <motion.div
+              className={`absolute top-0 right-0 w-48 h-48 ${statusConfig.blurColor} rounded-full blur-3xl`}
+              animate={{ 
+                scale: [1, 1.3, 1],
+                opacity: [0.2, 0.5, 0.2],
+                x: [0, -30, 0]
+              }}
+              transition={{ duration: 3.5, repeat: Infinity }}
+            />
             
-            <div className="flex items-center space-x-3">
-              <Link
-                href="/"
-                className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group"
-              >
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
-                <span>Back to Home</span>
-              </Link>
-              
-              <Link
-                href="/new"
-                className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-[#ff0000] hover:bg-[#cc0000] rounded-lg transition-all duration-200 group"
-              >
-                <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
-                <span>New Job</span>
-              </Link>
+            <div className="relative z-10 p-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                <div className="flex items-center space-x-4">
+                  <motion.div 
+                    className={`w-12 h-12 bg-gradient-to-br ${statusConfig.iconBg} rounded-xl flex items-center justify-center shadow-lg`}
+                    key={statusFilter}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+                  >
+                    <BarChart className="w-6 h-6 text-white" />
+                  </motion.div>
+                  <div>
+                    <motion.h1 
+                      className={`text-2xl sm:text-3xl font-bold ${statusConfig.accentColor} mb-2 tracking-tight`}
+                      key={`title-${statusFilter}`}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                    >
+                      {statusConfig.title}
+                    </motion.h1>
+                    {statusConfig.description && (
+                      <motion.p 
+                        className="text-base text-muted-foreground"
+                        key={`desc-${statusFilter}`}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                      >
+                        {statusConfig.description}
+                      </motion.p>
+                    )}
+                  </div>
+                </div>
+                
+                <motion.div 
+                  className="flex items-center space-x-3"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  <Link
+                    href="/"
+                    className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
+                    <span>Back to Home</span>
+                  </Link>
+                  
+                  <Link
+                    href="/new"
+                    className="inline-flex items-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#ff0000] to-[#cc0000] hover:from-[#cc0000] hover:to-[#aa0000] rounded-xl transition-all duration-200 group shadow-lg hover:shadow-xl"
+                  >
+                    <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200" />
+                    <span>New Job</span>
+                  </Link>
+                </motion.div>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -190,6 +337,7 @@ export default function JobsPage() {
           onViewJob={handleViewJob}
           onDownloadJob={handleDownloadJob}
           onDeleteJob={handleDeleteJob}
+          onStatusFilterChange={handleStatusFilterChange}
         />
         </main>
       </div>

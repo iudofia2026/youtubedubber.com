@@ -54,10 +54,10 @@ frontend/
 - **Aesthetic**: Sharp, geometric, minimalist (no rounded corners)
 
 ### Key Pages
-1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, feature showcase, CTAs
+1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, credit-based pricing section, feature showcase, How it Works section, and CTAs
 2. **Features** (`/features`): Comprehensive feature showcase with comparison table and advanced capabilities
-3. **Pricing** (`/pricing`): Pricing plans with monthly/yearly toggle, add-ons, and FAQ section
-4. **How it Works** (`/how-it-works`): 4-step process explanation with visual guides and use cases
+3. **Pricing** (`/pricing`): Credit-based pricing plans with add-ons and FAQ section
+4. **How it Works** (`/how-it-works`): Detailed 4-step process explanation with visual guides and use cases
 5. **Upload** (`/new`): 4-step wizard starting with audio preparation guide, then file uploads and language selection
    - **Step 0**: Audio Setup - Animated visual guide explaining how to split video audio into voice and background tracks
    - **Step 1**: Voice Track Upload - Upload voice-only audio file
@@ -69,9 +69,14 @@ frontend/
    - **Sign In** (`/auth/signin`): User login with email/password
    - **Sign Up** (`/auth/signup`): User registration with terms acceptance
    - **Password Reset** (`/auth/reset-password`): Email-based password reset
-9. **Legal Pages**:
-   - **Terms of Service** (`/legal/terms`): Comprehensive terms and conditions
-   - **Privacy Policy** (`/legal/privacy`): Data protection and privacy information
+9. **Support Pages**:
+   - **Help Center** (`/help`): Comprehensive FAQ, search functionality, and categorized help articles
+   - **Contact Us** (`/contact`): Contact form, support methods, and quick links
+   - **Status** (`/status`): System status, uptime metrics, and incident history
+10. **Legal Pages**:
+    - **Terms of Service** (`/legal/terms`): Comprehensive terms and conditions
+    - **Privacy Policy** (`/legal/privacy`): Data protection and privacy information
+    - **Cookie Policy** (`/legal/cookies`): Detailed cookie usage and management information
 
 ## 🔧 Current Functionality
 
@@ -300,7 +305,7 @@ npm run dev
 # Opens http://localhost:3000
 ```
 
-⚠️ **IMPORTANT**: Do not run `npm run dev` or any testing commands as they cause agents to run infinitely. The application is fully functional and ready for use without testing.
+⚠️ **CRITICAL - NO TESTING**: Do not run `npm run dev`, `npm test`, `npm run build`, or any testing commands as they cause agents to run infinitely. The application is fully functional and ready for use without testing. All changes should be made directly to code files only.
 
 ### Building for Production
 ```bash
@@ -370,7 +375,8 @@ When the backend is ready:
 - ✅ **File Preview System** - Complete audio preview player with play/pause, seek, volume control, and real-time progress tracking
 - ✅ **Development Authentication Bypass** - Complete development mode for testing without Supabase setup
 - ✅ **Marketing Pages** - Comprehensive Features, Pricing, and How it Works pages with professional UI/UX
-- ✅ **Navigation Updates** - Added links to all new pages in main navigation
+- ✅ **Homepage How it Works Section** - Added 4-step process explanation directly on homepage for new users
+- ✅ **Navigation Optimization** - Streamlined navigation by removing How it Works (moved to homepage)
 - ✅ **Footer Updates** - Updated footer links to point to actual pages instead of hash links
 
 **Next Steps**: Continue with remaining high-impact, low-effort items from the expansion roadmap.
@@ -463,6 +469,56 @@ Based on the backend architecture and business requirements, the frontend needs 
 - **Contact/support** forms
 - **Status page** for service health
 - **Live chat** or support widget
+
+### **🎨 Visual Enhancement System**
+
+#### **Creative Job Page Distinctions**
+- **Status-Based Color Coding**: Each job status has unique visual identity
+  - **Complete Jobs**: Green gradients with celebration animations (🎉)
+  - **Processing Jobs**: Blue gradients with spinning animations (⚡)
+  - **Error Jobs**: Red gradients with warning animations (⚠️)
+  - **Pending Jobs**: Yellow gradients with floating animations (⏳)
+
+#### **Animated Status Banners**
+- **Dynamic Backgrounds**: Animated blur patterns that pulse and scale
+- **Interactive Icons**: Status-specific icons with unique animations
+- **Progress Indicators**: Real-time progress bars with smooth transitions
+- **Emoji Integration**: Fun emojis for better visual recognition
+
+#### **Enhanced Job Cards**
+- **Gradient Backgrounds**: Status-specific gradient themes
+- **Animated Icons**: Rotating, pulsing, and floating animations
+- **Hover Effects**: Scale and lift animations on interaction
+- **Status Dots**: Pulsing indicator dots for active status
+- **Shadow Effects**: Dynamic shadows that respond to status
+
+#### **Interactive Elements**
+- **Smooth Transitions**: All animations use Framer Motion for fluidity
+- **Hover States**: Enhanced hover effects with scale and color changes
+- **Loading States**: Animated loading indicators with status-specific themes
+- **Touch Optimization**: Mobile-friendly touch interactions
+
+#### **Enhanced Job View Page**
+- **Comprehensive Data Display**: Rich job information with detailed metrics
+- **Interactive Overview Cards**: 4 color-coded cards showing different job aspects
+  - **Audio Files Card**: Voice track duration, background track, quality settings
+  - **Languages Card**: Target languages, completion status, remaining work
+  - **Settings Card**: Voice model, quality settings, processing speed
+  - **Activity Card**: Creation time, last update, estimated completion
+- **Audio Preview System**: Interactive audio players with play controls
+  - **Original Voice Track**: Play/pause controls with progress visualization
+  - **Background Track**: Separate audio player for background music
+  - **Visual Progress Bars**: Real-time progress indication
+  - **Volume Controls**: Audio level management
+- **Detailed Information Panel**: Comprehensive job metadata
+  - **Job ID**: Copy-to-clipboard functionality
+  - **Status Indicators**: Visual status with appropriate icons
+  - **Progress Tracking**: Animated progress bars
+  - **Timeline Information**: Creation and completion timestamps
+- **Action Buttons**: Quick access to common operations
+  - **Download All**: Bulk download functionality
+  - **Share**: Job sharing capabilities
+  - **Copy Job ID**: Easy job identification sharing
 
 ### **🎨 New Components Required**
 
@@ -758,7 +814,7 @@ lib/
    - Create download history view
    - **Effort**: 3-4 hours, **Impact**: High (completes user journey)
 
-**Current Status**: Foundation complete + error handling + job management + enhanced upload flow + navigation fixes + authentication system implemented + comprehensive marketing pages (Features, Pricing, How it Works). Ready for next phase of high-impact features.
+**Current Status**: Foundation complete + error handling + job management + enhanced upload flow + navigation fixes + authentication system implemented + comprehensive marketing pages (Features, Pricing, How it Works) + homepage How it Works section + streamlined navigation. Ready for next phase of high-impact features.
 
 ## 🔐 **AUTHENTICATION SYSTEM IMPLEMENTATION**
 
@@ -919,13 +975,32 @@ CREATE TABLE jobs (
 - **Error Messages**: Mobile-friendly error display
 
 **Latest Updates**:
+- ✅ **Enhanced Job View Page**: Created comprehensive job details page with rich data and clean UX
+- ✅ **Interactive Job Cards**: Added 4 detailed overview cards (Audio Files, Languages, Settings, Activity)
+- ✅ **Audio Preview System**: Implemented audio player interface with play controls and progress bars
+- ✅ **Detailed Information Panel**: Added job information with copy-to-clipboard functionality
+- ✅ **Action Buttons**: Added download all and share functionality with clean UI
+- ✅ **Jobs Header Cleanup**: Reduced header size and removed emoji for cleaner appearance
+- ✅ **Static Icon Design**: Removed continuous animations from header icon for subtlety
+- ✅ **Creative Visual Distinctions**: Added stunning visual elements to make job subpages easily distinguishable
+- ✅ **Animated Status Banners**: Implemented dynamic status banners with animated backgrounds and icons for each job status
+- ✅ **Enhanced Job Cards**: Created gradient backgrounds, animated icons, and status-specific visual themes
+- ✅ **Interactive Animations**: Added hover effects, scale animations, and pulsing indicators for better UX
+- ✅ **Status-Based Color Coding**: Complete color system with gradients, borders, and animated elements
+- ✅ **Jobs Dropdown Navigation Fix**: Fixed seamless navigation between job status filters without requiring page refresh
+- ✅ **URL Parameter Reactivity**: Implemented proper URL parameter listening using Next.js useSearchParams hook
+- ✅ **Navigation State Management**: Updated JobHistory component to react to URL changes automatically
+- ✅ **Router Navigation**: Changed from router.replace to router.push for proper component re-rendering
+- ✅ **Credit-Based Pricing System**: Converted from subscription to credit-based pricing model
+- ✅ **Homepage Pricing Section**: Added pricing section closer to top of homepage for better visibility
+- ✅ **Pricing Page Updates**: Updated pricing page to reflect credit-based system with simplified pricing display
+- ✅ **FAQ Updates**: Updated FAQ section to reflect credit-based pricing model
+- ✅ **CTA Updates**: Updated call-to-action sections to emphasize "pay only for what you use"
 - ✅ **Smart First-Time User Detection**: Personalized workflow based on user history
-- ✅ **Conditional Audio Guide**: Only shows for new users, returning users start at upload
+- ✅ **How It Works Integration**: Complete "How It Works" content as Step 0 for users with 0 jobs
 - ✅ **Enhanced Visual Design**: Stunning gradient backgrounds and interactive step cards
-- ✅ **Auto-Smooth Scroll**: Guided experience with elegant scroll animation
 - ✅ **Step Management**: Smart navigation that adapts to user type
 - ✅ **Rules of Hooks Fix**: Resolved React hook order violation
-- ✅ **Jobs Dropdown Navigation Fix**: Fixed navigation issues with filtered job pages
 - ✅ **URL Parameter Handling**: Improved URL parameter handling for better navigation
 - ✅ **PostCSS Build Error Fix**: Resolved Tailwind CSS v4 configuration issues
 - ✅ **Missing UI Components**: Added Checkbox component and dependencies
@@ -946,7 +1021,7 @@ CREATE TABLE jobs (
 2. **Jobs Dropdown Navigation** ✅ **FIXED**
    - **Issue**: Jobs dropdown links were not navigating properly to filtered job pages
    - **Impact**: Medium - users couldn't access filtered job views from navigation
-   - **Fix**: Improved URL parameter handling and navigation logic in JobHistory component
+   - **Fix**: Implemented proper URL parameter reactivity using useSearchParams hook and changed router.replace to router.push
    - **Status**: ✅ **RESOLVED**
 
 3. **PostCSS Build Error** ✅ **FIXED**
@@ -986,12 +1061,15 @@ CREATE TABLE jobs (
    - **Mitigation**: Current polling simulation works, needs real implementation
    - **Status**: Ready for WebSocket/SSE integration
 
-### **Testing Recommendations**
-1. **Cross-browser Testing**: Test Jobs dropdown on Chrome, Firefox, Safari
-2. **Mobile Testing**: Test on various mobile devices and screen sizes
-3. **URL Testing**: Test bookmarking and sharing filtered job views
-4. **Performance Testing**: Test with large numbers of jobs (100+)
-5. **Accessibility Testing**: Ensure keyboard navigation and screen reader support
+### **Development Guidelines**
+⚠️ **NO TESTING COMMANDS**: Never run `npm run dev`, `npm test`, `npm run build`, or any testing commands as they cause infinite loops. All development should be done by editing code files directly.
+
+### **Code Quality Assurance**
+1. **Code Review**: Review all changes before committing
+2. **TypeScript Compliance**: Ensure all TypeScript types are correct
+3. **Component Logic**: Verify component state management and effects
+4. **URL Handling**: Ensure proper URL parameter handling and navigation
+5. **Error Handling**: Verify error boundaries and user feedback systems
 
 ---
 
@@ -1061,31 +1139,53 @@ CREATE TABLE jobs (
   - Responsive design that works across all screen sizes
   - Enhanced visual cohesion between hero, features, and CTA sections
 
+- **Homepage How it Works Section**: Added comprehensive 4-step process explanation directly on homepage
+  - **Step 1**: Prepare Your Audio (🎬) - Split video into voice/background tracks
+  - **Step 2**: Upload Your Files (📤) - Upload tracks and select languages
+  - **Step 3**: AI Processing (🤖) - Advanced AI generates natural dubs
+  - **Step 4**: Download & Use (⬇️) - Get completed dubs ready to publish
+  - Beautiful gradient cards with emojis and hover animations
+  - Step-by-step details for each process stage
+  - "Learn More" button linking to detailed how-it-works page
+  - Perfect for new users to understand the process immediately
+
 - **Enhanced Scroll Indicator**: Improved "learn more" section with better positioning and scroll-based fade-out
   - **Closer Positioning**: Moved scroll indicator closer to hero section with reduced padding (`py-4 -mt-4`)
   - **Scroll-Based Fade**: Added smooth fade-out effect that triggers when user scrolls down (fades over 200px of scroll)
   - **Smooth Animation**: Maintains existing pulsing text and bouncing arrow animations
-  - **Performance Optimized**: Uses React hooks for scroll detection with proper cleanup
-  - **Responsive Design**: Works seamlessly across all screen sizes
+
+- **Navigation Optimization**: Streamlined navigation for better user experience
+  - **Removed How it Works** from main navigation (moved to homepage)
+  - **Cleaner navigation** with only essential items: Home, New Job, Jobs
+  - **Better for signed-in users** who don't need process explanation in nav
+  - **Still accessible** via footer for users who need to reference it
+  - **Improved information architecture** - right content for right users
 
 ### Upload Page Enhancements (Latest Update)
 - **Smart First-Time User Detection**: Implemented intelligent user flow based on job history
-  - **First-Time Users**: See complete audio preparation guide (Step 0) with visual instructions
+  - **First-Time Users**: See complete "How It Works" guide (Step 0) with 4-step process explanation
   - **Returning Users**: Start directly at "Upload Voice Track" (Step 1) for faster workflow
   - **User State Management**: Uses localStorage to track user history and personalize experience
   - **Loading State**: Professional loading spinner while checking user history
-  - **Welcome Back Message**: Explains why audio guide was skipped for returning users
+  - **Welcome Back Message**: Explains why guide was skipped for returning users
+
+- **How It Works Integration**: Complete onboarding experience for new users
+  - **4-Step Process**: Prepare Audio → Upload Files → AI Processing → Download & Use
+  - **Visual Design**: Color-coded gradient cards with detailed instructions and pro tips
+  - **Interactive Elements**: Hover animations, step-by-step details, and visual icons
+  - **Call-to-Action**: Clean "Get Started" button to proceed to actual job creation
+  - **Responsive Layout**: Alternating left/right layout for visual interest
+  - **Clean UX**: No autoscroll - users can explore at their own pace
 
 - **Enhanced Audio Preparation Guide (Step 0)**: Comprehensive visual centerpiece for new users
   - **Stunning Visual Design**: Gradient backgrounds with decorative blur elements
   - **Interactive Step Cards**: 4-step process with hover animations and transitions
   - **Corrected Workflow Order**: Import → Split → Export Voice → Export Background
-  - **Auto-Smooth Scroll**: Automatically scrolls to instructions after 2.5 seconds
   - **Important Notes**: Duration synchronization requirements highlighted
   - **Responsive Layout**: 2x2 grid that works on all screen sizes
 
 - **Conditional Step Navigation**: Smart step management based on user type
-  - **First-Time Users**: Full 4-step process (Audio Setup → Voice → Background → Languages)
+  - **First-Time Users**: Full 4-step process (How It Works → Voice → Background → Languages)
   - **Returning Users**: 3-step process (Voice → Background → Languages)
   - **Step Filtering**: Progress bar only shows relevant steps for each user type
   - **Navigation Logic**: Prevents returning users from going back to Step 0
@@ -1140,3 +1240,43 @@ CREATE TABLE jobs (
   - **Consistent Branding**: Matches overall design system and color scheme
   - **Accessibility**: Proper semantic HTML and keyboard navigation
   - **Performance**: Optimized with proper lazy loading and animations
+
+### Support Pages Implementation (Latest Update)
+- **Help Center Page** (`/help`): Comprehensive support hub featuring:
+  - **Search Functionality**: Real-time search through FAQ and help articles
+  - **Categorized Content**: 8 categories (Getting Started, Audio Upload, Languages, etc.)
+  - **Interactive FAQ**: Expandable FAQ with 10+ common questions and answers
+  - **Quick Actions**: Direct links to key features and support options
+  - **Premium UI/UX**: YouTube-inspired design with smooth animations and gradients
+  - **Responsive Design**: Mobile-optimized with touch-friendly interactions
+
+- **Contact Us Page** (`/contact`): Streamlined email-focused contact interface including:
+  - **Email Support Focus**: Primary contact method with prominent email support card
+  - **Contact Form**: Multi-category form with priority levels and validation
+  - **Contact Information**: Response times, support scope, and helpful tips
+  - **Quick Links**: Direct access to help center, status page, and pricing
+  - **Form Validation**: Real-time validation with success/error feedback
+  - **Enhanced UI**: Improved visual hierarchy with larger, more prominent email support
+
+- **Status Page** (`/status`): System health monitoring dashboard featuring:
+  - **Overall Status**: System-wide health indicator with uptime metrics
+  - **Service Status**: Individual service health (API, Audio Processing, File Storage, etc.)
+  - **Performance Metrics**: Response times, success rates, and usage statistics
+  - **Incident History**: Recent incidents with severity levels and resolution details
+  - **Real-time Updates**: Refresh functionality with last updated timestamps
+  - **Professional Design**: Clean, informative layout with status indicators
+
+- **Cookie Policy Page** (`/legal/cookies`): Comprehensive cookie information including:
+  - **Cookie Types**: Essential, Analytics, Functional, and Marketing cookies
+  - **Detailed Table**: Specific cookies with names, purposes, duration, and data stored
+  - **Management Instructions**: Browser settings and cookie consent management
+  - **Third-Party Services**: Information about external services and their cookies
+  - **Privacy Contact**: Direct contact information for cookie-related questions
+  - **Legal Compliance**: GDPR and privacy regulation compliance information
+
+- **Footer Integration**: Updated footer with working support links:
+  - **Help Center Link**: Direct navigation to comprehensive help section
+  - **Contact Us Link**: Easy access to contact form and support options
+  - **Status Link**: Quick access to system status and health monitoring
+  - **Cookie Policy Link**: Access to detailed cookie usage information
+  - **Consistent Styling**: All links properly styled and functional

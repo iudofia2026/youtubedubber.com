@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Mic, Globe, Zap, DollarSign, BarChart3 } from 'lucide-react';
+import { ArrowRight, Mic, Globe, Zap, DollarSign, BarChart3, Check, X, Scissors, Upload, Brain, Download } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
 import { useAuth } from '@/lib/auth-context';
@@ -141,6 +141,7 @@ export default function Home() {
           </motion.div>
         </motion.div>
 
+
         {/* Features Section */}
         <motion.section
           className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 relative"
@@ -229,21 +230,25 @@ export default function Home() {
                 icon: Mic,
                 title: 'High-Quality Audio',
                 description: 'Advanced AI processing ensures natural-sounding voice dubbing with perfect timing and intonation.',
+                color: 'from-blue-500 to-cyan-500'
               },
               {
                 icon: Globe,
                 title: 'Multiple Languages',
                 description: 'Support for 12+ languages including English, Spanish, French, German, Japanese, and more.',
+                color: 'from-purple-500 to-pink-500'
               },
               {
                 icon: Zap,
                 title: 'Fast Processing',
                 description: 'Get your dubbed content ready in minutes, not hours. Our optimized pipeline delivers results quickly.',
+                color: 'from-yellow-500 to-orange-500'
               },
               {
                 icon: DollarSign,
                 title: 'Best Value Pricing',
                 description: 'Premium quality dubbing at unbeatable prices. We offer the best value compared to competitors like Rask and HeyGen.',
+                color: 'from-green-500 to-emerald-500'
               },
             ].map((feature, index) => {
               const Icon = feature.icon;
@@ -264,7 +269,7 @@ export default function Home() {
                   }}
                 >
                   <motion.div 
-                    className="w-14 h-14 bg-[#ff0000]/10 flex items-center justify-center mx-auto mb-3 border border-[#ff0000]/20"
+                    className={`w-16 h-16 bg-gradient-to-r ${feature.color} flex items-center justify-center mx-auto mb-4 rounded-lg`}
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ 
@@ -290,7 +295,7 @@ export default function Home() {
                         damping: 20
                       }}
                     >
-                      <Icon className="w-7 h-7 text-[#ff0000]" />
+                      <Icon className="w-8 h-8 text-white" />
                     </motion.div>
                   </motion.div>
                   <motion.h3 
@@ -323,6 +328,129 @@ export default function Home() {
           </div>
         </motion.section>
 
+        {/* How it Works Section */}
+        <motion.section
+          className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative bg-muted/30"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              className="text-center mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 tracking-tight">
+                How It
+                <span className="text-[#ff0000]"> Works</span>
+              </h2>
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto font-light leading-relaxed">
+                Simple 4-step process from audio preparation to final download.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[
+                {
+                  step: '01',
+                  title: 'Prepare Your Audio',
+                  description: 'Split your video audio into separate voice and background tracks for optimal dubbing quality.',
+                  icon: Scissors,
+                  color: 'from-blue-500 to-cyan-500',
+                  details: ['Import your video', 'Split audio tracks', 'Export voice track', 'Export background track']
+                },
+                {
+                  step: '02',
+                  title: 'Upload Your Files',
+                  description: 'Upload your prepared audio tracks and select your target languages for dubbing.',
+                  icon: Upload,
+                  color: 'from-purple-500 to-pink-500',
+                  details: ['Upload voice track', 'Upload background track', 'Select languages', 'Review and confirm']
+                },
+                {
+                  step: '03',
+                  title: 'AI Processing',
+                  description: 'Our advanced AI analyzes your voice and generates natural-sounding dubs in your chosen languages.',
+                  icon: Brain,
+                  color: 'from-yellow-500 to-orange-500',
+                  details: ['Speech-to-text', 'Translation', 'Voice generation', 'Audio mixing']
+                },
+                {
+                  step: '04',
+                  title: 'Download & Use',
+                  description: 'Download your completed dubs and integrate them into your content for maximum impact.',
+                  icon: Download,
+                  color: 'from-green-500 to-emerald-500',
+                  details: ['Download voice tracks', 'Download full mixes', 'Get subtitles', 'Ready to publish']
+                }
+              ].map((step, index) => (
+                <motion.div
+                  key={step.step}
+                  className="text-center group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -5 }}
+                >
+                  <motion.div
+                    className={`w-20 h-20 bg-gradient-to-r ${step.color} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}
+                    whileHover={{ rotate: 5 }}
+                  >
+                    <step.icon className="w-10 h-10 text-white" />
+                  </motion.div>
+                  
+                  <div className="mb-4">
+                    <span className="text-sm font-bold text-[#ff0000] bg-[#ff0000]/10 px-3 py-1 rounded-full">
+                      Step {step.step}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-foreground mb-4 tracking-tight">
+                    {step.title}
+                  </h3>
+                  
+                  <p className="text-muted-foreground mb-6 font-light leading-relaxed">
+                    {step.description}
+                  </p>
+                  
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {step.details.map((detail, detailIndex) => (
+                      <li key={detailIndex} className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 bg-gradient-to-r ${step.color} rounded-full flex-shrink-0`}></div>
+                        <span>{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              className="text-center mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/how-it-works">
+                <motion.button
+                  className="inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span>Learn More</span>
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </Link>
+            </motion.div>
+          </div>
+        </motion.section>
+
         {/* CTA Section */}
         <motion.section
           className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 relative"
@@ -352,7 +480,8 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 2.2 }}
             >
-              Join thousands of content creators who trust our platform for their multilingual dubbing needs.
+              Join thousands of content creators who trust our platform for their multilingual dubbing needs. 
+              Start free with credit packs that never expire.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}

@@ -155,69 +155,119 @@ export default function HowItWorksPage() {
         <main>
           {/* Hero Section */}
           <motion.section
-            className="py-20 sm:py-32 relative overflow-hidden px-4 sm:px-6 lg:px-8"
+            className="py-16 sm:py-20 relative overflow-hidden px-4 sm:px-6 lg:px-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="text-center relative z-10">
-              <motion.div
-                className="inline-flex items-center text-[#ff0000] mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                <YTdubberIcon size={80} className="mx-2 sm:mx-3 sm:w-24 sm:h-24 w-20 h-20" />
-              </motion.div>
-              
-              <motion.h1
-                className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                How It
-                <span className="block text-[#ff0000]">Works</span>
-              </motion.h1>
-              
-              <motion.p
-                className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto font-light"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-              >
-                Transform your content in just 4 simple steps. Our AI-powered platform 
-                makes professional multilingual dubbing accessible to everyone.
-              </motion.p>
-              
-              <motion.div
-                className="flex flex-col sm:flex-row items-center justify-center gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              >
-                <Link href="/new">
-                  <motion.button
-                    className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+            <div className="max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                {/* Left Side - Branding & Description */}
+                <motion.div
+                  className="text-center lg:text-left"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                  <motion.div
+                    className="inline-flex items-center text-[#ff0000] mb-6"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
                   >
-                    <span>Try It Now</span>
-                    <ArrowRight className="w-5 h-5" />
-                  </motion.button>
-                </Link>
-                
-                <Link href="/features">
-                  <motion.button
-                    className="inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    <YTdubberIcon size={80} className="mx-2 sm:mx-3 sm:w-24 sm:h-24 w-20 h-20" />
+                  </motion.div>
+                  
+                  <motion.h1
+                    className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 tracking-tight"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
                   >
-                    <Star className="w-5 h-5" />
-                    <span>View Features</span>
-                  </motion.button>
-                </Link>
-              </motion.div>
+                    How It
+                    <span className="text-[#ff0000]"> Works</span>
+                  </motion.h1>
+                  
+                  <motion.p
+                    className="text-xl sm:text-2xl text-muted-foreground mb-8 font-light leading-relaxed"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.8 }}
+                  >
+                    Transform your content in just 4 simple steps. Our AI-powered platform 
+                    makes professional multilingual dubbing accessible to everyone.
+                  </motion.p>
+                  
+                  <motion.div
+                    className="flex flex-col sm:flex-row items-center lg:items-start gap-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 1.0 }}
+                  >
+                    <Link href="/new">
+                      <motion.button
+                        className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <span>Try It Now</span>
+                        <ArrowRight className="w-5 h-5" />
+                      </motion.button>
+                    </Link>
+                    
+                    <Link href="/features">
+                      <motion.button
+                        className="inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Star className="w-5 h-5" />
+                        <span>View Features</span>
+                      </motion.button>
+                    </Link>
+                  </motion.div>
+                </motion.div>
+
+                {/* Right Side - Process Overview */}
+                <motion.div
+                  className="bg-card border border-border rounded-lg p-8"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                >
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 tracking-tight text-center">
+                    Simple 4-Step
+                    <span className="text-[#ff0000]"> Process</span>
+                  </h2>
+                  
+                  <p className="text-lg text-muted-foreground mb-8 text-center font-light leading-relaxed">
+                    From audio preparation to final download, our streamlined process 
+                    makes multilingual dubbing effortless.
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { step: '01', title: 'Prepare', color: 'from-blue-500 to-cyan-500' },
+                      { step: '02', title: 'Upload', color: 'from-purple-500 to-pink-500' },
+                      { step: '03', title: 'Process', color: 'from-yellow-500 to-orange-500' },
+                      { step: '04', title: 'Download', color: 'from-green-500 to-emerald-500' }
+                    ].map((item, index) => (
+                      <motion.div
+                        key={item.step}
+                        className="text-center p-4 rounded-lg bg-muted/30"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
+                      >
+                        <div className={`w-12 h-12 bg-gradient-to-r ${item.color} rounded-lg flex items-center justify-center mx-auto mb-3`}>
+                          <span className="text-white font-bold text-sm">{item.step}</span>
+                        </div>
+                        <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
             </div>
           </motion.section>
 
@@ -230,22 +280,6 @@ export default function HowItWorksPage() {
             viewport={{ once: true }}
           >
             <div className="max-w-7xl mx-auto">
-              <motion.div
-                className="text-center mb-16"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                viewport={{ once: true }}
-              >
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 tracking-tight">
-                  Simple 4-Step
-                  <span className="text-[#ff0000]"> Process</span>
-                </h2>
-                <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
-                  From audio preparation to final download, our streamlined process 
-                  makes multilingual dubbing effortless.
-                </p>
-              </motion.div>
 
               <div className="space-y-24">
                 {steps.map((step, index) => {
