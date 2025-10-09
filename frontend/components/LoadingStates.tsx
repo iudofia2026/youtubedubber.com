@@ -103,15 +103,27 @@ export const LoadingCard: React.FC<LoadingCardProps> = ({
 interface UploadProgressProps {
   progress: number;
   fileName: string;
-  status: 'uploading' | 'processing' | 'validating';
+  status: 'uploading' | 'processing' | 'validating' | 'complete' | 'error';
+  message?: string;
+  speed?: number;
+  estimatedTime?: number;
+  bytesUploaded?: number;
+  totalBytes?: number;
 }
 
 export const UploadProgress: React.FC<UploadProgressProps> = ({
   progress,
   fileName,
-  status
+  status,
+  message,
+  speed,
+  estimatedTime,
+  bytesUploaded,
+  totalBytes
 }) => {
   const getStatusText = () => {
+    if (message) return message;
+    
     switch (status) {
       case 'uploading':
         return 'Uploading file...';
@@ -119,9 +131,31 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
         return 'Validating file...';
       case 'processing':
         return 'Processing file...';
+      case 'complete':
+        return 'Upload complete!';
+      case 'error':
+        return 'Upload failed';
       default:
         return 'Processing...';
     }
+  };
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const formatSpeed = (bytesPerSecond: number) => {
+    return formatBytes(bytesPerSecond) + '/s';
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const getStatusIcon = () => {
@@ -132,6 +166,10 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
         return <FileText className="h-5 w-5" />;
       case 'processing':
         return <Languages className="h-5 w-5" />;
+      case 'complete':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'error':
+        return <FileText className="h-5 w-5 text-red-500" />;
       default:
         return <Loader2 className="h-5 w-5 animate-spin" />;
     }
@@ -152,6 +190,14 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {getStatusText()}
           </p>
+          {/* Additional upload info */}
+          {(bytesUploaded && totalBytes) && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {formatBytes(bytesUploaded)} of {formatBytes(totalBytes)}
+              {speed && ` • ${formatSpeed(speed)}`}
+              {estimatedTime && ` • ${formatTime(estimatedTime)} remaining`}
+            </p>
+          )}
         </div>
         <span className="text-sm font-medium text-gray-900 dark:text-white">
           {Math.round(progress)}%
@@ -160,7 +206,10 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
       
       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
         <motion.div
-          className="bg-red-600 h-2 rounded-full"
+          className={`h-2 rounded-full ${
+            status === 'complete' ? 'bg-green-500' : 
+            status === 'error' ? 'bg-red-500' : 'bg-red-600'
+          }`}
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3 }}

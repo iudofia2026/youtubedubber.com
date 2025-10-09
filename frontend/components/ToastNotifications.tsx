@@ -182,3 +182,78 @@ export const useToastHelpers = () => {
       addToast({ type: 'info', title, message }),
   };
 };
+
+// Enhanced error handling for API errors
+export const useApiErrorHandler = () => {
+  const { addToast } = useToast();
+
+  const handleApiError = (error: any, context?: string) => {
+    console.error('API Error:', error, context);
+
+    // If it's already an ApiError, use it directly
+    if (error.type && error.message) {
+      const errorType = error.type;
+      const title = getErrorTitle(errorType, context);
+      const message = error.message;
+      
+      addToast({
+        type: 'error',
+        title,
+        message,
+        duration: errorType === 'network' ? 8000 : 5000, // Longer duration for network errors
+        action: error.retryable ? {
+          label: 'Retry',
+          onClick: () => {
+            // This would need to be implemented by the calling component
+            console.log('Retry requested');
+          }
+        } : undefined
+      });
+      return;
+    }
+
+    // Handle generic errors
+    if (error instanceof Error) {
+      addToast({
+        type: 'error',
+        title: context ? `${context} Failed` : 'Error',
+        message: error.message,
+        duration: 5000
+      });
+      return;
+    }
+
+    // Fallback for unknown error types
+    addToast({
+      type: 'error',
+      title: context ? `${context} Failed` : 'Unknown Error',
+      message: 'An unexpected error occurred. Please try again.',
+      duration: 5000
+    });
+  };
+
+  return { handleApiError };
+};
+
+// Helper function to get appropriate error titles
+const getErrorTitle = (errorType: string, context?: string): string => {
+  const baseContext = context || 'Operation';
+  
+  switch (errorType) {
+    case 'network':
+      return 'Connection Error';
+    case 'validation':
+      return 'Invalid Data';
+    case 'server':
+      return 'Server Error';
+    case 'auth':
+      return 'Authentication Required';
+    case 'not_found':
+      return 'Not Found';
+    case 'rate_limit':
+      return 'Too Many Requests';
+    case 'unknown':
+    default:
+      return `${baseContext} Failed`;
+  }
+};

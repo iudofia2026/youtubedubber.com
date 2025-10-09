@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FileUploadProps } from '@/types';
 import { getAudioDuration } from '@/lib/audio-utils';
-import { useToastHelpers } from '@/components/ToastNotifications';
+import { useToastHelpers, useApiErrorHandler } from '@/components/ToastNotifications';
 import { UploadProgress } from '@/components/LoadingStates';
 import { Play, Pause, Volume2, VolumeX, RotateCcw } from 'lucide-react';
 
@@ -16,15 +16,17 @@ export function FileUpload({
   maxSize, 
   onFileSelect, 
   onDurationChange,
+  onUploadProgress,
+  onUploadComplete,
+  onUploadError,
   error, 
   value,
   duration,
-  durationFormatted
+  durationFormatted,
+  isUploading = false,
+  uploadProgress
 }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadStatus, setUploadStatus] = useState<'uploading' | 'processing' | 'validating'>('uploading');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [volume, setVolume] = useState(1);
@@ -33,6 +35,7 @@ export function FileUpload({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { success, error: showError } = useToastHelpers();
+  const { handleApiError } = useApiErrorHandler();
 
   // Audio control functions
   const togglePlayPause = () => {
@@ -142,44 +145,34 @@ export function FileUpload({
       return;
     }
 
-    setIsUploading(true);
-    setUploadProgress(0);
-    setUploadStatus('uploading');
-    
     try {
-      // Simulate upload progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 100);
+      // Notify parent component about upload start
+      onUploadProgress?.({
+        progress: 0,
+        status: 'validating',
+        message: 'Validating file...'
+      });
 
-      // Get audio duration
-      setUploadStatus('validating');
+      // Get audio duration for validation
       const audioInfo = await getAudioDuration(file);
       
-      // Complete upload
-      setUploadProgress(100);
-      setUploadStatus('processing');
+      // Notify parent component about validation complete
+      onUploadProgress?.({
+        progress: 100,
+        status: 'complete',
+        message: 'File validated successfully'
+      });
       
-      // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      // Call parent callbacks
       onFileSelect(file);
       onDurationChange?.(audioInfo.duration);
+      onUploadComplete?.(file);
       
-      success('File uploaded successfully', `${file.name} is ready for processing`);
+      success('File validated successfully', `${file.name} is ready for upload`);
     } catch (error) {
-      console.error('Failed to process file:', error);
-      showError('Upload failed', 'There was an error processing your file. Please try again.');
-      onFileSelect(file);
-    } finally {
-      setIsUploading(false);
-      setUploadProgress(0);
+      console.error('Failed to validate file:', error);
+      handleApiError(error, 'File Validation');
+      onUploadError?.(errorMessage);
     }
   };
 
@@ -243,9 +236,14 @@ export function FileUpload({
 
         {isUploading ? (
           <UploadProgress
-            progress={uploadProgress}
+            progress={uploadProgress?.progress || 0}
             fileName={value?.name || 'Uploading...'}
-            status={uploadStatus}
+            status={uploadProgress?.status || 'uploading'}
+            message={uploadProgress?.message}
+            speed={uploadProgress?.speed}
+            estimatedTime={uploadProgress?.estimatedTime}
+            bytesUploaded={uploadProgress?.bytesUploaded}
+            totalBytes={uploadProgress?.totalBytes}
           />
         ) : value ? (
           <motion.div

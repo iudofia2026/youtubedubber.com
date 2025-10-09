@@ -5,28 +5,32 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FileUpload } from './FileUpload';
 import { LanguageSelect } from './LanguageSelect';
-import { LANGUAGES } from '@/types';
+import { LANGUAGES, UploadProgress } from '@/types';
 import { useToastHelpers } from '@/components/ToastNotifications';
 import { LoadingButton } from '@/components/LoadingStates';
+import { submitDubbingJob } from '@/lib/api';
 
 interface JobCreationWizardProps {
-  onSubmit: (data: { voiceTrack: File; backgroundTrack?: File; targetLanguage: string }) => void;
+  onSubmit: (data: { voiceTrack: File; backgroundTrack?: File; targetLanguages: string[] }) => void;
 }
 
 const steps = [
   { id: 1, title: 'Upload Voice Track', description: 'Upload your voice-only audio file' },
   { id: 2, title: 'Upload Background', description: 'Add background music or ambient audio (optional)' },
-  { id: 3, title: 'Select Language', description: 'Choose target language for dubbing' },
+  { id: 3, title: 'Select Languages', description: 'Choose target languages for dubbing' },
   { id: 4, title: 'Review & Submit', description: 'Review your selections and submit' }
 ];
 
 export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
   const [formData, setFormData] = useState({
     voiceTrack: null as File | null,
     backgroundTrack: null as File | null,
-    targetLanguage: '',
+    targetLanguages: [] as string[],
+    voiceTrackDuration: null as number | null,
+    backgroundTrackDuration: null as number | null,
   });
   const { success, error: showError } = useToastHelpers();
 
@@ -37,8 +41,8 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
       return;
     }
     
-    if (currentStep === 3 && !formData.targetLanguage) {
-      showError('Language selection required', 'Please select a target language before proceeding.');
+    if (currentStep === 3 && formData.targetLanguages.length === 0) {
+      showError('Language selection required', 'Please select at least one target language before proceeding.');
       return;
     }
 
@@ -59,24 +63,45 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
       return;
     }
 
-    if (!formData.targetLanguage) {
-      showError('Language selection required', 'Please select a target language to continue.');
+    if (formData.targetLanguages.length === 0) {
+      showError('Language selection required', 'Please select at least one target language to continue.');
       return;
     }
 
     setIsSubmitting(true);
+    setUploadProgress({
+      progress: 0,
+      status: 'processing',
+      message: 'Starting upload process...'
+    });
     
     try {
-      await onSubmit({
+      const result = await submitDubbingJob({
         voiceTrack: formData.voiceTrack,
         backgroundTrack: formData.backgroundTrack || undefined,
-        targetLanguage: formData.targetLanguage
+        targetLanguages: formData.targetLanguages
+      }, (progress) => {
+        setUploadProgress(progress);
       });
       
       success('Job submitted successfully', 'Your dubbing job has been queued for processing.');
+      
+      // Call the parent onSubmit callback
+      onSubmit({
+        voiceTrack: formData.voiceTrack,
+        backgroundTrack: formData.backgroundTrack || undefined,
+        targetLanguages: formData.targetLanguages
+      });
+      
     } catch (error) {
       console.error('Failed to submit job:', error);
-      showError('Submission failed', 'There was an error submitting your job. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'There was an error submitting your job. Please try again.';
+      showError('Submission failed', errorMessage);
+      setUploadProgress({
+        progress: 0,
+        status: 'error',
+        message: errorMessage
+      });
     } finally {
       setIsSubmitting(false);
     }

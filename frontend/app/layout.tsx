@@ -6,6 +6,7 @@ import { ToastProvider } from "@/components/ToastNotifications";
 import { AuthProvider } from "@/lib/auth-context";
 import { Footer } from "@/components/Footer";
 import { DevModeToggle } from "@/components/DevModeToggle";
+import ConfigValidator from "@/components/ConfigValidator";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -44,18 +45,20 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <ErrorBoundary>
-          <ToastProvider>
-            <AuthProvider>
-              <div className="min-h-screen flex flex-col">
-                <main className="flex-1">
-                  {children}
-                </main>
-                <Footer />
-              </div>
-              {/* Dev Mode Toggle - Only show in development */}
-              {process.env.NODE_ENV === 'development' && <DevModeToggle />}
-            </AuthProvider>
-          </ToastProvider>
+          <ConfigValidator>
+            <ToastProvider>
+              <AuthProvider>
+                <div className="min-h-screen flex flex-col">
+                  <main className="flex-1">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
+                {/* Dev Mode Toggle - Only show in development */}
+                {process.env.NODE_ENV === 'development' && <DevModeToggle />}
+              </AuthProvider>
+            </ToastProvider>
+          </ConfigValidator>
         </ErrorBoundary>
       </body>
     </html>

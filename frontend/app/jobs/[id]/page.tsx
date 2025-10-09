@@ -9,7 +9,7 @@ import { ProgressBar } from '@/components/ProgressBar';
 import { IndividualLanguageProgress } from '@/components/IndividualLanguageProgress';
 import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
-import { simulateJobProgress } from '@/lib/api';
+import { pollJobStatus } from '@/lib/api';
 import { JobStatus, GetJobStatusResponse } from '@/types';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
@@ -25,14 +25,16 @@ export default function JobStatusPage() {
     id: jobId,
     status: 'uploading',
     progress: 0,
-    message: 'Uploading files...',
+    message: 'Loading job status...',
     languages: [],
     totalLanguages: targetLanguages.length,
     completedLanguages: 0,
     startedAt: new Date().toISOString(),
   });
   const [isComplete, setIsComplete] = useState(false);
-  const stopSimulationRef = useRef<(() => void) | null>(null);
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const stopPollingRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (!jobId) {
@@ -40,29 +42,34 @@ export default function JobStatusPage() {
       return;
     }
 
-    // Start progress simulation after a short delay to ensure animations work
-    const timer = setTimeout(() => {
-      const stopSimulation = simulateJobProgress(
-        jobId,
-        targetLanguages,
-        (status) => {
-          setJobStatus(status);
-          if (status.status === 'complete') {
-            setIsComplete(true);
-          }
-        },
-        () => {
+    // Start real job status polling
+    const stopPolling = pollJobStatus(
+      jobId,
+      targetLanguages,
+      (status) => {
+        setJobStatus(status);
+        setIsError(false);
+        setErrorMessage(null);
+        if (status.status === 'complete') {
           setIsComplete(true);
         }
-      );
+      },
+      () => {
+        setIsComplete(true);
+      },
+      (error) => {
+        console.error('Job polling error:', error);
+        setIsError(true);
+        setErrorMessage(error.message || 'Failed to fetch job status');
+        // Don't stop polling on error, let it retry
+      }
+    );
 
-      stopSimulationRef.current = stopSimulation;
-    }, 100);
+    stopPollingRef.current = stopPolling;
 
     return () => {
-      clearTimeout(timer);
-      if (stopSimulationRef.current) {
-        stopSimulationRef.current();
+      if (stopPollingRef.current) {
+        stopPollingRef.current();
       }
     };
   }, [jobId, router, targetLanguages]);
@@ -81,9 +88,18 @@ export default function JobStatusPage() {
   }
 
   const handleDownload = (languageCode: string) => {
-    // Mock download - in a real app, this would trigger actual file download
-    console.log(`Downloading ${languageCode} dub for job ${jobId}`);
-    // You could implement actual download logic here
+    const language = jobStatus.languages.find(lang => lang.languageCode === languageCode);
+    if (language?.downloadUrl) {
+      // Create a temporary link element to trigger download
+      const link = document.createElement('a');
+      link.href = language.downloadUrl;
+      link.download = `${jobId}_${languageCode}_dub.mp3`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      console.error(`No download URL available for language ${languageCode}`);
+    }
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -129,7 +145,7 @@ export default function JobStatusPage() {
           className={`mb-8 rounded-xl p-6 relative overflow-hidden ${
             isComplete 
               ? 'bg-gradient-to-br from-green-50 via-green-100/50 to-emerald-50 dark:from-green-900/20 dark:via-green-800/10 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-700' 
-              : jobStatus.status === 'error'
+              : isError || jobStatus.status === 'error'
               ? 'bg-gradient-to-br from-red-50 via-red-100/50 to-rose-50 dark:from-red-900/20 dark:via-red-800/10 dark:to-rose-900/20 border-2 border-red-200 dark:border-red-700'
               : jobStatus.status === 'processing'
               ? 'bg-gradient-to-br from-blue-50 via-blue-100/50 to-cyan-50 dark:from-blue-900/20 dark:via-blue-800/10 dark:to-cyan-900/20 border-2 border-blue-200 dark:border-blue-700'
@@ -150,7 +166,7 @@ export default function JobStatusPage() {
                 }}
                 transition={{ duration: 3, repeat: Infinity }}
               />
-            ) : jobStatus.status === 'error' ? (
+            ) : isError || jobStatus.status === 'error' ? (
               <motion.div
                 className="absolute top-0 right-0 w-32 h-32 bg-red-500 rounded-full blur-3xl"
                 animate={{ 
@@ -199,7 +215,7 @@ export default function JobStatusPage() {
                       transition={{ duration: 1.5, repeat: Infinity }}
                     />
                   </motion.div>
-                ) : jobStatus.status === 'error' ? (
+                ) : isError || jobStatus.status === 'error' ? (
                   <motion.div
                     className="relative"
                     animate={{ 
@@ -269,7 +285,7 @@ export default function JobStatusPage() {
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
                     {isComplete ? '🎉 Job Complete!' : 
-                     jobStatus.status === 'error' ? '⚠️ Job Error' :
+                     isError || jobStatus.status === 'error' ? '⚠️ Job Error' :
                      jobStatus.status === 'processing' ? '⚡ Processing Job' : '⏳ Pending Job'}
                   </motion.h2>
                   <motion.p 
@@ -278,7 +294,7 @@ export default function JobStatusPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                   >
-                    {jobStatus.message}
+                    {isError ? errorMessage : jobStatus.message}
                   </motion.p>
                 </div>
               </div>
@@ -302,7 +318,7 @@ export default function JobStatusPage() {
                   <motion.div
                     className={`h-full rounded-full ${
                       isComplete ? 'bg-green-500' : 
-                      jobStatus.status === 'error' ? 'bg-red-500' :
+                      isError || jobStatus.status === 'error' ? 'bg-red-500' :
                       jobStatus.status === 'processing' ? 'bg-blue-500' : 'bg-yellow-500'
                     }`}
                     initial={{ width: 0 }}
@@ -621,14 +637,14 @@ export default function JobStatusPage() {
                   <div className="flex items-center space-x-2">
                     {isComplete ? (
                       <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : jobStatus.status === 'error' ? (
+                    ) : isError || jobStatus.status === 'error' ? (
                       <AlertTriangle className="w-4 h-4 text-red-500" />
                     ) : (
                       <Clock className="w-4 h-4 text-blue-500" />
                     )}
                     <span className={`font-medium ${
                       isComplete ? 'text-green-600' : 
-                      jobStatus.status === 'error' ? 'text-red-600' : 'text-blue-600'
+                      isError || jobStatus.status === 'error' ? 'text-red-600' : 'text-blue-600'
                     }`}>
                       {isComplete ? 'Complete' : jobStatus.status.charAt(0).toUpperCase() + jobStatus.status.slice(1)}
                     </span>
@@ -642,7 +658,7 @@ export default function JobStatusPage() {
                       <motion.div
                         className={`h-full rounded-full ${
                           isComplete ? 'bg-green-500' : 
-                          jobStatus.status === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                          isError || jobStatus.status === 'error' ? 'bg-red-500' : 'bg-blue-500'
                         }`}
                         initial={{ width: 0 }}
                         animate={{ width: `${jobStatus.progress}%` }}
@@ -744,6 +760,44 @@ export default function JobStatusPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1 }}
         >
+          {isError && (
+            <motion.button
+              onClick={() => {
+                setIsError(false);
+                setErrorMessage(null);
+                // Restart polling
+                if (stopPollingRef.current) {
+                  stopPollingRef.current();
+                }
+                const stopPolling = pollJobStatus(
+                  jobId,
+                  targetLanguages,
+                  (status) => {
+                    setJobStatus(status);
+                    setIsError(false);
+                    setErrorMessage(null);
+                    if (status.status === 'complete') {
+                      setIsComplete(true);
+                    }
+                  },
+                  () => {
+                    setIsComplete(true);
+                  },
+                  (error) => {
+                    console.error('Job polling error:', error);
+                    setIsError(true);
+                    setErrorMessage(error.message || 'Failed to fetch job status');
+                  }
+                );
+                stopPollingRef.current = stopPolling;
+              }}
+              className="w-full sm:w-auto px-6 py-3 bg-yellow-500 text-white hover:bg-yellow-600 transition-colors duration-200 font-medium"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Retry Job
+            </motion.button>
+          )}
           <Link href="/new">
             <motion.button
               className="w-full sm:w-auto px-6 py-3 border border-[#ff0000] text-[#ff0000] hover:bg-[#ff0000] hover:text-white transition-colors duration-200 font-medium"

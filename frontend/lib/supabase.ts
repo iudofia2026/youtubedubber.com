@@ -1,26 +1,22 @@
 import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-// Check if environment variables are set
-if (!supabaseUrl) {
-  console.warn('NEXT_PUBLIC_SUPABASE_URL is not set. Supabase features will be disabled.')
-}
-
-if (!supabaseAnonKey) {
-  console.warn('NEXT_PUBLIC_SUPABASE_ANON_KEY is not set. Supabase features will be disabled.')
-}
+import { config, isSupabaseConfigured } from './config'
 
 // Create Supabase client only if both environment variables are available
-export const supabase = supabaseUrl && supabaseAnonKey 
-  ? createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = config.isSupabaseConfigured 
+  ? createClient(config.supabaseUrl!, config.supabaseAnonKey!)
   : null
 
-// Helper function to check if Supabase is configured
-export const isSupabaseConfigured = () => {
-  return !!(supabaseUrl && supabaseAnonKey)
+// Log configuration status
+if (config.isDevelopment) {
+  if (config.isSupabaseConfigured) {
+    console.log('✅ Supabase configured successfully')
+  } else {
+    console.warn('⚠️ Supabase not configured - using development mode')
+  }
 }
+
+// Export the configuration check function
+export { isSupabaseConfigured }
 
 // Database types (will be generated from Supabase schema)
 export interface Database {

@@ -14,6 +14,8 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
   updateProfile: (updates: { full_name?: string; avatar_url?: string }) => Promise<{ error: AuthError | null }>;
+  refreshToken: () => Promise<boolean>;
+  getAccessToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -257,6 +259,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const refreshToken = async (): Promise<boolean> => {
+    // Development mode bypass
+    if (process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+      return true;
+    }
+
+    if (!supabase) {
+      return false;
+    }
+
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+      if (error) {
+        console.error('Token refresh failed:', error);
+        return false;
+      }
+      
+      if (data.session) {
+        setSession(data.session);
+        setUser(data.session.user);
+        return true;
+      }
+      
+      return false;
+    } catch (err) {
+      console.error('Token refresh error:', err);
+      return false;
+    }
+  };
+
+  const getAccessToken = async (): Promise<string | null> => {
+    // Development mode bypass
+    if (process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+      return 'dev-token';
+    }
+
+    if (!supabase) {
+      return null;
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      return session?.access_token || null;
+    } catch (err) {
+      console.error('Failed to get access token:', err);
+      return null;
+    }
+  };
+
   const value = {
     user,
     session,
@@ -266,6 +317,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signOut,
     resetPassword,
     updateProfile,
+    refreshToken,
+    getAccessToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

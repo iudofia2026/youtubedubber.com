@@ -7,10 +7,25 @@ export interface FileUploadProps {
   maxSize: number; // in MB
   onFileSelect: (file: File) => void;
   onDurationChange?: (duration: number) => void;
+  onUploadProgress?: (progress: UploadProgress) => void;
+  onUploadComplete?: (file: File) => void;
+  onUploadError?: (error: string) => void;
   error?: string;
   value?: File | null;
   duration?: number | null;
   durationFormatted?: string;
+  isUploading?: boolean;
+  uploadProgress?: UploadProgress;
+}
+
+export interface UploadProgress {
+  progress: number; // 0-100
+  status: 'uploading' | 'processing' | 'validating' | 'complete' | 'error';
+  message: string;
+  speed?: number; // bytes per second
+  estimatedTime?: number; // seconds remaining
+  bytesUploaded?: number;
+  totalBytes?: number;
 }
 
 export interface Language {
@@ -47,6 +62,27 @@ export interface DubbingJobData {
   targetLanguages: string[];
 }
 
+export interface SignedUploadUrls {
+  job_id: string;
+  upload_urls: {
+    voice_track: string;
+    background_track?: string;
+  };
+}
+
+export interface UploadUrlsRequest {
+  languages: string[];
+  voice_track_name: string;
+  background_track_name?: string;
+}
+
+export interface JobCreationRequest {
+  job_id: string;
+  voice_track_uploaded: boolean;
+  background_track_uploaded: boolean;
+  languages: string[];
+}
+
 export interface LanguageProgress {
   languageCode: string;
   languageName: string;
@@ -61,7 +97,7 @@ export interface LanguageProgress {
 
 export interface JobStatus {
   id: string;
-  status: 'uploading' | 'processing' | 'generating' | 'finalizing' | 'complete';
+  status: 'uploading' | 'processing' | 'generating' | 'finalizing' | 'complete' | 'error';
   progress: number;
   message: string;
   languages: LanguageProgress[];
