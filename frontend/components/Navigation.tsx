@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -32,25 +32,25 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
   }, []);
 
   // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsJobsDropdownOpen(false);
-      }
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setIsUserMenuOpen(false);
-      }
-    };
+  const handleClickOutside = useCallback((event: MouseEvent | TouchEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsJobsDropdownOpen(false);
+    }
+    if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+      setIsUserMenuOpen(false);
+    }
+  }, []);
 
+  useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('touchstart', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, []);
+  }, [handleClickOutside]);
 
-  const navigationItems = [
+  const navigationItems = React.useMemo(() => [
     {
       name: 'Home',
       href: '/',
@@ -64,9 +64,9 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
       current: pathname === '/new',
       requireAuth: true,
     },
-  ];
+  ], [pathname]);
 
-  const jobsDropdownItems = [
+  const jobsDropdownItems = React.useMemo(() => [
     {
       name: 'All Jobs',
       href: '/jobs',
@@ -97,32 +97,32 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
       icon: AlertCircle,
       current: isClient && pathname === '/jobs' && currentStatus === 'error',
     },
-  ];
+  ], [isClient, pathname, currentStatus]);
 
-  const toggleMobileMenu = () => {
+  const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     // Close jobs dropdown when opening mobile menu
     if (!isMobileMenuOpen) {
       setIsJobsDropdownOpen(false);
     }
-  };
+  }, [isMobileMenuOpen]);
 
-  const closeMobileMenu = () => {
+  const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false);
-  };
+  }, []);
 
-  const closeJobsDropdown = () => {
+  const closeJobsDropdown = useCallback(() => {
     setIsJobsDropdownOpen(false);
-  };
+  }, []);
 
-  const closeUserMenu = () => {
+  const closeUserMenu = useCallback(() => {
     setIsUserMenuOpen(false);
-  };
+  }, []);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     await signOut();
     closeUserMenu();
-  };
+  }, [signOut, closeUserMenu]);
 
   return (
     <nav className="bg-background border-b border-border">

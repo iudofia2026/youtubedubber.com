@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }) || { data: { subscription: { unsubscribe: () => {} } } };
 
     return () => subscription.unsubscribe();
-  }, [success]);
+  }, []); // Remove success from dependencies to prevent infinite re-renders
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     // Development mode bypass

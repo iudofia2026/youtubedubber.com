@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mic, Globe, Zap, DollarSign, BarChart3 } from 'lucide-react';
@@ -10,11 +10,14 @@ import { YTdubberIcon } from '@/components/YTdubberIcon';
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
 
+  const handleScroll = useCallback(() => {
+    setScrollY(window.scrollY);
+  }, []);
+
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   // Calculate opacity based on scroll position
   const scrollIndicatorOpacity = Math.max(0, 1 - scrollY / 200); // Fade out over 200px of scroll
