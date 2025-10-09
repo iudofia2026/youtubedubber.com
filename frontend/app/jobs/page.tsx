@@ -16,6 +16,7 @@ export default function JobsPage() {
   const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'processing' | 'complete' | 'error'>('all');
   const { error: showError } = useToastHelpers();
 
   // Mock data for demonstration - in real app, this would come from API
@@ -132,6 +133,63 @@ export default function JobsPage() {
     }
   };
 
+  const handleStatusFilterChange = (status: 'all' | 'pending' | 'processing' | 'complete' | 'error') => {
+    setStatusFilter(status);
+  };
+
+  // Dynamic styling based on status filter
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return {
+          title: 'Pending Jobs',
+          description: 'Jobs waiting to be processed',
+          iconBg: 'from-yellow-500 to-orange-500',
+          accentColor: 'text-yellow-600',
+          bgGradient: 'from-yellow-500/10 via-transparent to-yellow-500/10',
+          blurColor: 'bg-yellow-500/10'
+        };
+      case 'processing':
+        return {
+          title: 'Processing Jobs',
+          description: 'Jobs currently being processed by AI',
+          iconBg: 'from-blue-500 to-cyan-500',
+          accentColor: 'text-blue-600',
+          bgGradient: 'from-blue-500/10 via-transparent to-blue-500/10',
+          blurColor: 'bg-blue-500/10'
+        };
+      case 'complete':
+        return {
+          title: 'Completed Jobs',
+          description: 'Successfully completed dubbing jobs',
+          iconBg: 'from-green-500 to-emerald-500',
+          accentColor: 'text-green-600',
+          bgGradient: 'from-green-500/10 via-transparent to-green-500/10',
+          blurColor: 'bg-green-500/10'
+        };
+      case 'error':
+        return {
+          title: 'Failed Jobs',
+          description: 'Jobs that encountered errors during processing',
+          iconBg: 'from-red-500 to-pink-500',
+          accentColor: 'text-red-600',
+          bgGradient: 'from-red-500/10 via-transparent to-red-500/10',
+          blurColor: 'bg-red-500/10'
+        };
+      default:
+        return {
+          title: 'Your Jobs',
+          description: 'Manage and track your dubbing jobs',
+          iconBg: 'from-[#ff0000] to-[#cc0000]',
+          accentColor: 'text-[#ff0000]',
+          bgGradient: 'from-[#ff0000]/5 via-transparent to-[#ff0000]/5',
+          blurColor: 'bg-[#ff0000]/10'
+        };
+    }
+  };
+
+  const statusConfig = getStatusConfig(statusFilter);
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-background">
@@ -157,9 +215,15 @@ export default function JobsPage() {
         >
           {/* Animated Background Pattern */}
           <div className="relative mb-8">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/5 via-transparent to-[#ff0000]/5 rounded-2xl"></div>
+            <motion.div 
+              className={`absolute inset-0 bg-gradient-to-r ${statusConfig.bgGradient} rounded-2xl`}
+              key={statusFilter}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            />
             <motion.div
-              className="absolute top-0 left-0 w-64 h-64 bg-[#ff0000]/10 rounded-full blur-3xl"
+              className={`absolute top-0 left-0 w-64 h-64 ${statusConfig.blurColor} rounded-full blur-3xl`}
               animate={{ 
                 scale: [1, 1.2, 1],
                 opacity: [0.3, 0.6, 0.3],
@@ -168,7 +232,7 @@ export default function JobsPage() {
               transition={{ duration: 4, repeat: Infinity }}
             />
             <motion.div
-              className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"
+              className={`absolute top-0 right-0 w-48 h-48 ${statusConfig.blurColor} rounded-full blur-3xl`}
               animate={{ 
                 scale: [1, 1.3, 1],
                 opacity: [0.2, 0.5, 0.2],
@@ -180,25 +244,33 @@ export default function JobsPage() {
             <div className="relative z-10 p-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-xl flex items-center justify-center shadow-lg">
+                  <motion.div 
+                    className={`w-12 h-12 bg-gradient-to-br ${statusConfig.iconBg} rounded-xl flex items-center justify-center shadow-lg`}
+                    key={statusFilter}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+                  >
                     <BarChart3 className="w-6 h-6 text-white" />
-                  </div>
+                  </motion.div>
                   <div>
                     <motion.h1 
-                      className="text-2xl sm:text-3xl font-bold text-foreground mb-2 tracking-tight"
+                      className={`text-2xl sm:text-3xl font-bold ${statusConfig.accentColor} mb-2 tracking-tight`}
+                      key={`title-${statusFilter}`}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
                     >
-                      Your Jobs
+                      {statusConfig.title}
                     </motion.h1>
                     <motion.p 
                       className="text-base text-muted-foreground"
+                      key={`desc-${statusFilter}`}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
                     >
-                      Manage and track your dubbing jobs
+                      {statusConfig.description}
                     </motion.p>
                   </div>
                 </div>
@@ -238,6 +310,7 @@ export default function JobsPage() {
           onViewJob={handleViewJob}
           onDownloadJob={handleDownloadJob}
           onDeleteJob={handleDeleteJob}
+          onStatusFilterChange={handleStatusFilterChange}
         />
         </main>
       </div>

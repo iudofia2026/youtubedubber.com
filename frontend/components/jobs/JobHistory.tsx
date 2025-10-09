@@ -18,6 +18,7 @@ interface JobHistoryProps {
   onViewJob?: (jobId: string) => void;
   onDownloadJob?: (jobId: string) => void;
   onDeleteJob?: (jobId: string) => void;
+  onStatusFilterChange?: (status: JobStatus) => void;
 }
 
 export function JobHistory({
@@ -26,7 +27,8 @@ export function JobHistory({
   onRefresh,
   onViewJob,
   onDownloadJob,
-  onDeleteJob
+  onDeleteJob,
+  onStatusFilterChange
 }: JobHistoryProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -153,7 +155,8 @@ export function JobHistory({
   const handleStatusChange = useCallback((status: JobStatus) => {
     setStatusFilter(status);
     updateURL({ status });
-  }, [updateURL]);
+    onStatusFilterChange?.(status);
+  }, [updateURL, onStatusFilterChange]);
 
   const handleSortChange = useCallback((sort: SortOption) => {
     setSortBy(sort);
