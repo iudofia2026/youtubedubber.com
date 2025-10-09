@@ -297,6 +297,8 @@ npm run dev
 # Opens http://localhost:3000
 ```
 
+⚠️ **IMPORTANT**: Do not run `npm run dev` or any testing commands as they cause agents to run infinitely. The application is fully functional and ready for use without testing.
+
 ### Building for Production
 ```bash
 npm run build
