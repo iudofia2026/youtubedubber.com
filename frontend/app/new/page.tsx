@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle, Play, Pause, Scissors, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle, Play, Pause, Scissors, Volume2, VolumeX, FileAudio, Zap, Download, Star } from 'lucide-react';
 import Link from 'next/link';
 import { FileUpload } from '@/components/FileUpload';
 import { LanguageChecklist } from '@/components/LanguageChecklist';
@@ -39,10 +39,86 @@ export default function NewJobPage() {
   const [isCheckingJobs, setIsCheckingJobs] = useState(true);
 
   const steps = [
-    { id: 0, title: 'Audio Setup', description: 'Prepare your audio files', icon: Scissors },
+    { id: 0, title: 'How It Works', description: 'Learn the process', icon: Scissors },
     { id: 1, title: 'Voice Track', description: 'Upload your voice-only audio file', icon: Mic },
     { id: 2, title: 'Background Track', description: 'Add background music (optional)', icon: Music },
     { id: 3, title: 'Target Languages', description: 'Select languages for dubbing', icon: Globe },
+  ];
+
+  // How it works steps content
+  const howItWorksSteps = [
+    {
+      number: '01',
+      title: 'Prepare Your Audio',
+      description: 'Split your video audio into separate voice and background tracks for optimal dubbing quality.',
+      icon: FileAudio,
+      details: [
+        'Import your video into any video editor',
+        'Export voice track (speech only, no music)',
+        'Export background track (music, SFX, ambient)',
+        'Ensure both tracks are the same duration'
+      ],
+      tips: [
+        'Use high-quality audio (48kHz/24-bit recommended)',
+        'Remove background noise from voice track',
+        'Keep background music at consistent levels'
+      ],
+      color: 'from-blue-500 to-cyan-500'
+    },
+    {
+      number: '02',
+      title: 'Upload Your Files',
+      description: 'Upload your prepared audio tracks and select your target languages for dubbing.',
+      icon: Upload,
+      details: [
+        'Upload voice track (required)',
+        'Upload background track (optional)',
+        'Select target languages (1-12+ languages)',
+        'Review file details and confirm'
+      ],
+      tips: [
+        'Supported formats: MP3, WAV, M4A, FLAC',
+        'Maximum file size: 100MB per track',
+        'Processing time: 2-5 minutes per language'
+      ],
+      color: 'from-purple-500 to-pink-500'
+    },
+    {
+      number: '03',
+      title: 'AI Processing',
+      description: 'Our advanced AI analyzes your voice and generates natural-sounding dubs in your chosen languages.',
+      icon: Zap,
+      details: [
+        'Speech-to-text conversion',
+        'Translation to target languages',
+        'AI voice generation and cloning',
+        'Audio mixing and synchronization'
+      ],
+      tips: [
+        'Processing happens in the cloud',
+        'Real-time progress tracking',
+        'Quality optimization for each language'
+      ],
+      color: 'from-yellow-500 to-orange-500'
+    },
+    {
+      number: '04',
+      title: 'Download & Use',
+      description: 'Download your completed dubs and integrate them into your content for maximum impact.',
+      icon: Download,
+      details: [
+        'Download voice-only tracks',
+        'Download full-mix tracks',
+        'Get subtitle files (SRT/VTT)',
+        'Files available for 48 hours'
+      ],
+      tips: [
+        'Test audio quality before publishing',
+        'Sync with your video timeline',
+        'Keep backups of your files'
+      ],
+      color: 'from-green-500 to-emerald-500'
+    }
   ];
 
   // Function to check if user has past jobs
@@ -290,216 +366,148 @@ export default function NewJobPage() {
                     </motion.div>
                     
                     <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight">
-                      Prepare Your Audio Files
+                      How It Works
                     </h2>
                     <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                      Before we can create multilingual dubs, you&apos;ll need to split your video&apos;s audio into two separate MP3 files
+                      Learn how our AI-powered platform transforms your content into multilingual dubs in just 4 simple steps
                     </p>
-                    
-                    {/* Auto-scroll indicator */}
-                    <motion.div
-                      className="mt-6 flex flex-col items-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.6, delay: 1.5 }}
-                    >
-                      <motion.p
-                        className="text-sm text-muted-foreground mb-2"
-                        animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                      >
-                        Detailed instructions below
-                      </motion.p>
-                      <motion.div
-                        className="text-muted-foreground/60"
-                        animate={{ y: [0, 8, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </motion.div>
-                    </motion.div>
                   </motion.div>
 
-
-                  {/* Enhanced Instructions - Centerpiece */}
+                  {/* How It Works Steps */}
                   <motion.div
                     ref={instructionsRef}
-                    className="max-w-5xl mx-auto"
+                    className="max-w-6xl mx-auto"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.6 }}
                   >
-                    {/* Main Container with Enhanced Styling */}
-                    <div className="relative bg-gradient-to-br from-[#ff0000]/5 via-[#ff0000]/3 to-[#ff0000]/8 border-2 border-[#ff0000]/20 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
-                      {/* Decorative Background Elements */}
-                      <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                        <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#ff0000]/10 rounded-full blur-xl" />
-                        <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#ff0000]/5 rounded-full blur-2xl" />
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[#ff0000]/3 rounded-full blur-3xl" />
-                      </div>
-                      
-                      {/* Header Section */}
-                      <motion.div
-                        className="text-center mb-8 relative z-10"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.8 }}
-                      >
-                        <motion.div
-                          className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-2xl mb-4 shadow-lg"
-                          whileHover={{ scale: 1.05, rotate: 5 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <Scissors className="w-8 h-8 text-white" />
-                        </motion.div>
+                    <div className="space-y-12">
+                      {howItWorksSteps.map((step, index) => {
+                        const Icon = step.icon;
+                        const isEven = index % 2 === 0;
                         
-                        <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 tracking-tight">
-                          How to Split Your Audio
-                        </h3>
-                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                          Follow these steps to prepare your audio files for multilingual dubbing
-                        </p>
-                      </motion.div>
-
-                      {/* Enhanced Step Cards */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-                        {/* Step 1 */}
-                        <motion.div
-                          className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-[#ff0000]/20 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.6, delay: 1.0 }}
-                          whileHover={{ y: -5 }}
-                        >
-                          <div className="flex items-start space-x-4">
-                            <motion.div
-                              className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
-                              whileHover={{ rotate: 10 }}
-                            >
-                              <span className="text-white font-bold text-lg">1</span>
-                            </motion.div>
+                        return (
+                          <motion.div
+                            key={step.number}
+                            className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-8`}
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: index * 0.2 }}
+                          >
+                            {/* Content */}
                             <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[#ff0000] transition-colors duration-300">
-                                Import Your Video
-                              </h4>
-                              <p className="text-muted-foreground leading-relaxed">
-                                Use any audio editing software (Audacity, Adobe Audition, DaVinci Resolve, etc.) and import your video file
-                              </p>
+                              <motion.div
+                                className="flex items-center space-x-4 mb-6"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.6, delay: index * 0.2 + 0.2 }}
+                              >
+                                <div className={`w-16 h-16 bg-gradient-to-r ${step.color} flex items-center justify-center rounded-lg`}>
+                                  <Icon className="w-8 h-8 text-white" />
+                                </div>
+                                <div>
+                                  <div className="text-sm font-medium text-[#ff0000] mb-1">Step {step.number}</div>
+                                  <h3 className="text-2xl font-bold text-foreground">{step.title}</h3>
+                                </div>
+                              </motion.div>
+                              
+                              <motion.p
+                                className="text-lg text-muted-foreground mb-8 font-light leading-relaxed"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.6, delay: index * 0.2 + 0.3 }}
+                              >
+                                {step.description}
+                              </motion.p>
+                              
+                              <div className="space-y-6">
+                                <div>
+                                  <h4 className="text-lg font-semibold text-foreground mb-4">What you'll do:</h4>
+                                  <ul className="space-y-3">
+                                    {step.details.map((detail, detailIndex) => (
+                                      <motion.li
+                                        key={detailIndex}
+                                        className="flex items-start space-x-3"
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.6, delay: index * 0.2 + 0.4 + detailIndex * 0.1 }}
+                                      >
+                                        <CheckCircle className="w-5 h-5 text-[#ff0000] flex-shrink-0 mt-0.5" />
+                                        <span className="text-muted-foreground">{detail}</span>
+                                      </motion.li>
+                                    ))}
+                                  </ul>
+                                </div>
+                                
+                                <div>
+                                  <h4 className="text-lg font-semibold text-foreground mb-4">Pro tips:</h4>
+                                  <ul className="space-y-2">
+                                    {step.tips.map((tip, tipIndex) => (
+                                      <motion.li
+                                        key={tipIndex}
+                                        className="flex items-start space-x-3"
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.6, delay: index * 0.2 + 0.5 + tipIndex * 0.1 }}
+                                      >
+                                        <Star className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-1" />
+                                        <span className="text-sm text-muted-foreground">{tip}</span>
+                                      </motion.li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                          {/* Decorative line */}
-                          <div className="absolute bottom-0 left-6 right-6 h-1 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </motion.div>
-
-                        {/* Step 2 */}
-                        <motion.div
-                          className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-[#ff0000]/20 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.6, delay: 1.2 }}
-                          whileHover={{ y: -5 }}
-                        >
-                          <div className="flex items-start space-x-4">
-                            <motion.div
-                              className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
-                              whileHover={{ rotate: 10 }}
-                            >
-                              <span className="text-white font-bold text-lg">2</span>
-                            </motion.div>
-                            <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[#ff0000] transition-colors duration-300">
-                                Split the Audio
-                              </h4>
-                              <p className="text-muted-foreground leading-relaxed">
-                                Create two separate tracks: one with only voice, one with only background audio
-                              </p>
+                            
+                            {/* Visual */}
+                            <div className="flex-1 flex justify-center">
+                              <motion.div
+                                className={`w-80 h-80 bg-gradient-to-br ${step.color} rounded-2xl flex items-center justify-center relative overflow-hidden`}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.8, delay: index * 0.2 + 0.3 }}
+                                whileHover={{ scale: 1.05 }}
+                              >
+                                <Icon className="w-32 h-32 text-white/80" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+                                  <span className="text-white font-bold text-sm">{step.number}</span>
+                                </div>
+                              </motion.div>
                             </div>
-                          </div>
-                          {/* Decorative line */}
-                          <div className="absolute bottom-0 left-6 right-6 h-1 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </motion.div>
-
-                        {/* Step 3 */}
-                        <motion.div
-                          className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-[#ff0000]/20 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.6, delay: 1.4 }}
-                          whileHover={{ y: -5 }}
-                        >
-                          <div className="flex items-start space-x-4">
-                            <motion.div
-                              className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
-                              whileHover={{ rotate: 10 }}
-                            >
-                              <span className="text-white font-bold text-lg">3</span>
-                            </motion.div>
-                            <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[#ff0000] transition-colors duration-300">
-                                Export Voice Track
-                              </h4>
-                              <p className="text-muted-foreground leading-relaxed">
-                                Export the voice-only track as an MP3 file (clean speech, no background music)
-                              </p>
-                            </div>
-                          </div>
-                          {/* Decorative line */}
-                          <div className="absolute bottom-0 left-6 right-6 h-1 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </motion.div>
-
-                        {/* Step 4 */}
-                        <motion.div
-                          className="group relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-[#ff0000]/20 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.6, delay: 1.6 }}
-                          whileHover={{ y: -5 }}
-                        >
-                          <div className="flex items-start space-x-4">
-                            <motion.div
-                              className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
-                              whileHover={{ rotate: 10 }}
-                            >
-                              <span className="text-white font-bold text-lg">4</span>
-                            </motion.div>
-                            <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[#ff0000] transition-colors duration-300">
-                                Export Background Track
-                              </h4>
-                              <p className="text-muted-foreground leading-relaxed">
-                                Export the background track as an MP3 file with the same duration as the voice track
-                              </p>
-                            </div>
-                          </div>
-                          {/* Decorative line */}
-                          <div className="absolute bottom-0 left-6 right-6 h-1 bg-gradient-to-r from-[#ff0000] to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </motion.div>
-                      </div>
-
-                      {/* Important Note */}
-                      <motion.div
-                        className="mt-8 p-4 bg-[#ff0000]/10 border border-[#ff0000]/30 rounded-xl relative z-10"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 1.8 }}
-                      >
-                        <div className="flex items-start space-x-3">
-                          <div className="flex-shrink-0 w-6 h-6 bg-[#ff0000] rounded-full flex items-center justify-center">
-                            <span className="text-white text-sm font-bold">!</span>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-foreground mb-1">Important</p>
-                            <p className="text-sm text-muted-foreground">
-                              Both audio files must have the exact same duration for proper synchronization during dubbing.
-                            </p>
-                          </div>
-                        </div>
-                      </motion.div>
+                          </motion.div>
+                        );
+                      })}
                     </div>
                   </motion.div>
 
+                  {/* CTA Section */}
+                  <motion.div
+                    className="max-w-4xl mx-auto text-center"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 1.0 }}
+                  >
+                    <div className="bg-gradient-to-r from-[#ff0000]/10 to-[#ff0000]/5 border border-[#ff0000]/20 p-8 rounded-lg">
+                      <h3 className="text-2xl font-bold text-foreground mb-4 tracking-tight">
+                        Ready to Get Started?
+                      </h3>
+                      
+                      <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto font-light leading-relaxed">
+                        Now that you know how it works, let&apos;s create your first multilingual dub!
+                      </p>
+                      
+                      <motion.button
+                        onClick={() => setCurrentStep(1)}
+                        className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Upload className="w-5 h-5" />
+                        <span>Start Your First Dub</span>
+                      </motion.button>
+                    </div>
+                  </motion.div>
                 </div>
               )}
 
@@ -980,7 +988,15 @@ export default function NewJobPage() {
           >
             <div className="flex items-center justify-center space-x-8">
               {steps
-                .filter(step => hasPastJobs ? step.id !== 0 : true) // Hide step 0 for returning users
+                .filter(step => {
+                  // Show "How it Works" step (id 0) only for users with no past jobs
+                  if (step.id === 0) {
+                    return hasPastJobs === false;
+                  }
+                  // For returning users, hide step 0 (audio setup) and show steps 1-3
+                  // For new users, show all steps including "How it Works"
+                  return true;
+                })
                 .map((step, index) => {
                 const Icon = step.icon;
                 const isActive = currentStep === step.id;
