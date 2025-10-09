@@ -30,9 +30,8 @@ export default function NewJobPage() {
     general?: string;
   }>({});
   
-  // Refs for auto-scroll functionality
+  // Refs for instructions
   const instructionsRef = useRef<HTMLDivElement>(null);
-  const [hasAutoScrolled, setHasAutoScrolled] = useState(false);
   
   // State for checking if user has past jobs
   const [hasPastJobs, setHasPastJobs] = useState<boolean | null>(null);
@@ -151,43 +150,6 @@ export default function NewJobPage() {
     checkPastJobs();
   }, [checkPastJobs]);
 
-  // Custom smooth scroll function with duration control
-  const smoothScrollToElement = (element: HTMLElement, duration: number = 2000) => {
-    const targetPosition = element.offsetTop - window.innerHeight / 2 + element.offsetHeight / 2;
-    const startPosition = window.pageYOffset;
-    const distance = targetPosition - startPosition;
-    let startTime: number | null = null;
-
-    const animation = (currentTime: number) => {
-      if (startTime === null) startTime = currentTime;
-      const timeElapsed = currentTime - startTime;
-      const progress = Math.min(timeElapsed / duration, 1);
-      
-      // Easing function for smooth animation (ease-in-out)
-      const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
-      const easedProgress = easeInOutCubic(progress);
-      
-      window.scrollTo(0, startPosition + distance * easedProgress);
-      
-      if (progress < 1) {
-        requestAnimationFrame(animation);
-      }
-    };
-
-    requestAnimationFrame(animation);
-  };
-
-  // Auto-scroll to instructions after initial load (only for first-time users)
-  useEffect(() => {
-    if (currentStep === 0 && !hasAutoScrolled && instructionsRef.current && hasPastJobs === false) {
-      const timer = setTimeout(() => {
-        smoothScrollToElement(instructionsRef.current!, 3000); // 3 seconds duration
-        setHasAutoScrolled(true);
-      }, 2500); // Wait 2.5 seconds before scrolling
-
-      return () => clearTimeout(timer);
-    }
-  }, [currentStep, hasAutoScrolled, hasPastJobs]);
 
   const validateStep = useCallback((step: number) => {
     if (step === 0) {
