@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
@@ -177,27 +177,20 @@ export default function JobsPage() {
             <div className="relative z-10 p-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div className="flex items-center space-x-4">
-                  <motion.div
-                    className="w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-2xl flex items-center justify-center shadow-lg"
-                    animate={{ 
-                      rotate: [0, 5, -5, 0],
-                      scale: [1, 1.05, 1]
-                    }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    <BarChart3 className="w-8 h-8 text-white" />
-                  </motion.div>
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-xl flex items-center justify-center shadow-lg">
+                    <BarChart3 className="w-6 h-6 text-white" />
+                  </div>
                   <div>
                     <motion.h1 
-                      className="text-4xl sm:text-5xl font-bold text-foreground mb-2 tracking-tight"
+                      className="text-2xl sm:text-3xl font-bold text-foreground mb-2 tracking-tight"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
                     >
-                      🎬 Your Jobs
+                      Your Jobs
                     </motion.h1>
                     <motion.p 
-                      className="text-xl text-muted-foreground"
+                      className="text-base text-muted-foreground"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
