@@ -69,9 +69,13 @@ frontend/
    - **Sign In** (`/auth/signin`): User login with email/password
    - **Sign Up** (`/auth/signup`): User registration with terms acceptance
    - **Password Reset** (`/auth/reset-password`): Email-based password reset
-9. **Legal Pages**:
-   - **Terms of Service** (`/legal/terms`): Comprehensive terms and conditions
-   - **Privacy Policy** (`/legal/privacy`): Data protection and privacy information
+9. **Support Pages**:
+   - **Help Center** (`/help`): Comprehensive FAQ, search functionality, and categorized help articles
+   - **Contact Us** (`/contact`): Contact form, support methods, and quick links
+   - **Status** (`/status`): System status, uptime metrics, and incident history
+10. **Legal Pages**:
+    - **Terms of Service** (`/legal/terms`): Comprehensive terms and conditions
+    - **Privacy Policy** (`/legal/privacy`): Data protection and privacy information
 
 ## 🔧 Current Functionality
 
@@ -1206,3 +1210,34 @@ CREATE TABLE jobs (
   - **Consistent Branding**: Matches overall design system and color scheme
   - **Accessibility**: Proper semantic HTML and keyboard navigation
   - **Performance**: Optimized with proper lazy loading and animations
+
+### Support Pages Implementation (Latest Update)
+- **Help Center Page** (`/help`): Comprehensive support hub featuring:
+  - **Search Functionality**: Real-time search through FAQ and help articles
+  - **Categorized Content**: 8 categories (Getting Started, Audio Upload, Languages, etc.)
+  - **Interactive FAQ**: Expandable FAQ with 10+ common questions and answers
+  - **Quick Actions**: Direct links to key features and support options
+  - **Premium UI/UX**: YouTube-inspired design with smooth animations and gradients
+  - **Responsive Design**: Mobile-optimized with touch-friendly interactions
+
+- **Contact Us Page** (`/contact`): Professional contact interface including:
+  - **Contact Form**: Multi-category form with priority levels and validation
+  - **Contact Methods**: Email, phone, and live chat options with response times
+  - **Contact Information**: Business hours, office location, and support details
+  - **Quick Links**: Direct access to help center, status page, and pricing
+  - **Form Validation**: Real-time validation with success/error feedback
+  - **Premium Design**: Consistent branding with animated elements
+
+- **Status Page** (`/status`): System health monitoring dashboard featuring:
+  - **Overall Status**: System-wide health indicator with uptime metrics
+  - **Service Status**: Individual service health (API, Audio Processing, File Storage, etc.)
+  - **Performance Metrics**: Response times, success rates, and usage statistics
+  - **Incident History**: Recent incidents with severity levels and resolution details
+  - **Real-time Updates**: Refresh functionality with last updated timestamps
+  - **Professional Design**: Clean, informative layout with status indicators
+
+- **Footer Integration**: Updated footer with working support links:
+  - **Help Center Link**: Direct navigation to comprehensive help section
+  - **Contact Us Link**: Easy access to contact form and support options
+  - **Status Link**: Quick access to system status and health monitoring
+  - **Consistent Styling**: All links properly styled and functional
