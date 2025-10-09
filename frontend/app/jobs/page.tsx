@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Plus, BarChart3, BarChart } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
@@ -14,10 +15,23 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function JobsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'processing' | 'complete' | 'error'>('all');
   const { error: showError } = useToastHelpers();
+
+  // Initialize status filter from URL parameters
+  useEffect(() => {
+    if (!searchParams) return;
+    
+    const status = searchParams.get('status') as 'all' | 'pending' | 'processing' | 'complete' | 'error';
+    if (status && ['all', 'pending', 'processing', 'complete', 'error'].includes(status)) {
+      setStatusFilter(status);
+    } else {
+      setStatusFilter('all');
+    }
+  }, [searchParams]);
 
   // Mock data for demonstration - in real app, this would come from API
   useEffect(() => {
@@ -135,6 +149,17 @@ export default function JobsPage() {
 
   const handleStatusFilterChange = (status: 'all' | 'pending' | 'processing' | 'complete' | 'error') => {
     setStatusFilter(status);
+    
+    // Update URL to reflect the status change
+    const params = new URLSearchParams(window.location.search);
+    if (status === 'all') {
+      params.delete('status');
+    } else {
+      params.set('status', status);
+    }
+    
+    const newURL = params.toString() ? `?${params.toString()}` : '';
+    router.push(`/jobs${newURL}`, { scroll: false });
   };
 
   // Dynamic styling based on status filter
@@ -143,7 +168,7 @@ export default function JobsPage() {
       case 'pending':
         return {
           title: 'Pending Jobs',
-          description: 'Jobs waiting to be processed',
+          description: '',
           iconBg: 'from-yellow-500 to-orange-500',
           accentColor: 'text-yellow-600',
           bgGradient: 'from-yellow-500/10 via-transparent to-yellow-500/10',
@@ -152,7 +177,7 @@ export default function JobsPage() {
       case 'processing':
         return {
           title: 'Processing Jobs',
-          description: 'Jobs currently being processed by AI',
+          description: '',
           iconBg: 'from-blue-500 to-cyan-500',
           accentColor: 'text-blue-600',
           bgGradient: 'from-blue-500/10 via-transparent to-blue-500/10',
@@ -161,7 +186,7 @@ export default function JobsPage() {
       case 'complete':
         return {
           title: 'Completed Jobs',
-          description: 'Successfully completed dubbing jobs',
+          description: '',
           iconBg: 'from-green-500 to-emerald-500',
           accentColor: 'text-green-600',
           bgGradient: 'from-green-500/10 via-transparent to-green-500/10',
@@ -170,7 +195,7 @@ export default function JobsPage() {
       case 'error':
         return {
           title: 'Failed Jobs',
-          description: 'Jobs that encountered errors during processing',
+          description: '',
           iconBg: 'from-red-500 to-pink-500',
           accentColor: 'text-red-600',
           bgGradient: 'from-red-500/10 via-transparent to-red-500/10',
@@ -251,7 +276,7 @@ export default function JobsPage() {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
                   >
-                    <BarChart3 className="w-6 h-6 text-white" />
+                    <BarChart className="w-6 h-6 text-white" />
                   </motion.div>
                   <div>
                     <motion.h1 
@@ -263,15 +288,17 @@ export default function JobsPage() {
                     >
                       {statusConfig.title}
                     </motion.h1>
-                    <motion.p 
-                      className="text-base text-muted-foreground"
-                      key={`desc-${statusFilter}`}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.6, delay: 0.3 }}
-                    >
-                      {statusConfig.description}
-                    </motion.p>
+                    {statusConfig.description && (
+                      <motion.p 
+                        className="text-base text-muted-foreground"
+                        key={`desc-${statusFilter}`}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                      >
+                        {statusConfig.description}
+                      </motion.p>
+                    )}
                   </div>
                 </div>
                 
