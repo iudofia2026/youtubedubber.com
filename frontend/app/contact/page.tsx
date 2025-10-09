@@ -41,23 +41,8 @@ export default function ContactUs() {
       icon: Mail,
       contact: 'support@ytdubber.com',
       responseTime: '24 hours',
-      color: 'from-blue-500 to-cyan-500'
-    },
-    {
-      title: 'Live Chat',
-      description: 'Chat with our support team in real-time',
-      icon: MessageCircle,
-      contact: 'Available 9 AM - 6 PM PST',
-      responseTime: 'Immediate',
-      color: 'from-green-500 to-emerald-500'
-    },
-    {
-      title: 'Phone Support',
-      description: 'Speak directly with our team',
-      icon: Phone,
-      contact: '+1 (555) 123-4567',
-      responseTime: 'Business hours',
-      color: 'from-purple-500 to-pink-500'
+      color: 'from-blue-500 to-cyan-500',
+      isPrimary: true
     }
   ];
 
@@ -152,34 +137,46 @@ export default function ContactUs() {
               <h2 className="text-2xl font-bold text-foreground text-center mb-8">
                 Get in Touch
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="max-w-2xl mx-auto">
                 {contactMethods.map((method, index) => {
                   const Icon = method.icon;
                   return (
                     <motion.div
                       key={method.title}
-                      className="bg-card border border-border rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300 hover:border-[#ff0000]/20"
+                      className={`bg-card border-2 ${method.isPrimary ? 'border-[#ff0000] shadow-lg' : 'border-border'} rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-                      whileHover={{ y: -5 }}
+                      whileHover={{ y: -5, scale: 1.02 }}
                     >
-                      <div className={`w-16 h-16 bg-gradient-to-r ${method.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
-                        <Icon className="w-8 h-8 text-white" />
+                      <div className={`w-20 h-20 bg-gradient-to-r ${method.color} rounded-2xl flex items-center justify-center mx-auto mb-6`}>
+                        <Icon className="w-10 h-10 text-white" />
                       </div>
-                      <h3 className="text-xl font-semibold text-foreground mb-2">
+                      <h3 className="text-2xl font-bold text-foreground mb-3">
                         {method.title}
                       </h3>
-                      <p className="text-muted-foreground mb-4">
+                      <p className="text-lg text-muted-foreground mb-6">
                         {method.description}
                       </p>
-                      <div className="space-y-2">
-                        <p className="text-[#ff0000] font-medium">
+                      <div className="space-y-3">
+                        <a
+                          href={`mailto:${method.contact}`}
+                          className="inline-block text-2xl font-bold text-[#ff0000] hover:text-[#cc0000] transition-colors duration-200"
+                        >
                           {method.contact}
-                        </p>
+                        </a>
                         <p className="text-sm text-muted-foreground">
                           Response time: {method.responseTime}
                         </p>
+                        <div className="mt-6">
+                          <a
+                            href={`mailto:${method.contact}?subject=YT Dubber Support Request`}
+                            className="inline-flex items-center space-x-2 bg-[#ff0000] text-white px-8 py-4 rounded-lg font-medium hover:bg-[#cc0000] transition-colors duration-200"
+                          >
+                            <Mail className="w-5 h-5" />
+                            <span>Send Email</span>
+                          </a>
+                        </div>
                       </div>
                     </motion.div>
                   );
@@ -379,11 +376,11 @@ export default function ContactUs() {
                           Email Support
                         </h3>
                         <p className="text-muted-foreground mb-2">
-                          For general inquiries and support
+                          For all inquiries and support requests
                         </p>
                         <a
                           href="mailto:support@ytdubber.com"
-                          className="text-[#ff0000] hover:text-[#cc0000] font-medium"
+                          className="text-[#ff0000] hover:text-[#cc0000] font-medium text-lg"
                         >
                           support@ytdubber.com
                         </a>
@@ -392,55 +389,54 @@ export default function ContactUs() {
 
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Phone className="w-6 h-6 text-white" />
+                        <Clock className="w-6 h-6 text-white" />
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-foreground mb-1">
-                          Phone Support
+                          Response Time
                         </h3>
                         <p className="text-muted-foreground mb-2">
-                          Available during business hours
+                          We typically respond within
                         </p>
-                        <a
-                          href="tel:+15551234567"
-                          className="text-[#ff0000] hover:text-[#cc0000] font-medium"
-                        >
-                          +1 (555) 123-4567
-                        </a>
+                        <p className="text-foreground font-medium">
+                          24 hours
+                        </p>
                       </div>
                     </div>
 
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Clock className="w-6 h-6 text-white" />
+                        <MessageCircle className="w-6 h-6 text-white" />
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-foreground mb-1">
-                          Business Hours
+                          What We Help With
                         </h3>
                         <p className="text-muted-foreground mb-2">
-                          Monday - Friday
+                          Technical support, billing questions, feature requests
                         </p>
-                        <p className="text-foreground font-medium">
-                          9:00 AM - 6:00 PM PST
+                        <p className="text-foreground text-sm">
+                          General inquiries and feedback
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <MapPin className="w-6 h-6 text-white" />
+                        <Zap className="w-6 h-6 text-white" />
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-foreground mb-1">
-                          Office Location
+                          Quick Tips
                         </h3>
                         <p className="text-muted-foreground mb-2">
-                          San Francisco, CA
+                          For faster support, include:
                         </p>
-                        <p className="text-foreground">
-                          Remote-first company
-                        </p>
+                        <ul className="text-foreground text-sm space-y-1">
+                          <li>• Your account email</li>
+                          <li>• Job ID (if applicable)</li>
+                          <li>• Detailed description</li>
+                        </ul>
                       </div>
                     </div>
                   </div>
