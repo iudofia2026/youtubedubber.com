@@ -97,7 +97,7 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
     } catch (error) {
       console.error('Failed to submit job:', error);
       const errorMessage = error instanceof Error ? error.message : 'There was an error submitting your job. Please try again.';
-      showError('Submission failed', errorMessage);
+      handleApiError(error, 'Job Submission');
       setUploadProgress({
         progress: 0,
         status: 'error',

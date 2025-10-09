@@ -175,3 +175,28 @@ export const JOB_STATUS_MESSAGES = {
   finalizing: 'Finalizing...',
   complete: 'Complete!',
 } as const;
+
+// Error handling types
+export interface ApiError {
+  type: 'network' | 'validation' | 'server' | 'auth' | 'not_found' | 'rate_limit' | 'unknown';
+  message: string;
+  details?: any;
+  statusCode?: number;
+  retryable?: boolean;
+}
+
+export interface BackendErrorResponse {
+  error: string;
+  message: string;
+  details?: any;
+  voice_duration?: number;
+  background_duration?: number;
+  status_code?: number;
+}
+
+export interface NetworkStatus {
+  isOnline: boolean;
+  isSlowConnection: boolean;
+  connectionType?: string;
+  effectiveType?: string;
+}
