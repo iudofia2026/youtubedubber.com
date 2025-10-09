@@ -6,9 +6,11 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Mic, Globe, Zap, DollarSign, BarChart3 } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
+import { useAuth } from '@/lib/auth-context';
 
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
+  const { user } = useAuth();
 
   const handleScroll = useCallback(() => {
     setScrollY(window.scrollY);
@@ -97,16 +99,18 @@ export default function Home() {
                 </motion.button>
               </Link>
               
-              <Link href="/jobs">
-                <motion.button
-                  className="inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <BarChart3 className="w-5 h-5" />
-                  <span>View Jobs</span>
-                </motion.button>
-              </Link>
+              {user && (
+                <Link href="/jobs">
+                  <motion.button
+                    className="inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <BarChart3 className="w-5 h-5" />
+                    <span>View Jobs</span>
+                  </motion.button>
+                </Link>
+              )}
             </motion.div>
           </div>
         </motion.section>
