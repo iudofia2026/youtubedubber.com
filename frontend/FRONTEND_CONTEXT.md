@@ -920,7 +920,7 @@ CREATE TABLE jobs (
 
 **Latest Updates**:
 - ✅ **Smart First-Time User Detection**: Personalized workflow based on user history
-- ✅ **Conditional Audio Guide**: Only shows for new users, returning users start at upload
+- ✅ **How It Works Integration**: Complete "How It Works" content as Step 0 for users with 0 jobs
 - ✅ **Enhanced Visual Design**: Stunning gradient backgrounds and interactive step cards
 - ✅ **Auto-Smooth Scroll**: Guided experience with elegant scroll animation
 - ✅ **Step Management**: Smart navigation that adapts to user type
@@ -1070,11 +1070,18 @@ CREATE TABLE jobs (
 
 ### Upload Page Enhancements (Latest Update)
 - **Smart First-Time User Detection**: Implemented intelligent user flow based on job history
-  - **First-Time Users**: See complete audio preparation guide (Step 0) with visual instructions
+  - **First-Time Users**: See complete "How It Works" guide (Step 0) with 4-step process explanation
   - **Returning Users**: Start directly at "Upload Voice Track" (Step 1) for faster workflow
   - **User State Management**: Uses localStorage to track user history and personalize experience
   - **Loading State**: Professional loading spinner while checking user history
-  - **Welcome Back Message**: Explains why audio guide was skipped for returning users
+  - **Welcome Back Message**: Explains why guide was skipped for returning users
+
+- **How It Works Integration**: Complete onboarding experience for new users
+  - **4-Step Process**: Prepare Audio → Upload Files → AI Processing → Download & Use
+  - **Visual Design**: Color-coded gradient cards with detailed instructions and pro tips
+  - **Interactive Elements**: Hover animations, step-by-step details, and visual icons
+  - **Call-to-Action**: Clean "Get Started" button to proceed to actual job creation
+  - **Responsive Layout**: Alternating left/right layout for visual interest
 
 - **Enhanced Audio Preparation Guide (Step 0)**: Comprehensive visual centerpiece for new users
   - **Stunning Visual Design**: Gradient backgrounds with decorative blur elements
@@ -1085,7 +1092,7 @@ CREATE TABLE jobs (
   - **Responsive Layout**: 2x2 grid that works on all screen sizes
 
 - **Conditional Step Navigation**: Smart step management based on user type
-  - **First-Time Users**: Full 4-step process (Audio Setup → Voice → Background → Languages)
+  - **First-Time Users**: Full 4-step process (How It Works → Voice → Background → Languages)
   - **Returning Users**: 3-step process (Voice → Background → Languages)
   - **Step Filtering**: Progress bar only shows relevant steps for each user type
   - **Navigation Logic**: Prevents returning users from going back to Step 0
