@@ -923,7 +923,6 @@ CREATE TABLE jobs (
 - ✅ **Smart First-Time User Detection**: Personalized workflow based on user history
 - ✅ **How It Works Integration**: Complete "How It Works" content as Step 0 for users with 0 jobs
 - ✅ **Enhanced Visual Design**: Stunning gradient backgrounds and interactive step cards
-- ✅ **Auto-Smooth Scroll**: Guided experience with elegant scroll animation
 - ✅ **Step Management**: Smart navigation that adapts to user type
 - ✅ **Rules of Hooks Fix**: Resolved React hook order violation
 - ✅ **Jobs Dropdown Navigation Fix**: Fixed navigation issues with filtered job pages
@@ -1098,12 +1097,12 @@ CREATE TABLE jobs (
   - **Interactive Elements**: Hover animations, step-by-step details, and visual icons
   - **Call-to-Action**: Clean "Get Started" button to proceed to actual job creation
   - **Responsive Layout**: Alternating left/right layout for visual interest
+  - **Clean UX**: No autoscroll - users can explore at their own pace
 
 - **Enhanced Audio Preparation Guide (Step 0)**: Comprehensive visual centerpiece for new users
   - **Stunning Visual Design**: Gradient backgrounds with decorative blur elements
   - **Interactive Step Cards**: 4-step process with hover animations and transitions
   - **Corrected Workflow Order**: Import → Split → Export Voice → Export Background
-  - **Auto-Smooth Scroll**: Automatically scrolls to instructions after 2.5 seconds
   - **Important Notes**: Duration synchronization requirements highlighted
   - **Responsive Layout**: 2x2 grid that works on all screen sizes
 
