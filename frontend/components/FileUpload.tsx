@@ -171,6 +171,7 @@ export function FileUpload({
       success('File validated successfully', `${file.name} is ready for upload`);
     } catch (error) {
       console.error('Failed to validate file:', error);
+      const errorMessage = error instanceof Error ? error.message : 'There was an error validating your file. Please try again.';
       handleApiError(error, 'File Validation');
       onUploadError?.(errorMessage);
     }
