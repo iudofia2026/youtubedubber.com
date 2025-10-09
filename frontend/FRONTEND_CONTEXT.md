@@ -55,18 +55,21 @@ frontend/
 
 ### Key Pages
 1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, feature showcase, CTAs
-2. **Upload** (`/new`): 4-step wizard starting with audio preparation guide, then file uploads and language selection
+2. **Features** (`/features`): Comprehensive feature showcase with comparison table and advanced capabilities
+3. **Pricing** (`/pricing`): Pricing plans with monthly/yearly toggle, add-ons, and FAQ section
+4. **How it Works** (`/how-it-works`): 4-step process explanation with visual guides and use cases
+5. **Upload** (`/new`): 4-step wizard starting with audio preparation guide, then file uploads and language selection
    - **Step 0**: Audio Setup - Animated visual guide explaining how to split video audio into voice and background tracks
    - **Step 1**: Voice Track Upload - Upload voice-only audio file
    - **Step 2**: Background Track Upload - Upload background music/ambient audio (optional)
    - **Step 3**: Target Languages - Select languages for dubbing
-3. **Job Status** (`/jobs/[id]`): Real-time progress tracking with per-language details
-4. **Jobs List** (`/jobs`): Complete job management interface with filtering and status tracking
-5. **Authentication Pages**:
+6. **Job Status** (`/jobs/[id]`): Real-time progress tracking with per-language details
+7. **Jobs List** (`/jobs`): Complete job management interface with filtering and status tracking
+8. **Authentication Pages**:
    - **Sign In** (`/auth/signin`): User login with email/password
    - **Sign Up** (`/auth/signup`): User registration with terms acceptance
    - **Password Reset** (`/auth/reset-password`): Email-based password reset
-6. **Legal Pages**:
+9. **Legal Pages**:
    - **Terms of Service** (`/legal/terms`): Comprehensive terms and conditions
    - **Privacy Policy** (`/legal/privacy`): Data protection and privacy information
 
@@ -366,6 +369,9 @@ When the backend is ready:
 - ✅ **Visual Refinements** - Reduced gradient intensity and cleaned up decorative elements for cleaner appearance
 - ✅ **File Preview System** - Complete audio preview player with play/pause, seek, volume control, and real-time progress tracking
 - ✅ **Development Authentication Bypass** - Complete development mode for testing without Supabase setup
+- ✅ **Marketing Pages** - Comprehensive Features, Pricing, and How it Works pages with professional UI/UX
+- ✅ **Navigation Updates** - Added links to all new pages in main navigation
+- ✅ **Footer Updates** - Updated footer links to point to actual pages instead of hash links
 
 **Next Steps**: Continue with remaining high-impact, low-effort items from the expansion roadmap.
 
@@ -752,7 +758,7 @@ lib/
    - Create download history view
    - **Effort**: 3-4 hours, **Impact**: High (completes user journey)
 
-**Current Status**: Foundation complete + error handling + job management + enhanced upload flow + navigation fixes + authentication system implemented. Ready for next phase of high-impact features.
+**Current Status**: Foundation complete + error handling + job management + enhanced upload flow + navigation fixes + authentication system implemented + comprehensive marketing pages (Features, Pricing, How it Works). Ready for next phase of high-impact features.
 
 ## 🔐 **AUTHENTICATION SYSTEM IMPLEMENTATION**
 
