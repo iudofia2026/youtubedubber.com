@@ -78,32 +78,182 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
     return job.progress || 0;
   };
 
+  const getStatusGradient = () => {
+    switch (job.status) {
+      case 'complete':
+        return 'from-green-50 via-emerald-50 to-green-100 dark:from-green-900/20 dark:via-emerald-900/10 dark:to-green-800/20';
+      case 'error':
+        return 'from-red-50 via-rose-50 to-red-100 dark:from-red-900/20 dark:via-rose-900/10 dark:to-red-800/20';
+      case 'pending':
+        return 'from-yellow-50 via-amber-50 to-yellow-100 dark:from-yellow-900/20 dark:via-amber-900/10 dark:to-yellow-800/20';
+      case 'processing':
+        return 'from-blue-50 via-cyan-50 to-blue-100 dark:from-blue-900/20 dark:via-cyan-900/10 dark:to-blue-800/20';
+      default:
+        return 'from-gray-50 via-gray-50 to-gray-100 dark:from-gray-900/20 dark:via-gray-900/10 dark:to-gray-800/20';
+    }
+  };
+
+  const getStatusBorder = () => {
+    switch (job.status) {
+      case 'complete':
+        return 'border-green-200 dark:border-green-700';
+      case 'error':
+        return 'border-red-200 dark:border-red-700';
+      case 'pending':
+        return 'border-yellow-200 dark:border-yellow-700';
+      case 'processing':
+        return 'border-blue-200 dark:border-blue-700';
+      default:
+        return 'border-gray-200 dark:border-gray-700';
+    }
+  };
+
   return (
     <motion.div
-      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-200 touch-manipulation"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.02 }}
+      className={`bg-gradient-to-br ${getStatusGradient()} rounded-xl border-2 ${getStatusBorder()} p-4 sm:p-6 hover:shadow-xl transition-all duration-300 touch-manipulation relative overflow-hidden`}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      whileHover={{ scale: 1.03, y: -5 }}
       whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.3 }}
     >
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        {job.status === 'complete' && (
+          <motion.div
+            className="absolute top-0 right-0 w-24 h-24 bg-green-500 rounded-full blur-2xl"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.6, 0.3]
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
+        )}
+        {job.status === 'error' && (
+          <motion.div
+            className="absolute top-0 right-0 w-24 h-24 bg-red-500 rounded-full blur-2xl"
+            animate={{ 
+              scale: [1, 1.3, 1],
+              opacity: [0.3, 0.7, 0.3]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        )}
+        {job.status === 'processing' && (
+          <motion.div
+            className="absolute top-0 right-0 w-24 h-24 bg-blue-500 rounded-full blur-2xl"
+            animate={{ 
+              scale: [1, 1.1, 1],
+              opacity: [0.3, 0.5, 0.3]
+            }}
+            transition={{ duration: 2.5, repeat: Infinity }}
+          />
+        )}
+        {job.status === 'pending' && (
+          <motion.div
+            className="absolute top-0 right-0 w-24 h-24 bg-yellow-500 rounded-full blur-2xl"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.6, 0.3]
+            }}
+            transition={{ duration: 2.8, repeat: Infinity }}
+          />
+        )}
+      </div>
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          {getStatusIcon()}
+      <div className="relative z-10 flex items-start justify-between mb-4">
+        <div className="flex items-center space-x-4">
+          <motion.div
+            className="relative"
+            animate={job.status === 'processing' ? { rotate: 360 } : {}}
+            transition={job.status === 'processing' ? { duration: 2, repeat: Infinity, ease: "linear" } : {}}
+          >
+            {job.status === 'complete' ? (
+              <motion.div
+                className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shadow-lg"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
+                <CheckCircle className="w-6 h-6 text-white" />
+              </motion.div>
+            ) : job.status === 'error' ? (
+              <motion.div
+                className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center shadow-lg"
+                animate={{ 
+                  rotate: [0, -5, 5, 0],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <AlertCircle className="w-6 h-6 text-white" />
+              </motion.div>
+            ) : job.status === 'processing' ? (
+              <motion.div
+                className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              >
+                <Loader2 className="w-6 h-6 text-white" />
+              </motion.div>
+            ) : (
+              <motion.div
+                className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg"
+                animate={{ 
+                  y: [0, -3, 0],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{ duration: 2.5, repeat: Infinity }}
+              >
+                <Clock className="w-6 h-6 text-white" />
+              </motion.div>
+            )}
+            
+            {/* Status indicator dot */}
+            <motion.div
+              className={`absolute -top-1 -right-1 w-4 h-4 rounded-full ${
+                job.status === 'complete' ? 'bg-green-400' :
+                job.status === 'error' ? 'bg-red-400' :
+                job.status === 'processing' ? 'bg-blue-400' : 'bg-yellow-400'
+              }`}
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.7, 1, 0.7]
+              }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </motion.div>
+          
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Job #{job.id.slice(-8)}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <motion.h3 
+              className="text-xl font-bold text-gray-900 dark:text-white mb-1"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              🎬 Job #{job.id.slice(-8)}
+            </motion.h3>
+            <motion.p 
+              className="text-sm text-gray-500 dark:text-gray-400"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
               {formatDate(job.createdAt)}
-            </p>
+            </motion.p>
           </div>
         </div>
         
-        <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}>
-          {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-        </div>
+        <motion.div 
+          className={`px-4 py-2 rounded-xl text-sm font-bold shadow-lg ${getStatusColor()}`}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          {job.status === 'complete' ? '✅ Complete' :
+           job.status === 'error' ? '❌ Error' :
+           job.status === 'processing' ? '⚡ Processing' : '⏳ Pending'}
+        </motion.div>
       </div>
 
       {/* Job Details */}

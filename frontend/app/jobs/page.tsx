@@ -145,39 +145,91 @@ export default function JobsPage() {
           <Breadcrumbs items={breadcrumbConfigs.jobs} />
         </motion.div>
 
-        {/* Header with Actions */}
+        {/* Creative Header with Visual Distinction */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 tracking-tight">
-                Your Jobs
-              </h1>
-              <p className="text-lg text-muted-foreground">
-                Manage and track your dubbing jobs
-              </p>
-            </div>
+          {/* Animated Background Pattern */}
+          <div className="relative mb-8">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/5 via-transparent to-[#ff0000]/5 rounded-2xl"></div>
+            <motion.div
+              className="absolute top-0 left-0 w-64 h-64 bg-[#ff0000]/10 rounded-full blur-3xl"
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3],
+                x: [0, 50, 0]
+              }}
+              transition={{ duration: 4, repeat: Infinity }}
+            />
+            <motion.div
+              className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"
+              animate={{ 
+                scale: [1, 1.3, 1],
+                opacity: [0.2, 0.5, 0.2],
+                x: [0, -30, 0]
+              }}
+              transition={{ duration: 3.5, repeat: Infinity }}
+            />
             
-            <div className="flex items-center space-x-3">
-              <Link
-                href="/"
-                className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group"
-              >
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
-                <span>Back to Home</span>
-              </Link>
-              
-              <Link
-                href="/new"
-                className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-[#ff0000] hover:bg-[#cc0000] rounded-lg transition-all duration-200 group"
-              >
-                <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
-                <span>New Job</span>
-              </Link>
+            <div className="relative z-10 p-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                <div className="flex items-center space-x-4">
+                  <motion.div
+                    className="w-16 h-16 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-2xl flex items-center justify-center shadow-lg"
+                    animate={{ 
+                      rotate: [0, 5, -5, 0],
+                      scale: [1, 1.05, 1]
+                    }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  >
+                    <BarChart3 className="w-8 h-8 text-white" />
+                  </motion.div>
+                  <div>
+                    <motion.h1 
+                      className="text-4xl sm:text-5xl font-bold text-foreground mb-2 tracking-tight"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                    >
+                      🎬 Your Jobs
+                    </motion.h1>
+                    <motion.p 
+                      className="text-xl text-muted-foreground"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.3 }}
+                    >
+                      Manage and track your dubbing jobs
+                    </motion.p>
+                  </div>
+                </div>
+                
+                <motion.div 
+                  className="flex items-center space-x-3"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  <Link
+                    href="/"
+                    className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
+                    <span>Back to Home</span>
+                  </Link>
+                  
+                  <Link
+                    href="/new"
+                    className="inline-flex items-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#ff0000] to-[#cc0000] hover:from-[#cc0000] hover:to-[#aa0000] rounded-xl transition-all duration-200 group shadow-lg hover:shadow-xl"
+                  >
+                    <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200" />
+                    <span>New Job</span>
+                  </Link>
+                </motion.div>
+              </div>
             </div>
           </div>
         </motion.div>

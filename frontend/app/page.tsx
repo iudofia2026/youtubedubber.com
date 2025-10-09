@@ -41,246 +41,106 @@ export default function Home() {
         <Navigation currentPath="/" />
         
         <main>
-          {/* Super Narrow Header with Pricing */}
+          {/* Hero Section */}
           <motion.section
-            className="py-6 relative overflow-hidden px-4 sm:px-6 lg:px-8"
+            className="py-20 sm:py-32 relative overflow-hidden px-4 sm:px-6 lg:px-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="text-center relative z-10">
-              <motion.div
-                className="inline-flex items-center text-[#ff0000] mb-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                <YTdubberIcon size={40} className="mx-2 sm:mx-3 sm:w-12 sm:h-12 w-10 h-10" />
-                <span className="text-2xl sm:text-3xl font-bold">YT Dubber</span>
-              </motion.div>
+          <div className="text-center relative z-10">
+            <motion.h1
+              className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            >
+              <span className="inline-flex items-center text-[#ff0000]">
+                YouTube
+                <YTdubberIcon size={80} className="mx-2 sm:mx-3 sm:w-24 sm:h-24 w-20 h-20" />
+                Dubber
+              </span>
+            </motion.h1>
+            
+            <motion.p
+              className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto font-light"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            >
+              Transform your content with{" "}
+              <span className="text-[#ff0000] font-medium">multilingual dubbing</span>
+            </motion.p>
+            
+            <motion.p
+              className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto font-light leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+            >
+              Upload your voice and background audio tracks, select your target language, 
+              and let us create professional-quality multilingual dubs for your content
+            </motion.p>
+            
+            <motion.div
+              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+            >
+              <Link href="/new">
+                <motion.button
+                  className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span>Start Dubbing</span>
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </Link>
               
-              <motion.h1
-                className="text-xl sm:text-2xl font-bold text-foreground mb-2 tracking-tight"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                Simple, Transparent
-                <span className="text-[#ff0000]"> Credit Pack Pricing</span>
-              </motion.h1>
-              
-              <motion.p
-                className="text-sm sm:text-base text-muted-foreground mb-4 max-w-2xl mx-auto font-light"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-              >
-                Buy credit packs that never expire. No subscriptions, no monthly fees. 
-                Start free and scale as you grow.
-              </motion.p>
-              
-              <motion.div
-                className="flex flex-col sm:flex-row items-center justify-center gap-2"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              >
-                <Link href="/new">
+              {user && (
+                <Link href="/jobs">
                   <motion.button
-                    className="inline-flex items-center space-x-2 bg-[#ff0000] text-white px-4 py-2 text-sm font-medium hover:bg-[#cc0000] transition-colors duration-200"
+                    className="inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <span>Start Dubbing</span>
-                    <ArrowRight className="w-3 h-3" />
+                    <BarChart3 className="w-5 h-5" />
+                    <span>View Jobs</span>
                   </motion.button>
                 </Link>
-                
-                {user && (
-                  <Link href="/jobs">
-                    <motion.button
-                      className="inline-flex items-center space-x-2 border-2 border-[#ff0000] text-[#ff0000] px-4 py-2 text-sm font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <BarChart3 className="w-3 h-3" />
-                      <span>View Jobs</span>
-                    </motion.button>
-                  </Link>
-                )}
-              </motion.div>
-            </div>
-          </motion.section>
-
-
-        {/* Pricing Section */}
-        <motion.section
-          className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 relative"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-        >
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              className="text-center mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.0 }}
-            >
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-3 tracking-tight">
-                Choose Your
-                <span className="text-[#ff0000]"> Credit Pack</span>
-              </h2>
-              <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto font-light leading-relaxed">
-                Credits never expire. No subscriptions, no monthly fees.
-              </p>
+              )}
             </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  name: 'Starter Pack',
-                  description: 'Perfect for trying out the service',
-                  price: 'Free',
-                  credits: '2 free jobs',
-                  icon: '⚡',
-                  color: 'from-blue-500 to-cyan-500',
-                  popular: false,
-                  features: [
-                    '2 free dubbing jobs',
-                    'Up to 5 minutes per job',
-                    '2 languages included',
-                    'Basic voice quality',
-                    'Email support',
-                    '48-hour file retention'
-                  ],
-                  limitations: [
-                    'Limited to 2 jobs total',
-                    'No background track support',
-                    'Basic processing speed'
-                  ],
-                  cta: 'Get Started Free',
-                  ctaLink: '/auth/signup'
-                },
-                {
-                  name: 'Creator Pack',
-                  description: 'Great value for regular creators',
-                  price: '$29',
-                  credits: '50 credits',
-                  icon: '⭐',
-                  color: 'from-purple-500 to-pink-500',
-                  popular: true,
-                  features: [
-                    '50 dubbing credits',
-                    'Up to 30 minutes per job',
-                    'All 12+ languages',
-                    'Premium voice quality',
-                    'Dual track support',
-                    'Priority processing',
-                    'Email & chat support',
-                    '7-day file retention',
-                    'Batch processing',
-                    'Custom voice settings'
-                  ],
-                  limitations: [],
-                  cta: 'Buy Creator Pack',
-                  ctaLink: '/auth/signup?plan=creator'
-                },
-                {
-                  name: 'Professional Pack',
-                  description: 'Best value for heavy users',
-                  price: '$99',
-                  credits: '250 credits',
-                  icon: '👑',
-                  color: 'from-yellow-500 to-orange-500',
-                  popular: false,
-                  features: [
-                    '250 dubbing credits',
-                    'Up to 2 hours per job',
-                    'All 12+ languages',
-                    'Studio-grade voice quality',
-                    'Advanced audio processing',
-                    'Real-time processing',
-                    'Priority support',
-                    '30-day file retention',
-                    'API access',
-                    'Team collaboration',
-                    'Analytics dashboard',
-                    'Custom integrations'
-                  ],
-                  limitations: [],
-                  cta: 'Buy Professional Pack',
-                  ctaLink: '/auth/signup?plan=professional'
-                }
-              ].map((plan, index) => (
-                <motion.div
-                  key={plan.name}
-                  className={`relative bg-card border rounded-lg p-8 ${
-                    plan.popular 
-                      ? 'border-[#ff0000] shadow-lg scale-105' 
-                      : 'border-border hover:shadow-lg'
-                  } transition-all duration-300`}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 1.6 + index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-[#ff0000] text-white text-sm font-medium px-4 py-2 rounded-full">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  
-                  <div className="text-center mb-8">
-                    <div className={`w-16 h-16 bg-gradient-to-r ${plan.color} flex items-center justify-center mx-auto mb-4 rounded-lg`}>
-                      <span className="text-4xl">{plan.icon}</span>
-                    </div>
-                    
-                    <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
-                    <p className="text-muted-foreground mb-6">{plan.description}</p>
-                    
-                    <div className="mb-6">
-                      <div className="text-4xl font-bold text-foreground">{plan.price}</div>
-                      <div className="text-lg text-muted-foreground mt-1">{plan.credits}</div>
-                    </div>
-                  </div>
-                  
-                  <ul className="space-y-4 mb-8">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start space-x-3">
-                        <Check className="w-5 h-5 text-[#ff0000] flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-foreground">{feature}</span>
-                      </li>
-                    ))}
-                    
-                    {plan.limitations.map((limitation, limitationIndex) => (
-                      <li key={limitationIndex} className="flex items-start space-x-3">
-                        <X className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-muted-foreground">{limitation}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <Link href={plan.ctaLink}>
-                    <motion.button
-                      className={`w-full py-3 px-6 rounded-lg font-medium transition-colors duration-200 ${
-                        plan.popular
-                          ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]'
-                          : 'bg-muted text-foreground hover:bg-muted/80'
-                      }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {plan.cta}
-                    </motion.button>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
           </div>
         </motion.section>
+
+        {/* Scroll Indicator - Moved closer to hero and with fade-out effect */}
+        <motion.div
+          className="flex flex-col items-center py-4 -mt-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+          style={{ opacity: scrollIndicatorOpacity }}
+        >
+          <motion.p
+            className="text-sm text-muted-foreground mb-4"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            learn more
+          </motion.p>
+          <motion.div
+            className="text-muted-foreground/60"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </motion.div>
+        </motion.div>
+
 
         {/* Features Section */}
         <motion.section
@@ -478,19 +338,18 @@ export default function Home() {
         >
           <div className="max-w-7xl mx-auto">
             <motion.div
-              className="text-center mb-16"
+              className="text-center mb-12"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 tracking-tight">
                 How It
                 <span className="text-[#ff0000]"> Works</span>
               </h2>
-              <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
-                Transform your content in just 4 simple steps. Our AI-powered platform 
-                makes professional multilingual dubbing accessible to everyone.
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto font-light leading-relaxed">
+                Simple 4-step process from audio preparation to final download.
               </p>
             </motion.div>
 
