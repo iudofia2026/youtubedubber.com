@@ -125,45 +125,52 @@ export default function FeaturesPage() {
   const comparisonFeatures = [
     {
       feature: 'Voice Quality',
-      ytdubber: 'Studio-grade, natural-sounding',
+      ytdubber: 'Studio-grade, natural-sounding AI',
       youtube: 'Manual recording required',
-      competitors: 'Robotic, artificial'
+      elevenlabs: 'High-quality AI synthesis',
+      competitors: 'Robotic, artificial voices'
     },
     {
       feature: 'Processing Speed',
       ytdubber: '2-5 minutes',
       youtube: 'Manual recording + editing',
+      elevenlabs: '1-3 minutes',
       competitors: '15-30 minutes'
     },
     {
       feature: 'Language Support',
       ytdubber: '12+ languages',
       youtube: '3-4 languages only',
+      elevenlabs: '29+ languages',
       competitors: '5-8 languages'
     },
     {
-      feature: 'Pricing',
+      feature: 'Pricing Model',
       ytdubber: 'Pay-per-use, transparent',
       youtube: 'Free but manual work',
-      competitors: 'Subscription-based, hidden fees'
+      elevenlabs: 'Subscription ($5-330/month)',
+      competitors: 'Subscription ($20-100+/month)'
     },
     {
       feature: 'Audio Separation',
       ytdubber: 'Dual track support',
       youtube: 'Single track only',
+      elevenlabs: 'Single track only',
       competitors: 'Single track only'
     },
     {
       feature: 'Ease of Use',
       ytdubber: 'Upload & AI handles everything',
       youtube: 'Manual voice recording required',
+      elevenlabs: 'Upload & generate',
       competitors: 'Complex setup process'
     },
     {
-      feature: 'Security',
-      ytdubber: 'Enterprise-grade, auto-delete',
-      youtube: 'Basic security',
-      competitors: 'Basic security'
+      feature: 'Voice Cloning',
+      ytdubber: 'Advanced voice matching',
+      youtube: 'Not available',
+      elevenlabs: 'Voice cloning available',
+      competitors: 'Limited voice options'
     }
   ];
 
@@ -413,6 +420,7 @@ export default function FeaturesPage() {
                         <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Feature</th>
                         <th className="px-6 py-4 text-center text-sm font-semibold text-[#ff0000]">YT Dubber</th>
                         <th className="px-6 py-4 text-center text-sm font-semibold text-blue-600">YouTube Native</th>
+                        <th className="px-6 py-4 text-center text-sm font-semibold text-purple-600">ElevenLabs</th>
                         <th className="px-6 py-4 text-center text-sm font-semibold text-muted-foreground">Other Platforms</th>
                       </tr>
                     </thead>
@@ -436,6 +444,11 @@ export default function FeaturesPage() {
                           <td className="px-6 py-4 text-center text-sm text-blue-600">
                             <div className="flex items-center justify-center space-x-2">
                               <span>{item.youtube}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center text-sm text-purple-600">
+                            <div className="flex items-center justify-center space-x-2">
+                              <span>{item.elevenlabs}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4 text-center text-sm text-muted-foreground">{item.competitors}</td>
