@@ -514,6 +514,7 @@ Based on the backend architecture and business requirements, the frontend needs 
 - `EmptyStates.tsx` - Empty state displays
 - `ConfirmDialog.tsx` - Confirmation modals
 - `ToastNotifications.tsx` - Toast message system
+- `DevModeToggle.tsx` - Development mode toggle (floating button)
 
 ### **📄 New Pages Required**
 
@@ -700,6 +701,15 @@ lib/
 - **Profile Updates**: Profile changes are simulated with success messages
 - **Protected Routes**: All job management and upload features are accessible
 - **Navigation**: User dropdown and profile menu work normally
+
+#### **🔄 Quick Dev Mode Toggle (NEW)**
+- **Floating Toggle**: Fixed bottom-right corner button for easy access
+- **One-Click Switch**: Toggle between dev mode and normal mode instantly
+- **Visual Indicators**: Orange button for dev mode, gray for normal mode
+- **Persistent Settings**: Remembers your preference across sessions
+- **Auto-Refresh**: Page refreshes automatically after toggling for immediate effect
+- **Always Visible**: Available on all pages and screen sizes
+- **Development Only**: Only appears when `NODE_ENV=development`
 
 ### **🎯 Immediate Next Steps for Any Agent**
 
@@ -914,6 +924,7 @@ CREATE TABLE jobs (
 - ✅ **PostCSS Build Error Fix**: Resolved Tailwind CSS v4 configuration issues
 - ✅ **Missing UI Components**: Added Checkbox component and dependencies
 - ✅ **Documentation**: Updated frontend context with latest features
+- ✅ **Dev Mode Toggle**: Floating bottom-right toggle for quick dev/normal mode switching
 
 ---
 
