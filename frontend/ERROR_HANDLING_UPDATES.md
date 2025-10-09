@@ -410,8 +410,420 @@ function MyComponent() {
 - Use appropriate error types and messages
 - Implement retry mechanisms where beneficial
 
+### 3. Enhanced ErrorBoundary Component (`components/ErrorBoundary.tsx`)
+
+#### 3.1 New Props and Features
+**Location**: `components/ErrorBoundary.tsx` (lines 13-19)
+
+```typescript
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback?: React.ComponentType<{ error: Error; retry: () => void }>;
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+  resetOnPropsChange?: boolean;
+  resetKeys?: Array<string | number>;
+}
+```
+
+**Purpose**:
+- Adds custom error handler callback
+- Enables automatic reset on prop changes
+- Supports reset keys for conditional error boundary reset
+- Provides more control over error boundary behavior
+
+#### 3.2 Enhanced Error UI
+**Location**: `components/ErrorBoundary.tsx` (lines 73-149)
+
+**New Features**:
+- Error type detection and specific messaging
+- Multiple recovery options (Try Again, Reload Page, Go Back)
+- Help center and support links
+- Better error categorization and suggestions
+- Improved development error details display
+
+**Error Type Detection**:
+```typescript
+getErrorType = (error: Error): string => {
+  if (error.name === 'ChunkLoadError' || error.message.includes('Loading chunk')) {
+    return 'Chunk Load Error';
+  }
+  if (error.name === 'TypeError' && error.message.includes('fetch')) {
+    return 'Network Error';
+  }
+  // ... other error types
+};
+```
+
+#### 3.3 Automatic Reset Logic
+**Location**: `components/ErrorBoundary.tsx` (lines 41-60)
+
+- Resets error boundary when resetKeys change
+- Resets on prop changes when enabled
+- Prevents error boundary from staying in error state unnecessarily
+
+### 4. Network Status Detection (`lib/useNetworkStatus.ts`)
+
+#### 4.1 Network Status Hook
+**Location**: `lib/useNetworkStatus.ts` (lines 1-50)
+
+```typescript
+export const useNetworkStatus = (): NetworkStatus => {
+  const [networkStatus, setNetworkStatus] = useState<NetworkStatus>({
+    isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
+    isSlowConnection: false,
+  });
+  // ... implementation
+};
+```
+
+**Features**:
+- Detects online/offline status
+- Identifies slow connections (2g, slow-2g)
+- Monitors connection type changes
+- Provides connection metadata
+
+#### 4.2 Offline Handler Hook
+**Location**: `lib/useNetworkStatus.ts` (lines 52-85)
+
+```typescript
+export const useOfflineHandler = () => {
+  const { isOnline } = useNetworkStatus();
+  const [pendingActions, setPendingActions] = useState<Array<() => Promise<any>>>([]);
+
+  const queueAction = (action: () => Promise<any>) => {
+    if (isOnline) {
+      return action();
+    } else {
+      setPendingActions(prev => [...prev, action]);
+      return Promise.reject(new Error('Action queued for when connection is restored'));
+    }
+  };
+  // ... implementation
+};
+```
+
+**Features**:
+- Queues actions when offline
+- Automatically retries queued actions when online
+- Tracks pending actions count
+- Provides manual retry functionality
+
+### 5. Error Recovery Component (`components/ErrorRecovery.tsx`)
+
+#### 5.1 Error Recovery UI
+**Location**: `components/ErrorRecovery.tsx` (lines 1-50)
+
+```typescript
+interface ErrorRecoveryProps {
+  error: any;
+  onRetry: () => Promise<void>;
+  onDismiss?: () => void;
+  context?: string;
+  maxRetries?: number;
+  className?: string;
+}
+```
+
+**Features**:
+- Visual error recovery interface
+- Retry button with loading state
+- Retry attempt counter
+- Maximum retry limit handling
+- Dismiss functionality
+- Context-aware error messages
+
+#### 5.2 Retry State Hook
+**Location**: `components/ErrorRecovery.tsx` (lines 120-150)
+
+```typescript
+export const useRetryState = (maxRetries: number = 3) => {
+  const [retryCount, setRetryCount] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [lastError, setLastError] = useState<any>(null);
+
+  const executeWithRetry = async <T>(
+    operation: () => Promise<T>,
+    onError?: (error: any, retryCount: number) => void
+  ): Promise<T> => {
+    // ... implementation
+  };
+  // ... other methods
+};
+```
+
+**Features**:
+- Manages retry state and count
+- Executes operations with retry logic
+- Tracks retry attempts and errors
+- Provides reset functionality
+
+### 6. Updated Type Definitions (`types/index.ts`)
+
+#### 6.1 New Error Types
+**Location**: `types/index.ts` (lines 179-202)
+
+```typescript
+export interface ApiError {
+  type: 'network' | 'validation' | 'server' | 'auth' | 'not_found' | 'rate_limit' | 'unknown';
+  message: string;
+  details?: any;
+  statusCode?: number;
+  retryable?: boolean;
+}
+
+export interface BackendErrorResponse {
+  error: string;
+  message: string;
+  details?: any;
+  voice_duration?: number;
+  background_duration?: number;
+  status_code?: number;
+}
+
+export interface NetworkStatus {
+  isOnline: boolean;
+  isSlowConnection: boolean;
+  connectionType?: string;
+  effectiveType?: string;
+}
+```
+
+**Purpose**:
+- Provides TypeScript types for error handling
+- Ensures type safety across error handling system
+- Supports backend error response structure
+- Enables network status monitoring
+
+## Updated Components
+
+### 1. FileUpload Component
+**Changes Made**:
+- Added `useApiErrorHandler` hook
+- Replaced generic error handling with structured error handling
+- Improved error messages for file validation
+- Better error context for debugging
+
+### 2. JobCreationWizard Component
+**Changes Made**:
+- Added `useApiErrorHandler` hook
+- Enhanced error handling for job submission
+- Better error messages and context
+- Improved error recovery flow
+
+## Error Handling Features
+
+### 1. Comprehensive Error Categorization
+The system now categorizes errors into the following types:
+
+- **Network**: Connection issues, timeouts, offline states
+- **Validation**: Invalid data, missing required fields, format errors
+- **Server**: 5xx errors, internal server errors
+- **Auth**: Authentication and authorization errors
+- **Not Found**: 404 errors, resource not found
+- **Rate Limit**: 429 errors, too many requests
+- **Unknown**: Unclassified errors
+
+### 2. Advanced Retry Logic
+- Automatic retry for transient errors (network, server, rate limit)
+- Exponential backoff to prevent server overload
+- Configurable retry attempts and delays
+- Respects retryability flags from error types
+- Manual retry options for users
+
+### 3. Network-Aware Error Handling
+- Detects offline/online status
+- Queues actions when offline
+- Automatically retries when connection restored
+- Identifies slow connections
+- Provides appropriate messaging for network issues
+
+### 4. Enhanced User Experience
+- Context-aware error titles and messages
+- Retry buttons for retryable errors
+- Multiple recovery options (retry, reload, go back)
+- Help center and support links
+- Error type detection and suggestions
+
+### 5. Developer-Friendly Features
+- Structured error logging with context
+- Error categorization for easier debugging
+- Detailed error information preserved
+- Development error details in ErrorBoundary
+- Type-safe error handling throughout
+
+## Usage Examples
+
+### 1. Using the API Error Handler
+```typescript
+import { useApiErrorHandler } from '@/components/ToastNotifications';
+
+function MyComponent() {
+  const { handleApiError } = useApiErrorHandler();
+  
+  const handleApiCall = async () => {
+    try {
+      const result = await someApiCall();
+      return result;
+    } catch (error) {
+      handleApiError(error, 'Data Loading');
+    }
+  };
+}
+```
+
+### 2. Using Error Recovery Component
+```typescript
+import { ErrorRecovery, useRetryState } from '@/components/ErrorRecovery';
+
+function MyComponent() {
+  const { executeWithRetry, retryCount, isRetrying } = useRetryState(3);
+  
+  const handleOperation = async () => {
+    try {
+      await executeWithRetry(async () => {
+        return await someApiCall();
+      });
+    } catch (error) {
+      // Error is handled by the retry state
+    }
+  };
+
+  return (
+    <ErrorRecovery
+      error={lastError}
+      onRetry={handleOperation}
+      context="Data Loading"
+      maxRetries={3}
+    />
+  );
+}
+```
+
+### 3. Using Network Status
+```typescript
+import { useNetworkStatus, useOfflineHandler } from '@/lib/useNetworkStatus';
+
+function MyComponent() {
+  const { isOnline, isSlowConnection } = useNetworkStatus();
+  const { queueAction, pendingActionsCount } = useOfflineHandler();
+  
+  const handleAction = async () => {
+    try {
+      await queueAction(async () => {
+        return await someApiCall();
+      });
+    } catch (error) {
+      // Action was queued for when online
+    }
+  };
+}
+```
+
+## Benefits
+
+### 1. Improved User Experience
+- Clear, actionable error messages
+- Automatic retry for transient errors
+- Context-aware error handling
+- Multiple recovery options
+- Network-aware error handling
+
+### 2. Better Error Recovery
+- Automatic retry mechanism with exponential backoff
+- Manual retry options for users
+- Offline action queuing
+- Error boundary reset capabilities
+- Comprehensive error categorization
+
+### 3. Enhanced Debugging
+- Structured error logging with context
+- Error categorization for easier debugging
+- Detailed error information preserved
+- Development error details in ErrorBoundary
+- Network status monitoring
+
+### 4. Backend Integration Ready
+- Handles structured backend responses
+- Supports specific error types like duration mismatch
+- Maintains compatibility with existing code
+- Easy to extend for new error types
+- Type-safe error handling throughout
+
+## Future Enhancements
+
+### 1. Error Analytics
+- Track error frequency and types
+- Monitor retry success rates
+- Identify common error patterns
+- Performance impact analysis
+
+### 2. Advanced Retry Strategies
+- Circuit breaker pattern
+- Jitter for retry delays
+- Different retry strategies per error type
+- Adaptive retry based on error patterns
+
+### 3. Error Recovery Actions
+- Implement actual retry functionality in components
+- Add "Report Error" actions
+- Provide alternative actions for failed operations
+- User feedback collection
+
+### 4. Offline Support
+- Service worker integration
+- Offline data caching
+- Background sync capabilities
+- Progressive web app features
+
+## Testing
+
+### 1. Error Scenarios to Test
+- Network disconnection
+- Server errors (500, 502, 503, 504)
+- Validation errors (400)
+- Authentication errors (401, 403)
+- Rate limiting (429)
+- Not found errors (404)
+- Duration mismatch errors
+- Chunk load errors
+- Reference errors
+
+### 2. Retry Behavior
+- Verify retry attempts for retryable errors
+- Confirm no retry for non-retryable errors
+- Test exponential backoff timing
+- Verify retry button functionality
+- Test offline action queuing
+
+### 3. User Experience
+- Check error message clarity
+- Verify appropriate error titles
+- Test toast notification timing
+- Confirm retry button visibility
+- Test error boundary reset functionality
+
+## Migration Notes
+
+### 1. Existing Code
+- All existing API calls now use the new error handling
+- No breaking changes to existing interfaces
+- Backward compatibility maintained
+- Gradual migration possible
+
+### 2. New Components
+- Use `useApiErrorHandler()` for new API calls
+- Implement retry functionality where needed
+- Add context to error handling calls
+- Use ErrorRecovery component for complex error states
+
+### 3. Error Handling Updates
+- Replace generic error handling with structured approach
+- Use appropriate error types and messages
+- Implement retry mechanisms where beneficial
+- Add network status awareness
+
 ## Conclusion
 
-The enhanced error handling system provides a robust foundation for handling API errors in the YT Dubber frontend. It improves user experience through clear error messages, automatic retry mechanisms, and context-aware error handling. The system is designed to be extensible and maintainable, with clear separation of concerns and comprehensive error categorization.
+The enhanced error handling system provides a comprehensive foundation for handling errors in the YT Dubber frontend. It significantly improves user experience through clear error messages, automatic retry mechanisms, context-aware error handling, and network-aware features. The system is designed to be extensible and maintainable, with clear separation of concerns and comprehensive error categorization.
 
-The implementation maintains backward compatibility while providing significant improvements in error handling capabilities, making the application more resilient and user-friendly.
+The implementation maintains backward compatibility while providing significant improvements in error handling capabilities, making the application more resilient, user-friendly, and developer-friendly. The addition of network status detection, error recovery components, and enhanced error boundaries creates a robust error handling ecosystem that can adapt to various error scenarios and provide appropriate recovery mechanisms.
