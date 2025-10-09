@@ -54,9 +54,9 @@ frontend/
 - **Aesthetic**: Sharp, geometric, minimalist (no rounded corners)
 
 ### Key Pages
-1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, feature showcase, How it Works section, and CTAs
+1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, credit-based pricing section, feature showcase, How it Works section, and CTAs
 2. **Features** (`/features`): Comprehensive feature showcase with comparison table and advanced capabilities
-3. **Pricing** (`/pricing`): Pricing plans with monthly/yearly toggle, add-ons, and FAQ section
+3. **Pricing** (`/pricing`): Credit-based pricing plans with add-ons and FAQ section
 4. **How it Works** (`/how-it-works`): Detailed 4-step process explanation with visual guides and use cases
 5. **Upload** (`/new`): 4-step wizard starting with audio preparation guide, then file uploads and language selection
    - **Step 0**: Audio Setup - Animated visual guide explaining how to split video audio into voice and background tracks
@@ -300,7 +300,7 @@ npm run dev
 # Opens http://localhost:3000
 ```
 
-⚠️ **IMPORTANT**: Do not run `npm run dev` or any testing commands as they cause agents to run infinitely. The application is fully functional and ready for use without testing.
+⚠️ **CRITICAL - NO TESTING**: Do not run `npm run dev`, `npm test`, `npm run build`, or any testing commands as they cause agents to run infinitely. The application is fully functional and ready for use without testing. All changes should be made directly to code files only.
 
 ### Building for Production
 ```bash
@@ -920,12 +920,20 @@ CREATE TABLE jobs (
 - **Error Messages**: Mobile-friendly error display
 
 **Latest Updates**:
+- ✅ **Jobs Dropdown Navigation Fix**: Fixed seamless navigation between job status filters without requiring page refresh
+- ✅ **URL Parameter Reactivity**: Implemented proper URL parameter listening using Next.js useSearchParams hook
+- ✅ **Navigation State Management**: Updated JobHistory component to react to URL changes automatically
+- ✅ **Router Navigation**: Changed from router.replace to router.push for proper component re-rendering
+- ✅ **Credit-Based Pricing System**: Converted from subscription to credit-based pricing model
+- ✅ **Homepage Pricing Section**: Added pricing section closer to top of homepage for better visibility
+- ✅ **Pricing Page Updates**: Updated pricing page to reflect credit-based system with simplified pricing display
+- ✅ **FAQ Updates**: Updated FAQ section to reflect credit-based pricing model
+- ✅ **CTA Updates**: Updated call-to-action sections to emphasize "pay only for what you use"
 - ✅ **Smart First-Time User Detection**: Personalized workflow based on user history
 - ✅ **How It Works Integration**: Complete "How It Works" content as Step 0 for users with 0 jobs
 - ✅ **Enhanced Visual Design**: Stunning gradient backgrounds and interactive step cards
 - ✅ **Step Management**: Smart navigation that adapts to user type
 - ✅ **Rules of Hooks Fix**: Resolved React hook order violation
-- ✅ **Jobs Dropdown Navigation Fix**: Fixed navigation issues with filtered job pages
 - ✅ **URL Parameter Handling**: Improved URL parameter handling for better navigation
 - ✅ **PostCSS Build Error Fix**: Resolved Tailwind CSS v4 configuration issues
 - ✅ **Missing UI Components**: Added Checkbox component and dependencies
@@ -946,7 +954,7 @@ CREATE TABLE jobs (
 2. **Jobs Dropdown Navigation** ✅ **FIXED**
    - **Issue**: Jobs dropdown links were not navigating properly to filtered job pages
    - **Impact**: Medium - users couldn't access filtered job views from navigation
-   - **Fix**: Improved URL parameter handling and navigation logic in JobHistory component
+   - **Fix**: Implemented proper URL parameter reactivity using useSearchParams hook and changed router.replace to router.push
    - **Status**: ✅ **RESOLVED**
 
 3. **PostCSS Build Error** ✅ **FIXED**
@@ -986,12 +994,15 @@ CREATE TABLE jobs (
    - **Mitigation**: Current polling simulation works, needs real implementation
    - **Status**: Ready for WebSocket/SSE integration
 
-### **Testing Recommendations**
-1. **Cross-browser Testing**: Test Jobs dropdown on Chrome, Firefox, Safari
-2. **Mobile Testing**: Test on various mobile devices and screen sizes
-3. **URL Testing**: Test bookmarking and sharing filtered job views
-4. **Performance Testing**: Test with large numbers of jobs (100+)
-5. **Accessibility Testing**: Ensure keyboard navigation and screen reader support
+### **Development Guidelines**
+⚠️ **NO TESTING COMMANDS**: Never run `npm run dev`, `npm test`, `npm run build`, or any testing commands as they cause infinite loops. All development should be done by editing code files directly.
+
+### **Code Quality Assurance**
+1. **Code Review**: Review all changes before committing
+2. **TypeScript Compliance**: Ensure all TypeScript types are correct
+3. **Component Logic**: Verify component state management and effects
+4. **URL Handling**: Ensure proper URL parameter handling and navigation
+5. **Error Handling**: Verify error boundaries and user feedback systems
 
 ---
 

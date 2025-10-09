@@ -8,19 +8,19 @@ import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
 
 export default function PricingPage() {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   const pricingPlans = [
     {
-      name: 'Starter',
-      description: 'Perfect for individual creators getting started',
+      name: 'Starter Pack',
+      description: 'Perfect for trying out the service',
       price: { monthly: 0, yearly: 0 },
       originalPrice: null,
+      credits: '2 free jobs',
       icon: Zap,
       color: 'from-blue-500 to-cyan-500',
       popular: false,
       features: [
-        '2 free dubbing jobs per month',
+        '2 free dubbing jobs',
         'Up to 5 minutes per job',
         '2 languages included',
         'Basic voice quality',
@@ -28,7 +28,7 @@ export default function PricingPage() {
         '48-hour file retention'
       ],
       limitations: [
-        'Limited to 2 jobs per month',
+        'Limited to 2 jobs total',
         'No background track support',
         'Basic processing speed'
       ],
@@ -36,15 +36,16 @@ export default function PricingPage() {
       ctaLink: '/auth/signup'
     },
     {
-      name: 'Creator',
-      description: 'Ideal for active content creators and YouTubers',
+      name: 'Creator Pack',
+      description: 'Great value for regular creators',
       price: { monthly: 29, yearly: 290 },
       originalPrice: { monthly: 29, yearly: 348 },
+      credits: '50 credits',
       icon: Star,
       color: 'from-purple-500 to-pink-500',
       popular: true,
       features: [
-        '50 dubbing jobs per month',
+        '50 dubbing credits',
         'Up to 30 minutes per job',
         'All 12+ languages',
         'Premium voice quality',
@@ -56,19 +57,20 @@ export default function PricingPage() {
         'Custom voice settings'
       ],
       limitations: [],
-      cta: 'Start Creator Plan',
+      cta: 'Buy Creator Pack',
       ctaLink: '/auth/signup?plan=creator'
     },
     {
-      name: 'Professional',
-      description: 'For businesses and professional content teams',
+      name: 'Professional Pack',
+      description: 'Best value for heavy users',
       price: { monthly: 99, yearly: 990 },
       originalPrice: { monthly: 99, yearly: 1188 },
+      credits: '250 credits',
       icon: Crown,
       color: 'from-yellow-500 to-orange-500',
       popular: false,
       features: [
-        'Unlimited dubbing jobs',
+        '250 dubbing credits',
         'Up to 2 hours per job',
         'All 12+ languages',
         'Studio-grade voice quality',
@@ -82,7 +84,7 @@ export default function PricingPage() {
         'Custom integrations'
       ],
       limitations: [],
-      cta: 'Start Professional',
+      cta: 'Buy Professional Pack',
       ctaLink: '/auth/signup?plan=professional'
     }
   ];
@@ -113,12 +115,12 @@ export default function PricingPage() {
 
   const faqs = [
     {
-      question: 'How does the pay-per-use model work?',
-      answer: 'You only pay for what you use. Each dubbing job consumes credits based on the duration and number of languages. No monthly fees unless you choose a plan.'
+      question: 'How does the credit pack system work?',
+      answer: 'You buy credit packs that never expire. Each dubbing job consumes credits based on the duration and number of languages. No monthly fees - just pay once and use your credits whenever you need them.'
     },
     {
-      question: 'Can I change plans anytime?',
-      answer: 'Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we\'ll prorate any differences.'
+      question: 'Do credits expire?',
+      answer: 'No! Your credits never expire. Buy a pack today and use it months or even years later. Perfect for creators who work on projects sporadically.'
     },
     {
       question: 'What happens to my files after the retention period?',
@@ -126,11 +128,11 @@ export default function PricingPage() {
     },
     {
       question: 'Do you offer refunds?',
-      answer: 'We offer a 30-day money-back guarantee for all paid plans. If you\'re not satisfied, we\'ll refund your payment in full.'
+      answer: 'We offer a 30-day money-back guarantee for all credit pack purchases. If you\'re not satisfied, we\'ll refund your payment in full.'
     },
     {
       question: 'Is there a free trial?',
-      answer: 'Yes! The Starter plan includes 2 free dubbing jobs per month, so you can try our service without any commitment.'
+      answer: 'Yes! The Starter Pack includes 2 free dubbing jobs, so you can try our service without any commitment.'
     },
     {
       question: 'Do you offer enterprise pricing?',
@@ -186,7 +188,7 @@ export default function PricingPage() {
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
                 Simple, Transparent
-                <span className="block text-[#ff0000]">Pricing</span>
+                <span className="block text-[#ff0000]">Credit Pack Pricing</span>
               </motion.h1>
               
               <motion.p
@@ -195,39 +197,10 @@ export default function PricingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
-                Choose the plan that fits your needs. No hidden fees, no surprises. 
+                Buy credit packs that never expire. No subscriptions, no monthly fees. 
                 Start free and scale as you grow.
               </motion.p>
               
-              {/* Billing Toggle */}
-              <motion.div
-                className="flex items-center justify-center space-x-4 mb-12"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              >
-                <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-foreground' : 'text-muted-foreground'}`}>
-                  Monthly
-                </span>
-                <button
-                  onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
-                  className="relative inline-flex h-6 w-11 items-center rounded-full bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2"
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      billingCycle === 'yearly' ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-                <span className={`text-sm font-medium ${billingCycle === 'yearly' ? 'text-foreground' : 'text-muted-foreground'}`}>
-                  Yearly
-                </span>
-                {billingCycle === 'yearly' && (
-                  <span className="bg-[#ff0000] text-white text-xs px-2 py-1 rounded-full font-medium">
-                    Save 17%
-                  </span>
-                )}
-              </motion.div>
             </div>
           </motion.section>
 
@@ -281,18 +254,15 @@ export default function PricingPage() {
                           ) : (
                             <div className="flex items-baseline justify-center">
                               <span className="text-4xl font-bold text-foreground">
-                                ${billingCycle === 'monthly' ? plan.price.monthly : plan.price.yearly}
-                              </span>
-                              <span className="text-muted-foreground ml-2">
-                                /{billingCycle === 'monthly' ? 'month' : 'year'}
+                                ${plan.price.monthly}
                               </span>
                             </div>
                           )}
+                          <div className="text-lg text-muted-foreground mt-1">{plan.credits}</div>
                           
                           {plan.originalPrice && (
                             <div className="text-sm text-muted-foreground line-through mt-1">
-                              ${billingCycle === 'monthly' ? plan.originalPrice.monthly : plan.originalPrice.yearly}
-                              /{billingCycle === 'monthly' ? 'month' : 'year'}
+                              ${plan.originalPrice.monthly}
                             </div>
                           )}
                         </div>
@@ -472,7 +442,7 @@ export default function PricingPage() {
                 
                 <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto font-light leading-relaxed">
                   Join thousands of creators who trust YT Dubber for their multilingual content needs. 
-                  Start with our free plan today.
+                  Start with our free pack and buy credits that never expire.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
