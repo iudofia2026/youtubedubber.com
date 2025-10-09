@@ -504,7 +504,7 @@ export default function NewJobPage() {
                         whileTap={{ scale: 0.95 }}
                       >
                         <Upload className="w-5 h-5" />
-                        <span>Start Your First Dub</span>
+                        <span>Get Started</span>
                       </motion.button>
                     </div>
                   </motion.div>
