@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { FileUpload } from './FileUpload';
 import { LanguageSelect } from './LanguageSelect';
 import { LANGUAGES, UploadProgress } from '@/types';
-import { useToastHelpers } from '@/components/ToastNotifications';
+import { useToastHelpers, useApiErrorHandler } from '@/components/ToastNotifications';
 import { LoadingButton } from '@/components/LoadingStates';
 import { submitDubbingJob } from '@/lib/api';
 
@@ -33,6 +33,7 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
     backgroundTrackDuration: null as number | null,
   });
   const { success, error: showError } = useToastHelpers();
+  const { handleApiError } = useApiErrorHandler();
 
   const nextStep = () => {
     // Validate current step before proceeding
