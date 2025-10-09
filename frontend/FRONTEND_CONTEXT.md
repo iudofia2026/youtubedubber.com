@@ -76,6 +76,7 @@ frontend/
 10. **Legal Pages**:
     - **Terms of Service** (`/legal/terms`): Comprehensive terms and conditions
     - **Privacy Policy** (`/legal/privacy`): Data protection and privacy information
+    - **Cookie Policy** (`/legal/cookies`): Detailed cookie usage and management information
 
 ## 🔧 Current Functionality
 
@@ -1220,13 +1221,13 @@ CREATE TABLE jobs (
   - **Premium UI/UX**: YouTube-inspired design with smooth animations and gradients
   - **Responsive Design**: Mobile-optimized with touch-friendly interactions
 
-- **Contact Us Page** (`/contact`): Professional contact interface including:
+- **Contact Us Page** (`/contact`): Streamlined email-focused contact interface including:
+  - **Email Support Focus**: Primary contact method with prominent email support card
   - **Contact Form**: Multi-category form with priority levels and validation
-  - **Contact Methods**: Email, phone, and live chat options with response times
-  - **Contact Information**: Business hours, office location, and support details
+  - **Contact Information**: Response times, support scope, and helpful tips
   - **Quick Links**: Direct access to help center, status page, and pricing
   - **Form Validation**: Real-time validation with success/error feedback
-  - **Premium Design**: Consistent branding with animated elements
+  - **Enhanced UI**: Improved visual hierarchy with larger, more prominent email support
 
 - **Status Page** (`/status`): System health monitoring dashboard featuring:
   - **Overall Status**: System-wide health indicator with uptime metrics
@@ -1236,8 +1237,17 @@ CREATE TABLE jobs (
   - **Real-time Updates**: Refresh functionality with last updated timestamps
   - **Professional Design**: Clean, informative layout with status indicators
 
+- **Cookie Policy Page** (`/legal/cookies`): Comprehensive cookie information including:
+  - **Cookie Types**: Essential, Analytics, Functional, and Marketing cookies
+  - **Detailed Table**: Specific cookies with names, purposes, duration, and data stored
+  - **Management Instructions**: Browser settings and cookie consent management
+  - **Third-Party Services**: Information about external services and their cookies
+  - **Privacy Contact**: Direct contact information for cookie-related questions
+  - **Legal Compliance**: GDPR and privacy regulation compliance information
+
 - **Footer Integration**: Updated footer with working support links:
   - **Help Center Link**: Direct navigation to comprehensive help section
   - **Contact Us Link**: Easy access to contact form and support options
   - **Status Link**: Quick access to system status and health monitoring
+  - **Cookie Policy Link**: Access to detailed cookie usage information
   - **Consistent Styling**: All links properly styled and functional
