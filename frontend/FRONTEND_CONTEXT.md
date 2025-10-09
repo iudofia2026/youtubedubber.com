@@ -54,10 +54,10 @@ frontend/
 - **Aesthetic**: Sharp, geometric, minimalist (no rounded corners)
 
 ### Key Pages
-1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, feature showcase, CTAs
+1. **Homepage** (`/`): Hero section with "YouTube [YTdubber Icon] Dubber" branding, feature showcase, How it Works section, and CTAs
 2. **Features** (`/features`): Comprehensive feature showcase with comparison table and advanced capabilities
 3. **Pricing** (`/pricing`): Pricing plans with monthly/yearly toggle, add-ons, and FAQ section
-4. **How it Works** (`/how-it-works`): 4-step process explanation with visual guides and use cases
+4. **How it Works** (`/how-it-works`): Detailed 4-step process explanation with visual guides and use cases
 5. **Upload** (`/new`): 4-step wizard starting with audio preparation guide, then file uploads and language selection
    - **Step 0**: Audio Setup - Animated visual guide explaining how to split video audio into voice and background tracks
    - **Step 1**: Voice Track Upload - Upload voice-only audio file
@@ -370,7 +370,8 @@ When the backend is ready:
 - ✅ **File Preview System** - Complete audio preview player with play/pause, seek, volume control, and real-time progress tracking
 - ✅ **Development Authentication Bypass** - Complete development mode for testing without Supabase setup
 - ✅ **Marketing Pages** - Comprehensive Features, Pricing, and How it Works pages with professional UI/UX
-- ✅ **Navigation Updates** - Added links to all new pages in main navigation
+- ✅ **Homepage How it Works Section** - Added 4-step process explanation directly on homepage for new users
+- ✅ **Navigation Optimization** - Streamlined navigation by removing How it Works (moved to homepage)
 - ✅ **Footer Updates** - Updated footer links to point to actual pages instead of hash links
 
 **Next Steps**: Continue with remaining high-impact, low-effort items from the expansion roadmap.
@@ -758,7 +759,7 @@ lib/
    - Create download history view
    - **Effort**: 3-4 hours, **Impact**: High (completes user journey)
 
-**Current Status**: Foundation complete + error handling + job management + enhanced upload flow + navigation fixes + authentication system implemented + comprehensive marketing pages (Features, Pricing, How it Works). Ready for next phase of high-impact features.
+**Current Status**: Foundation complete + error handling + job management + enhanced upload flow + navigation fixes + authentication system implemented + comprehensive marketing pages (Features, Pricing, How it Works) + homepage How it Works section + streamlined navigation. Ready for next phase of high-impact features.
 
 ## 🔐 **AUTHENTICATION SYSTEM IMPLEMENTATION**
 
@@ -1061,12 +1062,27 @@ CREATE TABLE jobs (
   - Responsive design that works across all screen sizes
   - Enhanced visual cohesion between hero, features, and CTA sections
 
+- **Homepage How it Works Section**: Added comprehensive 4-step process explanation directly on homepage
+  - **Step 1**: Prepare Your Audio (🎬) - Split video into voice/background tracks
+  - **Step 2**: Upload Your Files (📤) - Upload tracks and select languages
+  - **Step 3**: AI Processing (🤖) - Advanced AI generates natural dubs
+  - **Step 4**: Download & Use (⬇️) - Get completed dubs ready to publish
+  - Beautiful gradient cards with emojis and hover animations
+  - Step-by-step details for each process stage
+  - "Learn More" button linking to detailed how-it-works page
+  - Perfect for new users to understand the process immediately
+
 - **Enhanced Scroll Indicator**: Improved "learn more" section with better positioning and scroll-based fade-out
   - **Closer Positioning**: Moved scroll indicator closer to hero section with reduced padding (`py-4 -mt-4`)
   - **Scroll-Based Fade**: Added smooth fade-out effect that triggers when user scrolls down (fades over 200px of scroll)
   - **Smooth Animation**: Maintains existing pulsing text and bouncing arrow animations
-  - **Performance Optimized**: Uses React hooks for scroll detection with proper cleanup
-  - **Responsive Design**: Works seamlessly across all screen sizes
+
+- **Navigation Optimization**: Streamlined navigation for better user experience
+  - **Removed How it Works** from main navigation (moved to homepage)
+  - **Cleaner navigation** with only essential items: Home, New Job, Jobs
+  - **Better for signed-in users** who don't need process explanation in nav
+  - **Still accessible** via footer for users who need to reference it
+  - **Improved information architecture** - right content for right users
 
 ### Upload Page Enhancements (Latest Update)
 - **Smart First-Time User Detection**: Implemented intelligent user flow based on job history
