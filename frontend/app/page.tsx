@@ -229,21 +229,25 @@ export default function Home() {
                 icon: Mic,
                 title: 'High-Quality Audio',
                 description: 'Advanced AI processing ensures natural-sounding voice dubbing with perfect timing and intonation.',
+                color: 'from-blue-500 to-cyan-500'
               },
               {
                 icon: Globe,
                 title: 'Multiple Languages',
                 description: 'Support for 12+ languages including English, Spanish, French, German, Japanese, and more.',
+                color: 'from-purple-500 to-pink-500'
               },
               {
                 icon: Zap,
                 title: 'Fast Processing',
                 description: 'Get your dubbed content ready in minutes, not hours. Our optimized pipeline delivers results quickly.',
+                color: 'from-yellow-500 to-orange-500'
               },
               {
                 icon: DollarSign,
                 title: 'Best Value Pricing',
                 description: 'Premium quality dubbing at unbeatable prices. We offer the best value compared to competitors like Rask and HeyGen.',
+                color: 'from-green-500 to-emerald-500'
               },
             ].map((feature, index) => {
               const Icon = feature.icon;
@@ -264,7 +268,7 @@ export default function Home() {
                   }}
                 >
                   <motion.div 
-                    className="w-14 h-14 bg-[#ff0000]/10 flex items-center justify-center mx-auto mb-3 border border-[#ff0000]/20"
+                    className={`w-16 h-16 bg-gradient-to-r ${feature.color} flex items-center justify-center mx-auto mb-4 rounded-lg`}
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ 
@@ -290,7 +294,7 @@ export default function Home() {
                         damping: 20
                       }}
                     >
-                      <Icon className="w-7 h-7 text-[#ff0000]" />
+                      <Icon className="w-8 h-8 text-white" />
                     </motion.div>
                   </motion.div>
                   <motion.h3 
