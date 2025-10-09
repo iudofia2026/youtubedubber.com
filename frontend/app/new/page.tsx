@@ -328,7 +328,7 @@ export default function NewJobPage() {
                     </motion.div>
                     
                     <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight">
-                      How It Works
+                      Get Started Now
                     </h2>
                     <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                       Learn how our AI-powered platform transforms your content into multilingual dubs in just 4 simple steps
