@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Download, CheckCircle, Clock, Globe, Users, Zap, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Download, CheckCircle, Clock, Globe, Users, Zap, BarChart3, FileAudio, Calendar, Settings, Activity, AlertTriangle, Info, Play, Pause, Volume2, Share2, Copy, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { ProgressBar } from '@/components/ProgressBar';
 import { IndividualLanguageProgress } from '@/components/IndividualLanguageProgress';
@@ -469,49 +469,271 @@ export default function JobStatusPage() {
           </div>
         </motion.div>
 
-        {/* Job Details */}
+        {/* Comprehensive Job Details */}
         <motion.div
-          className="mt-12 p-6 bg-card/30 backdrop-blur-sm border border-border"
+          className="mt-12 space-y-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          <h3 className="text-lg font-semibold text-foreground mb-4">
-            Job Information
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Job ID:</span>
-                <span className="font-mono text-foreground">{jobId}</span>
+          {/* Job Overview Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <motion.div
+              className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <FileAudio className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-semibold text-foreground">Audio Files</h3>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Status:</span>
-                <span className={`font-medium ${
-                  isComplete ? 'text-green-600' : 'text-[#ff0000]'
-                }`}>
-                  {isComplete ? 'Complete' : jobStatus.status}
-                </span>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Voice Track:</span>
+                  <span className="font-medium text-foreground">3:00 min</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Background:</span>
+                  <span className="font-medium text-foreground">3:00 min</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Quality:</span>
+                  <span className="font-medium text-foreground">High (48kHz)</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Progress:</span>
-                <span className="text-foreground">{jobStatus.progress}%</span>
+            </motion.div>
+
+            <motion.div
+              className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-6 rounded-xl border border-green-200 dark:border-green-700"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-semibold text-foreground">Languages</h3>
               </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Started:</span>
-                <span className="text-foreground">{formatTimeAgo(jobStatus.startedAt)}</span>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Target:</span>
+                  <span className="font-medium text-foreground">3 languages</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Completed:</span>
+                  <span className="font-medium text-foreground">{jobStatus.completedLanguages}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Remaining:</span>
+                  <span className="font-medium text-foreground">{jobStatus.totalLanguages - jobStatus.completedLanguages}</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Languages:</span>
-                <span className="text-foreground">{jobStatus.totalLanguages}</span>
+            </motion.div>
+
+            <motion.div
+              className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                  <Settings className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-semibold text-foreground">Settings</h3>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Completed:</span>
-                <span className="text-foreground">{jobStatus.completedLanguages}</span>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Voice Model:</span>
+                  <span className="font-medium text-foreground">Premium</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Quality:</span>
+                  <span className="font-medium text-foreground">High</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Speed:</span>
+                  <span className="font-medium text-foreground">Standard</span>
+                </div>
               </div>
-            </div>
+            </motion.div>
+
+            <motion.div
+              className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 p-6 rounded-xl border border-orange-200 dark:border-orange-700"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                  <Activity className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-semibold text-foreground">Activity</h3>
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Created:</span>
+                  <span className="font-medium text-foreground">{formatTimeAgo(jobStatus.startedAt)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Last Update:</span>
+                  <span className="font-medium text-foreground">2 min ago</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">ETA:</span>
+                  <span className="font-medium text-foreground">
+                    {isComplete ? 'Complete' : formatEstimatedCompletion(jobStatus.estimatedCompletion)}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Detailed Information Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Job Information */}
+            <motion.div
+              className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.9 }}
+            >
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-8 h-8 bg-[#ff0000] rounded-lg flex items-center justify-center">
+                  <Info className="w-4 h-4 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground">Job Information</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between py-3 border-b border-border">
+                  <span className="text-muted-foreground font-medium">Job ID</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="font-mono text-foreground bg-muted px-2 py-1 rounded text-sm">{jobId}</span>
+                    <button className="p-1 hover:bg-muted rounded transition-colors">
+                      <Copy className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between py-3 border-b border-border">
+                  <span className="text-muted-foreground font-medium">Status</span>
+                  <div className="flex items-center space-x-2">
+                    {isComplete ? (
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                    ) : jobStatus.status === 'error' ? (
+                      <AlertTriangle className="w-4 h-4 text-red-500" />
+                    ) : (
+                      <Clock className="w-4 h-4 text-blue-500" />
+                    )}
+                    <span className={`font-medium ${
+                      isComplete ? 'text-green-600' : 
+                      jobStatus.status === 'error' ? 'text-red-600' : 'text-blue-600'
+                    }`}>
+                      {isComplete ? 'Complete' : jobStatus.status.charAt(0).toUpperCase() + jobStatus.status.slice(1)}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between py-3 border-b border-border">
+                  <span className="text-muted-foreground font-medium">Progress</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
+                      <motion.div
+                        className={`h-full rounded-full ${
+                          isComplete ? 'bg-green-500' : 
+                          jobStatus.status === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                        }`}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${jobStatus.progress}%` }}
+                        transition={{ duration: 1, delay: 1 }}
+                      />
+                    </div>
+                    <span className="text-foreground font-medium">{jobStatus.progress}%</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between py-3 border-b border-border">
+                  <span className="text-muted-foreground font-medium">Started</span>
+                  <span className="text-foreground font-medium">{formatTimeAgo(jobStatus.startedAt)}</span>
+                </div>
+                
+                <div className="flex items-center justify-between py-3">
+                  <span className="text-muted-foreground font-medium">Estimated Completion</span>
+                  <span className="text-foreground font-medium">
+                    {isComplete ? 'Complete' : formatEstimatedCompletion(jobStatus.estimatedCompletion)}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Audio Preview & Actions */}
+            <motion.div
+              className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 1 }}
+            >
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                  <Play className="w-4 h-4 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground">Audio Preview</h3>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Original Audio */}
+                <div className="bg-muted/50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      <FileAudio className="w-4 h-4 text-muted-foreground" />
+                      <span className="font-medium text-foreground">Original Voice Track</span>
+                    </div>
+                    <span className="text-sm text-muted-foreground">3:00</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <button className="w-8 h-8 bg-[#ff0000] rounded-full flex items-center justify-center hover:bg-[#cc0000] transition-colors">
+                      <Play className="w-4 h-4 text-white" />
+                    </button>
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="w-1/3 h-full bg-[#ff0000] rounded-full"></div>
+                    </div>
+                    <Volume2 className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                </div>
+
+                {/* Background Audio */}
+                <div className="bg-muted/50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      <FileAudio className="w-4 h-4 text-muted-foreground" />
+                      <span className="font-medium text-foreground">Background Track</span>
+                    </div>
+                    <span className="text-sm text-muted-foreground">3:00</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <button className="w-8 h-8 bg-[#ff0000] rounded-full flex items-center justify-center hover:bg-[#cc0000] transition-colors">
+                      <Play className="w-4 h-4 text-white" />
+                    </button>
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="w-1/3 h-full bg-[#ff0000] rounded-full"></div>
+                    </div>
+                    <Volume2 className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex space-x-3 pt-4">
+                  <button className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-[#ff0000] text-white rounded-lg hover:bg-[#cc0000] transition-colors">
+                    <Download className="w-4 h-4" />
+                    <span>Download All</span>
+                  </button>
+                  <button className="flex items-center justify-center px-4 py-3 border border-border text-foreground rounded-lg hover:bg-muted transition-colors">
+                    <Share2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </motion.div>
 
