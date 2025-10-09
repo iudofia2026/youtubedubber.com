@@ -113,7 +113,8 @@ export default function JobsPage() {
   };
 
   const handleViewJob = (jobId: string) => {
-    router.push(`/jobs/${jobId}`);
+    console.log('Viewing job:', jobId);
+    router.push(`/jobs/test`);
   };
 
   const handleDownloadJob = (jobId: string) => {
