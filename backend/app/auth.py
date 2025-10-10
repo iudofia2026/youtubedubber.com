@@ -56,14 +56,33 @@ def verify_jwt_token(token: str) -> dict:
         # For now, we'll use a simple approach - in production, you'd want to cache the keys
         jwks_url = f"{settings.supabase_url}/auth/v1/jwks"
         
-        # For MVP, we'll use the service key to verify tokens
-        # In production, you'd want to implement proper JWT verification with JWKS
+        # Implement proper JWT verification with Supabase JWKS
         try:
+            # Get JWKS from Supabase
+            import httpx
+            jwks_url = f"{settings.supabase_url}/auth/v1/jwks"
+            
+            with httpx.Client() as client:
+                response = client.get(jwks_url)
+                jwks = response.json()
+            
+            # Find the correct key
+            key = None
+            for jwk in jwks['keys']:
+                if jwk['kid'] == kid:
+                    key = jwt.algorithms.RSAAlgorithm.from_jwk(jwk)
+                    break
+            
+            if not key:
+                raise AuthError("Invalid token: key not found")
+            
+            # Verify and decode token
             payload = jwt.decode(
                 token,
-                settings.supabase_service_key,
-                algorithms=["HS256"],
-                options={"verify_signature": False}  # Skip signature verification for MVP
+                key,
+                algorithms=["RS256"],
+                audience="authenticated",
+                issuer=f"{settings.supabase_url}/auth/v1"
             )
             
             # Basic validation
@@ -149,71 +168,6 @@ async def get_current_user_optional(
         return None
 
 
-def verify_supabase_token(token: str) -> dict:
-    """
-    Verify token using Supabase Auth
-    """
-    try:
-        # Use Supabase client to verify the token
-        response = supabase.auth.get_user(token)
-        
-        if response.user is None:
-            raise AuthError("Invalid token")
-        
-        return {
-            'sub': response.user.id,
-            'email': response.user.email,
-            'aud': 'authenticated'
-        }
-        
-    except Exception as e:
-        logger.error(f"Supabase token verification error: {e}")
-        raise AuthError("Token verification failed")
-
-
-# Alternative authentication using Supabase directly
-async def get_current_user_supabase(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
-) -> UserResponse:
-    """
-    Get current user using Supabase Auth verification
-    """
-    try:
-        # Verify token with Supabase
-        payload = verify_supabase_token(credentials.credentials)
-        
-        user_id = payload.get('sub')
-        email = payload.get('email')
-        
-        if not user_id or not email:
-            raise AuthError("Invalid token: missing user information")
-        
-        # Check if user exists in database, create if not
-        user = db.query(User).filter(User.id == user_id).first()
-        
-        if not user:
-            user = User(
-                id=user_id,
-                email=email
-            )
-            db.add(user)
-            db.commit()
-            db.refresh(user)
-            logger.info(f"Created new user via Supabase: {user_id}")
-        
-        return UserResponse(
-            id=user.id,
-            email=user.email,
-            created_at=user.created_at,
-            updated_at=user.updated_at
-        )
-        
-    except AuthError:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting current user via Supabase: {e}")
-        raise AuthError("Authentication failed")
 
 
 # Storage service for Supabase Storage
