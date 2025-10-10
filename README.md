@@ -116,9 +116,12 @@ YT Dubber transforms single-language YouTube content into multilingual masterpie
 ```bash
 cd frontend
 npm install
+cp .env.local.example .env.local  # Copy and configure environment variables
 npm run dev
 # Opens http://localhost:3000
 ```
+
+**Note**: The frontend has been configured to resolve common development issues including Turbopack workspace detection and environment variable validation. See [Frontend README](./frontend/README.md#troubleshooting) for troubleshooting details.
 
 ### **Backend Setup**
 ```bash

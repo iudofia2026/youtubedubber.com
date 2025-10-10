@@ -177,6 +177,22 @@ frontend/
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 
+### Troubleshooting
+
+#### Common Development Issues
+
+**Issue**: `Missing required environment variables: NEXT_PUBLIC_API_URL, NEXT_PUBLIC_APP_URL`
+- **Solution**: Ensure `.env.local` file exists in the frontend directory with required variables
+- **Quick Fix**: Copy `.env.local.example` to `.env.local` and update values
+
+**Issue**: `Next.js package not found` or Turbopack internal errors
+- **Solution**: This has been fixed in the codebase with proper Turbopack configuration
+- **If it persists**: Delete `.next` folder and `node_modules`, then run `npm install`
+
+**Issue**: Multiple lockfiles warning
+- **Solution**: This has been resolved by removing conflicting `package-lock.json` from root directory
+- **Note**: Only the frontend directory should have a `package-lock.json` file
+
 ### Code Quality
 
 - **TypeScript** - Strict type checking enabled
