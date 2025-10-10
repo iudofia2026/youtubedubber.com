@@ -27,7 +27,7 @@ def get_supabase_client() -> Client:
     return supabase
 
 # HTTP Bearer token scheme
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 
 class AuthError(HTTPException):
@@ -112,6 +112,10 @@ async def get_current_user(
     Get current authenticated user from JWT token
     """
     try:
+        # Check if credentials are provided
+        if not credentials:
+            raise AuthError("Not authenticated")
+        
         # Verify the JWT token
         payload = verify_jwt_token(credentials.credentials)
         

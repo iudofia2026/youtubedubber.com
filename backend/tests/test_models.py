@@ -2,22 +2,24 @@
 Database model tests
 """
 import pytest
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.database import engine, Base
+from app.database import Base
 from app.models import User, DubbingJob, LanguageTask, JobEvent, Artifact
 from datetime import datetime
 
 # Create test database
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+test_engine = create_engine("sqlite:///./test_models.db", echo=False)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 @pytest.fixture(scope="function")
 def db_session():
     """Create a test database session"""
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=test_engine)
     session = TestingSessionLocal()
     yield session
     session.close()
-    Base.metadata.drop_all(bind=engine)
+    Base.metadata.drop_all(bind=test_engine)
 
 def test_user_creation(db_session):
     """Test user model creation"""

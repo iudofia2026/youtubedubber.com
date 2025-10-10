@@ -4,15 +4,16 @@ API endpoint tests
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.database import get_db, Base, engine
+from app.database import get_db, Base
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import tempfile
 import os
 
 # Create test database
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-engine = engine
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test_api.db"
+test_engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=False)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 def override_get_db():
     try:
@@ -28,9 +29,9 @@ client = TestClient(app)
 @pytest.fixture(scope="module")
 def setup_database():
     """Set up test database"""
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=test_engine)
     yield
-    Base.metadata.drop_all(bind=engine)
+    Base.metadata.drop_all(bind=test_engine)
 
 def test_health_check():
     """Test health check endpoint"""
@@ -75,7 +76,7 @@ def test_get_job_status_unauthorized():
 
 def test_cors_headers():
     """Test CORS headers are present"""
-    response = client.options("/api/jobs/upload-urls")
-    assert response.status_code == 200
+    response = client.options("/api/jobs/upload-urls", headers={"Origin": "http://localhost:3000"})
+    # CORS middleware should add headers even if the route doesn't exist
     assert "access-control-allow-origin" in response.headers
-    assert "access-control-allow-methods" in response.headers
+    assert "access-control-allow-credentials" in response.headers

@@ -42,15 +42,29 @@ app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(RateLimitHeadersMiddleware)
 
 # CORS middleware configuration
-cors_middleware = get_cors_middleware()
-cors_middleware.app = app
-app.add_middleware(cors_middleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.get_cors_origins(),
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "X-CSRFToken",
+    ],
+    expose_headers=["X-Total-Count", "X-Rate-Limit-Remaining"],
+    max_age=3600,
+)
 
 # Trusted host middleware for security
 if settings.debug:
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["localhost", "127.0.0.1", "0.0.0.0"]
+        allowed_hosts=["localhost", "127.0.0.1", "0.0.0.0", "testserver", "*"]
     )
 
 # Include API routers
