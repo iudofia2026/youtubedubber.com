@@ -273,7 +273,7 @@ class AIService:
             voice = ffmpeg.input(voice_track_path)
             background = ffmpeg.input(background_track_path)
             
-            # Mix audio tracks (voice at 80%, background at 20%)
+            # Mix audio tracks (voice at 100%, background at 100%)
             mixed = ffmpeg.filter([voice, background], 'amix', inputs=2, duration='shortest')
             output = ffmpeg.output(mixed, output_path, acodec='mp3', audio_bitrate='128k')
             
