@@ -14,7 +14,7 @@ source venv/bin/activate
 # Install dependencies
 pip install fastapi uvicorn sqlalchemy alembic pydantic python-multipart
 pip install supabase python-dotenv pytest httpx
-pip install deepgram-sdk openai elevenlabs
+pip install deepgram-sdk openai
 pip install ffmpeg-python librosa soundfile
 
 # Setup Supabase
@@ -280,7 +280,6 @@ SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_KEY=your_service_key
 DEEPGRAM_API_KEY=your_deepgram_key
 OPENAI_API_KEY=your_openai_key
-ELEVENLABS_API_KEY=your_elevenlabs_key
 SECRET_KEY=your_secret_key
 DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
 ```

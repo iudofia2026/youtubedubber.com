@@ -5,6 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.schemas import UploadUrlsRequest, SignedUploadUrls, BackendErrorResponse
 from app.services.storage_service import StorageService
 from app.auth import get_current_user, UserResponse
+from app.middleware.rate_limit import upload_rate_limit
+from app.utils.security import create_http_exception
+from app.utils.validation import validate_language_codes, validate_filename
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,6 +26,16 @@ async def request_upload_urls(
     This endpoint matches the frontend API contract exactly
     """
     try:
+        # Validate input data
+        validated_languages = validate_language_codes(request.languages)
+        validated_voice_track = validate_filename(request.voice_track_name, "voice_track_name")
+        validated_background_track = validate_filename(request.background_track_name, "background_track_name")
+        
+        # Update request with validated data
+        request.languages = validated_languages
+        request.voice_track_name = validated_voice_track
+        request.background_track_name = validated_background_track
+        
         logger.info(f"Generating upload URLs for user {current_user.id}, languages: {request.languages}")
         
         # Generate signed URLs
@@ -37,12 +50,11 @@ async def request_upload_urls(
         return signed_urls
         
     except Exception as e:
-        logger.error(f"Error generating upload URLs: {e}")
-        raise HTTPException(
+        logger.error(f"Error generating upload URLs: {e}", exc_info=True)
+        raise create_http_exception(
+            error_type="upload_url_generation_failed",
+            message="Failed to generate upload URLs",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=BackendErrorResponse(
-                error="upload_url_generation_failed",
-                message="Failed to generate upload URLs",
-                details={"error": str(e)}
-            ).dict()
+            details={"user_id": current_user.id, "languages": request.languages},
+            original_error=e
         )

@@ -163,7 +163,6 @@ backend/
 | `SUPABASE_SERVICE_KEY` | Supabase service key | Yes | - |
 | `DEEPGRAM_API_KEY` | Deepgram API key | Yes | - |
 | `OPENAI_API_KEY` | OpenAI API key | Yes | - |
-| `ELEVENLABS_API_KEY` | ElevenLabs API key | No | - |
 | `SECRET_KEY` | JWT secret key | Yes | - |
 | `DEBUG` | Debug mode | No | false |
 | `CORS_ORIGINS` | Allowed CORS origins | No | http://localhost:3000 |

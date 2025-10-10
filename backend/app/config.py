@@ -17,7 +17,6 @@ class Settings(BaseSettings):
     # AI Services
     deepgram_api_key: str
     openai_api_key: str
-    elevenlabs_api_key: Optional[str] = None
     
     # Application Configuration
     app_name: str = "YT Dubber API"
@@ -34,6 +33,23 @@ class Settings(BaseSettings):
     worker_poll_interval: int = 5
     max_concurrent_jobs: int = 3
     job_timeout: int = 3600
+    
+    # Security Configuration
+    rate_limit_enabled: bool = True
+    rate_limit_storage_url: Optional[str] = None
+    log_level: str = "INFO"
+    secure_cookies: bool = False
+    https_only: bool = False
+    
+    # Monitoring Configuration
+    sentry_dsn: Optional[str] = None
+    health_check_interval: int = 30
+    metrics_enabled: bool = False
+    
+    # Performance Configuration
+    max_workers: int = 2
+    worker_timeout: int = 300
+    connection_pool_size: int = 10
     
     class Config:
         env_file = ".env"

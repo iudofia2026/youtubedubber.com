@@ -27,4 +27,4 @@
 ## Monitoring and Upgrade Path
 - MVP monitoring relies on structured application logs and Supabase/Postgres metrics.
 - When throughput outgrows the in-process worker, swap the queue with Redis plus Dramatiq (or equivalent) without changing API contracts.
-- Prometheus and Grafana dashboards, premium ElevenLabs TTS, and Stripe billing remain on the backlog until after the core pipeline is stable.
+- Prometheus and Grafana dashboards, premium TTS options, and Stripe billing remain on the backlog until after the core pipeline is stable.

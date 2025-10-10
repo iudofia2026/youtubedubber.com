@@ -10,6 +10,7 @@ from app.schemas import UserResponse
 from app.database import get_db
 from sqlalchemy.orm import Session
 from app.models import User
+from typing import Optional
 import logging
 
 # Configure logging

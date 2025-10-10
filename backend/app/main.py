@@ -1,7 +1,7 @@
 """
 Main FastAPI application
 """
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
@@ -9,6 +9,9 @@ from app.config import settings
 from app.api import jobs, upload
 from app.schemas import HealthResponse, BackendErrorResponse
 from app.database import create_tables
+from app.middleware.rate_limit import limiter, rate_limit_handler, RateLimitExceeded, health_rate_limit
+from app.middleware.security import SecurityHeadersMiddleware, RequestLoggingMiddleware, get_cors_middleware, RateLimitHeadersMiddleware
+from app.utils.security import create_safe_error_response, sanitize_error_message
 import logging
 from datetime import datetime
 
@@ -29,15 +32,19 @@ app = FastAPI(
     redoc_url="/redoc" if settings.debug else None
 )
 
+# Add rate limiter to the app
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
+
+# Add security middleware (order matters - first added is outermost)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(RateLimitHeadersMiddleware)
+
 # CORS middleware configuration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.get_cors_origins(),
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-    expose_headers=["*"]
-)
+cors_middleware = get_cors_middleware()
+cors_middleware.app = app
+app.add_middleware(cors_middleware)
 
 # Trusted host middleware for security
 if settings.debug:
@@ -79,31 +86,37 @@ async def health_check():
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     """
-    Custom HTTP exception handler
+    Custom HTTP exception handler with sanitized error messages
     """
+    # Sanitize the error detail
+    safe_detail = sanitize_error_message(str(exc.detail))
+    
     return JSONResponse(
         status_code=exc.status_code,
-        content=BackendErrorResponse(
-            error="http_error",
-            message=exc.detail,
+        content=create_safe_error_response(
+            error_type="http_error",
+            message=safe_detail,
             status_code=exc.status_code
-        ).dict()
+        )
     )
 
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
     """
-    General exception handler
+    General exception handler with sanitized error messages
     """
-    logger.error(f"Unhandled exception: {exc}")
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content=BackendErrorResponse(
-            error="internal_server_error",
+        content=create_safe_error_response(
+            error_type="internal_server_error",
             message="An internal server error occurred",
-            details={"error": str(exc)} if settings.debug else None
-        ).dict()
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details={"error": str(exc)} if settings.debug else None,
+            original_error=exc
+        )
     )
 
 

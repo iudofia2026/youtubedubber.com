@@ -45,7 +45,7 @@
 ### Phase 3 – Hardening and Deferred Enhancements (Backlog)
 Items documented for future sprints once the MVP is stable:
 - Swap in Redis plus Dramatiq (or alternative) when concurrency exceeds in-process worker limits.
-- Add premium ElevenLabs voice tier, caching presets, and usage metering.
+- Add premium voice tier, caching presets, and usage metering.
 - Introduce Stripe-based billing, usage tracking, and automated invoicing.
 - Provide real-time push via server-sent events or WebSockets once polling proves insufficient.
 - Layer on observability (Prometheus, Grafana), retry and backoff, and a dead-letter queue.
@@ -59,7 +59,7 @@ Items documented for future sprints once the MVP is stable:
 
 ## Upgrade Path Reference
 - Queue/Worker: Replace background module with Dramatiq and Redis by swapping enqueue abstraction and configuring new settings module.
-- Premium Voices: Extend TTS service with optional ElevenLabs implementation guarded by feature flag.
+- Premium Voices: Extend TTS service with additional voice options and quality tiers.
 - Billing: Introduce Stripe webhooks and cost aggregation leveraging existing job_events table.
 - Observability: Layer on structured logging exporters, metrics scraping, and alert routing without refactoring APIs.
 
@@ -81,7 +81,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install core dependencies
 pip install fastapi uvicorn sqlalchemy alembic pydantic python-multipart
 pip install supabase python-dotenv pytest httpx
-pip install deepgram-sdk openai elevenlabs
+pip install deepgram-sdk openai
 pip install ffmpeg-python librosa soundfile
 ```
 
@@ -93,7 +93,6 @@ echo "SUPABASE_URL=your_supabase_url" >> .env.example
 echo "SUPABASE_SERVICE_KEY=your_service_key" >> .env.example
 echo "DEEPGRAM_API_KEY=your_deepgram_key" >> .env.example
 echo "OPENAI_API_KEY=your_openai_key" >> .env.example
-echo "ELEVENLABS_API_KEY=your_elevenlabs_key" >> .env.example
 ```
 
 #### **3. Database Setup**
@@ -149,7 +148,6 @@ class Settings(BaseSettings):
     # AI Services
     deepgram_api_key: str
     openai_api_key: str
-    elevenlabs_api_key: Optional[str] = None
     
     # Application
     app_name: str = "YT Dubber API"

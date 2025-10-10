@@ -100,7 +100,7 @@ npm run dev
 - **BK-030 – Queue swap readiness**  
   Abstract enqueue interface and document steps to drop in Redis/Dramatiq + worker container.  
 - **BK-031 – Premium voice feature flag**  
-  Scaffold optional ElevenLabs integration behind feature flag with configuration toggles.  
+  Scaffold optional premium TTS integration behind feature flag with configuration toggles.  
 - **BK-032 – Billing groundwork**  
   Prepare job_events cost fields, export script, and notes for future Stripe integration.  
 - **BK-033 – Observability hooks**  
