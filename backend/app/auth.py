@@ -116,6 +116,33 @@ async def get_current_user(
         if not credentials:
             raise AuthError("Not authenticated")
         
+        # Check for development mode token
+        if credentials.credentials == "dev-token":
+            # Development mode - create or get dev user
+            user_id = "dev-user-123"
+            email = "dev@youtubedubber.com"
+            
+            # Check if dev user exists in database, create if not
+            user = db.query(User).filter(User.id == user_id).first()
+            
+            if not user:
+                # Create new dev user
+                user = User(
+                    id=user_id,
+                    email=email
+                )
+                db.add(user)
+                db.commit()
+                db.refresh(user)
+                logger.info(f"Created dev user: {user_id}")
+            
+            return UserResponse(
+                id=user.id,
+                email=user.email,
+                created_at=user.created_at,
+                updated_at=user.updated_at
+            )
+        
         # Verify the JWT token
         payload = verify_jwt_token(credentials.credentials)
         

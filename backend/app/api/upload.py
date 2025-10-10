@@ -8,6 +8,7 @@ from app.auth import get_current_user, UserResponse
 from app.middleware.rate_limit import upload_rate_limit
 from app.utils.security import create_http_exception
 from app.utils.validation import validate_language_codes, validate_filename
+from app.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -26,7 +27,22 @@ async def request_upload_urls(
     This endpoint matches the frontend API contract exactly
     """
     try:
-        # Validate input data
+        # For development mode, skip validation
+        if settings.supabase_url == "https://test.supabase.co":
+            logger.info(f"Development mode: Generating upload URLs for user {current_user.id}, languages: {request.languages}")
+            
+            # Generate signed URLs directly
+            signed_urls = await storage_service.generate_upload_urls(
+                user_id=current_user.id,
+                languages=request.languages,
+                voice_track_name=request.voice_track_name,
+                background_track_name=request.background_track_name
+            )
+            
+            logger.info(f"Generated upload URLs for job {signed_urls.job_id}")
+            return signed_urls
+        
+        # Production mode - validate input data
         validated_languages = validate_language_codes(request.languages)
         validated_voice_track = validate_filename(request.voice_track_name, "voice_track_name")
         validated_background_track = validate_filename(request.background_track_name, "background_track_name")

@@ -97,6 +97,291 @@ async def health_check():
     )
 
 
+@app.get("/test-db")
+async def test_database():
+    """
+    Test database connection
+    """
+    try:
+        from app.database import get_db
+        from app.models import User
+        from sqlalchemy.orm import Session
+        
+        db = next(get_db())
+        user_count = db.query(User).count()
+        
+        return {
+            "status": "success",
+            "message": "Database connection successful",
+            "user_count": user_count
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Database connection failed: {str(e)}"
+        }
+
+
+@app.get("/test-job-creation")
+async def test_job_creation():
+    """
+    Test job creation directly
+    """
+    try:
+        from app.database import get_db
+        from app.models import DubbingJob, LanguageTask, JobEvent
+        from app.schemas import JobStatus, LanguageTaskStatus
+        import uuid
+        
+        db = next(get_db())
+        
+        # Create a test job
+        job_id = f"test_job_{uuid.uuid4().hex[:8]}"
+        
+        job = DubbingJob(
+            id=job_id,
+            user_id="dev-user-123",
+            status=JobStatus.PROCESSING,
+            progress=0,
+            message="Test job created",
+            target_languages=["es"]
+        )
+        
+        db.add(job)
+        db.commit()
+        db.refresh(job)
+        
+        # Check if job was created
+        created_job = db.query(DubbingJob).filter(DubbingJob.id == job_id).first()
+        
+        return {
+            "status": "success",
+            "message": "Job creation test successful",
+            "job_id": job_id,
+            "job_exists": created_job is not None,
+            "job_status": created_job.status if created_job else None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Job creation test failed: {str(e)}"
+        }
+
+
+@app.post("/test-job-service")
+async def test_job_service():
+    """
+    Test job service directly
+    """
+    try:
+        from app.database import get_db
+        from app.services.job_service import JobService
+        from app.schemas import JobCreationRequest
+        
+        db = next(get_db())
+        job_service = JobService()
+        
+        # Create a test job using the service
+        job_data = JobCreationRequest(
+            job_id="test_service_job",
+            voice_track_uploaded=True,
+            background_track_uploaded=False,
+            languages=["es"]
+        )
+        
+        result = await job_service.create_job(
+            user_id="dev-user-123",
+            job_data=job_data,
+            db=db
+        )
+        
+        return {
+            "status": "success",
+            "message": "Job service test successful",
+            "result": result
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Job service test failed: {str(e)}"
+        }
+
+
+@app.post("/test-simple-job")
+async def test_simple_job():
+    """
+    Test simple job creation without service
+    """
+    try:
+        from app.database import get_db
+        from app.models import DubbingJob
+        from app.schemas import JobStatus
+        import uuid
+        
+        db = next(get_db())
+        
+        # Create a simple job
+        job_id = f"simple_job_{uuid.uuid4().hex[:8]}"
+        
+        job = DubbingJob(
+            id=job_id,
+            user_id="dev-user-123",
+            status=JobStatus.PROCESSING,
+            progress=0,
+            message="Simple test job",
+            target_languages=["es"]
+        )
+        
+        db.add(job)
+        db.commit()
+        db.refresh(job)
+        
+        # Check if job was created
+        created_job = db.query(DubbingJob).filter(DubbingJob.id == job_id).first()
+        
+        return {
+            "status": "success",
+            "message": "Simple job creation successful",
+            "job_id": job_id,
+            "job_exists": created_job is not None,
+            "job_status": created_job.status if created_job else None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Simple job creation failed: {str(e)}"
+        }
+
+
+@app.post("/test-language-task")
+async def test_language_task():
+    """
+    Test language task creation
+    """
+    try:
+        from app.database import get_db
+        from app.models import DubbingJob, LanguageTask
+        from app.schemas import JobStatus, LanguageTaskStatus
+        import uuid
+        
+        db = next(get_db())
+        
+        # Create a job first
+        job_id = f"task_job_{uuid.uuid4().hex[:8]}"
+        
+        job = DubbingJob(
+            id=job_id,
+            user_id="dev-user-123",
+            status=JobStatus.PROCESSING,
+            progress=0,
+            message="Test job for language task",
+            target_languages=["es"]
+        )
+        
+        db.add(job)
+        db.commit()
+        db.refresh(job)
+        
+        # Create a language task
+        task_id = f"task_{uuid.uuid4().hex[:12]}"
+        
+        language_task = LanguageTask(
+            id=task_id,
+            job_id=job_id,
+            language_code="es",
+            status=LanguageTaskStatus.PENDING,
+            progress=0,
+            message="Test language task"
+        )
+        
+        db.add(language_task)
+        db.commit()
+        db.refresh(language_task)
+        
+        # Check if task was created
+        created_task = db.query(LanguageTask).filter(LanguageTask.id == task_id).first()
+        
+        return {
+            "status": "success",
+            "message": "Language task creation successful",
+            "job_id": job_id,
+            "task_id": task_id,
+            "task_exists": created_task is not None,
+            "task_status": created_task.status if created_task else None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Language task creation failed: {str(e)}"
+        }
+
+
+@app.post("/test-job-event")
+async def test_job_event():
+    """
+    Test job event creation
+    """
+    try:
+        from app.database import get_db
+        from app.models import DubbingJob, JobEvent
+        from app.schemas import JobStatus
+        import uuid
+        
+        db = next(get_db())
+        
+        # Create a job first
+        job_id = f"event_job_{uuid.uuid4().hex[:8]}"
+        
+        job = DubbingJob(
+            id=job_id,
+            user_id="dev-user-123",
+            status=JobStatus.PROCESSING,
+            progress=0,
+            message="Test job for job event",
+            target_languages=["es"]
+        )
+        
+        db.add(job)
+        db.commit()
+        db.refresh(job)
+        
+        # Create a job event
+        event_id = f"event_{uuid.uuid4().hex[:12]}"
+        
+        job_event = JobEvent(
+            id=event_id,
+            job_id=job_id,
+            event_type="created",
+            message="Test job event",
+            event_metadata={
+                "languages": ["es"],
+                "voice_track_uploaded": True,
+                "background_track_uploaded": False
+            }
+        )
+        
+        db.add(job_event)
+        db.commit()
+        db.refresh(job_event)
+        
+        # Check if event was created
+        created_event = db.query(JobEvent).filter(JobEvent.id == event_id).first()
+        
+        return {
+            "status": "success",
+            "message": "Job event creation successful",
+            "job_id": job_id,
+            "event_id": event_id,
+            "event_exists": created_event is not None,
+            "event_type": created_event.event_type if created_event else None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Job event creation failed: {str(e)}"
+        }
+
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     """

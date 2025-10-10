@@ -39,7 +39,23 @@ class StorageService:
             if background_track_name:
                 background_track_path = f"uploads/{user_id}/{job_id}/background_track_{background_track_name}"
             
-            # Generate signed URLs
+            # Check if we're in development mode (test Supabase URL)
+            if settings.supabase_url == "https://test.supabase.co":
+                # Development mode - return mock URLs
+                upload_urls = {
+                    "voice_track": f"http://localhost:8000/mock-upload/{voice_track_path}",
+                }
+                
+                if background_track_path:
+                    upload_urls["background_track"] = f"http://localhost:8000/mock-upload/{background_track_path}"
+                
+                logger.info(f"Development mode: Generated mock upload URLs for job {job_id}")
+                return SignedUploadUrls(
+                    job_id=job_id,
+                    upload_urls=upload_urls
+                )
+            
+            # Production mode - use real Supabase
             upload_urls = {}
             
             # Voice track URL

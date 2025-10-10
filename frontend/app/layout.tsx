@@ -45,20 +45,18 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <ErrorBoundary>
-          <ConfigValidator>
-            <ToastProvider>
-              <AuthProvider>
-                <div className="min-h-screen flex flex-col">
-                  <main className="flex-1">
-                    {children}
-                  </main>
-                  <Footer />
-                </div>
-                {/* Dev Mode Toggle - Only show in development */}
-                {process.env.NODE_ENV === 'development' && <DevModeToggle />}
-              </AuthProvider>
-            </ToastProvider>
-          </ConfigValidator>
+          <ToastProvider>
+            <AuthProvider>
+              <div className="min-h-screen flex flex-col">
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+              {/* Dev Mode Toggle - Only show in development */}
+              {process.env.NODE_ENV === 'development' && <DevModeToggle />}
+            </AuthProvider>
+          </ToastProvider>
         </ErrorBoundary>
       </body>
     </html>

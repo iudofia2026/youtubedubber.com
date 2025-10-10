@@ -33,10 +33,15 @@ class JobService:
         Create a new dubbing job
         """
         try:
+            logger.info(f"Starting job creation for {job_data.job_id} for user {user_id}")
+            
             # Check if job already exists
             existing_job = db.query(DubbingJob).filter(DubbingJob.id == job_data.job_id).first()
             if existing_job:
+                logger.info(f"Job {job_data.job_id} already exists, returning status")
                 return await self.get_job_status(job_data.job_id, user_id, db)
+            
+            logger.info(f"Creating main job record for {job_data.job_id}")
             
             # Create the main job record
             job = DubbingJob(
@@ -49,11 +54,14 @@ class JobService:
             )
             
             db.add(job)
+            logger.info(f"Added job to database: {job_data.job_id}")
             
             # Create language tasks
             for language_code in job_data.languages:
+                task_id = f"task_{uuid.uuid4().hex[:12]}"
+                logger.info(f"Creating language task {task_id} for language {language_code}")
                 language_task = LanguageTask(
-                    id=f"task_{uuid.uuid4().hex[:12]}",
+                    id=task_id,
                     job_id=job_data.job_id,
                     language_code=language_code,
                     status=LanguageTaskStatus.PENDING,
@@ -63,12 +71,14 @@ class JobService:
                 db.add(language_task)
             
             # Create job event
+            event_id = f"event_{uuid.uuid4().hex[:12]}"
+            logger.info(f"Creating job event {event_id}")
             job_event = JobEvent(
-                id=f"event_{uuid.uuid4().hex[:12]}",
+                id=event_id,
                 job_id=job_data.job_id,
                 event_type="created",
                 message="Job created successfully",
-                metadata={
+                event_metadata={
                     "languages": job_data.languages,
                     "voice_track_uploaded": job_data.voice_track_uploaded,
                     "background_track_uploaded": job_data.background_track_uploaded
@@ -76,18 +86,41 @@ class JobService:
             )
             db.add(job_event)
             
-            db.commit()
-            db.refresh(job)
+            logger.info(f"Committing transaction for job {job_data.job_id}")
+            try:
+                db.commit()
+                logger.info(f"Transaction committed successfully for job {job_data.job_id}")
+            except Exception as commit_error:
+                logger.error(f"Error committing transaction: {commit_error}")
+                raise commit_error
             
-            logger.info(f"Created job {job_data.job_id} for user {user_id}")
+            try:
+                db.refresh(job)
+                logger.info(f"Job refreshed successfully: {job_data.job_id}")
+            except Exception as refresh_error:
+                logger.error(f"Error refreshing job: {refresh_error}")
+                raise refresh_error
             
-            # Return job status
-            return await self.get_job_status(job_data.job_id, user_id, db)
+            logger.info(f"Created job {job_data.job_id} for user {user_id} successfully")
+            
+            # Return simple success response instead of calling get_job_status
+            from app.schemas import JobStatusResponse, LanguageProgress
+            return JobStatusResponse(
+                id=job_data.job_id,
+                status=JobStatus.PROCESSING,
+                progress=0,
+                message="Job created successfully",
+                languages=[],
+                totalLanguages=len(job_data.languages),
+                completedLanguages=0,
+                startedAt=datetime.utcnow().isoformat(),
+                estimatedCompletion=None
+            )
             
         except Exception as e:
             db.rollback()
-            logger.error(f"Error creating job: {e}")
-            raise Exception("Failed to create job")
+            logger.error(f"Error creating job: {e}", exc_info=True)
+            raise Exception(f"Failed to create job: {str(e)}")
     
     async def get_job_status(
         self,

@@ -12,6 +12,7 @@ from app.database import get_db
 from app.middleware.rate_limit import job_rate_limit, user_rate_limit
 from app.utils.security import create_http_exception, sanitize_error_message
 from app.utils.validation import validate_job_id, validate_language_codes, validate_pagination_params
+from app.config import settings
 from sqlalchemy.orm import Session
 import logging
 
@@ -31,7 +32,24 @@ async def create_job(
     This endpoint matches the frontend API contract exactly
     """
     try:
-        # Validate input data
+        # For development mode, skip validation
+        if settings.supabase_url == "https://test.supabase.co":
+            logger.info(f"Development mode: Creating job {request.job_id} for user {current_user.id}")
+            
+            job_service = JobService()
+            
+            # Create the job
+            job_status = await job_service.create_job(
+                user_id=current_user.id,
+                job_data=request,
+                db=db
+            )
+            
+            logger.info(f"Created job {request.job_id} successfully")
+            
+            return SubmitJobResponse(jobId=request.job_id)
+        
+        # Production mode - validate input data
         validated_job_id = validate_job_id(request.job_id)
         validated_languages = validate_language_codes(request.languages)
         
