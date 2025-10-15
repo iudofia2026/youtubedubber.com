@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ChevronRight, Home, BarChart3, Plus, Download } from 'lucide-react';
+import { ChevronRight, Home, BarChart3, Plus } from 'lucide-react';
 
 export interface BreadcrumbItem {
   label: string;
@@ -96,8 +96,4 @@ export const breadcrumbConfigs = {
     { label: `Job #${jobId.slice(-8)}`, href: `/jobs/${jobId}` }
   ],
   
-  downloads: [
-    { label: 'Home', href: '/', icon: Home },
-    { label: 'Downloads', href: '/downloads', icon: Download }
-  ]
 };

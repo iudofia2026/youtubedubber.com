@@ -6,25 +6,20 @@ import {
   Download, 
   Search, 
   Filter, 
-  Calendar, 
-  Clock, 
   FileAudio, 
   Video, 
   FileText,
   AlertTriangle,
   CheckCircle,
-  RefreshCw,
   Trash2,
-  MoreVertical,
+  ChevronDown,
   SortAsc,
   SortDesc,
   Grid,
-  List
+  List,
+  HardDrive
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Navigation } from '@/components/Navigation';
-import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useToast } from '@/components/ToastNotifications';
 import { DownloadHistoryItem, DownloadFileType, LANGUAGES } from '@/types';
 
@@ -32,7 +27,11 @@ type SortField = 'downloadedAt' | 'fileName' | 'languageName' | 'fileType' | 'fi
 type SortDirection = 'asc' | 'desc';
 type ViewMode = 'grid' | 'list';
 
-export default function DownloadsPage() {
+interface DownloadHistorySectionProps {
+  className?: string;
+}
+
+export function DownloadHistorySection({ className = '' }: DownloadHistorySectionProps) {
   const { addToast } = useToast();
   const [downloadHistory, setDownloadHistory] = useState<DownloadHistoryItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,6 +42,7 @@ export default function DownloadsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Mock data - in real app, this would come from API
   useEffect(() => {
@@ -174,7 +174,7 @@ export default function DownloadsPage() {
     if (!expiresAt) {
       return { status: 'active', message: 'No expiration' };
     }
-        const now = new Date();
+    const now = new Date();
     const expiration = new Date(expiresAt);
     const hoursUntilExpiration = (expiration.getTime() - now.getTime()) / (1000 * 60 * 60);
     
@@ -294,280 +294,290 @@ export default function DownloadsPage() {
 
   if (isLoading) {
     return (
-      <ProtectedRoute>
-        <div className="min-h-screen bg-background">
-          <Navigation currentPath="/downloads" />
-          <main className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
-            <div className="flex items-center justify-center min-h-[400px]">
-              <div className="text-center">
-                <div className="w-8 h-8 border-2 border-[#ff0000] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Loading download history...</p>
-              </div>
-            </div>
-          </main>
+      <div className={`bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
+        <div className="flex items-center justify-center min-h-[200px]">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-[#ff0000] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading download history...</p>
+          </div>
         </div>
-      </ProtectedRoute>
+      </div>
     );
   }
 
   return (
-    <ProtectedRoute>
-      <div className="min-h-screen bg-background">
-        <Navigation currentPath="/downloads" />
-        
-        <main className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
-          {/* Breadcrumbs */}
-          <Breadcrumbs items={breadcrumbConfigs.downloads} />
-
-          {/* Header */}
-          <motion.div
-            className="flex items-center justify-between mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+    <motion.div
+      className={`bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden ${className}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-[#ff0000]/10 rounded-xl">
+              <Download className="w-6 h-6 text-[#ff0000]" />
+            </div>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Download History</h1>
-              <p className="text-muted-foreground mt-1">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Download History</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Manage your downloaded files and access re-download links
               </p>
             </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+              className="flex items-center space-x-2"
+            >
+              {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
+              <span className="hidden sm:inline">{viewMode === 'grid' ? 'List' : 'Grid'}</span>
+            </Button>
             
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                className="flex items-center space-x-2"
-              >
-                {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
-                <span>{viewMode === 'grid' ? 'List' : 'Grid'}</span>
-              </Button>
-            </div>
-          </motion.div>
-
-          {/* Stats Cards */}
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <div className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Downloads</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-                </div>
-                <Download className="w-8 h-8 text-[#ff0000] opacity-50" />
-              </div>
-            </div>
-            
-            <div className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Active Files</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.active}</p>
-                </div>
-                <CheckCircle className="w-8 h-8 text-green-600 opacity-50" />
-              </div>
-            </div>
-            
-            <div className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Expired Files</p>
-                  <p className="text-2xl font-bold text-red-600">{stats.expired}</p>
-                </div>
-                <AlertTriangle className="w-8 h-8 text-red-600 opacity-50" />
-              </div>
-            </div>
-            
-            <div className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Size</p>
-                  <p className="text-2xl font-bold text-foreground">{formatFileSize(stats.totalSize)}</p>
-                </div>
-                <FileAudio className="w-8 h-8 text-[#ff0000] opacity-50" />
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Search and Filters */}
-          <motion.div
-            className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-4 mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="flex flex-col lg:flex-row gap-4">
-              {/* Search */}
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="Search downloads..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              {/* Filters */}
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center space-x-2"
-                >
-                  <Filter className="w-4 h-4" />
-                  <span>Filters</span>
-                </Button>
-              </div>
-            </div>
-
-            {/* Filter Options */}
-            {showFilters && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="flex items-center space-x-2"
+            >
+              <span className="hidden sm:inline">{isExpanded ? 'Collapse' : 'Expand'}</span>
               <motion.div
-                className="mt-4 pt-4 border-t border-border space-y-4"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
+                animate={{ rotate: isExpanded ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
               >
-                {/* File Types */}
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">File Types</label>
-                  <div className="flex flex-wrap gap-2">
-                    {(['voice', 'full', 'captions'] as DownloadFileType[]).map(fileType => (
-                      <Button
-                        key={fileType}
-                        variant={selectedFileTypes.includes(fileType) ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSelectedFileTypes(prev => 
-                          prev.includes(fileType) 
-                            ? prev.filter(type => type !== fileType)
-                            : [...prev, fileType]
-                        )}
-                        className="flex items-center space-x-2"
-                      >
-                        {getFileTypeIcon(fileType)}
-                        <span>{getFileTypeLabel(fileType)}</span>
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Languages */}
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">Languages</label>
-                  <div className="flex flex-wrap gap-2">
-                    {LANGUAGES.map(language => (
-                      <Button
-                        key={language.code}
-                        variant={selectedLanguages.includes(language.code) ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSelectedLanguages(prev => 
-                          prev.includes(language.code) 
-                            ? prev.filter(lang => lang !== language.code)
-                            : [...prev, language.code]
-                        )}
-                      >
-                        {language.flag} {language.name}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+                <ChevronDown className="w-4 h-4" />
               </motion.div>
-            )}
-          </motion.div>
+            </Button>
+          </div>
+        </div>
 
-          {/* Sort Options */}
-          <motion.div
-            className="flex items-center justify-between mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-muted-foreground">Sort by:</span>
-              {(['downloadedAt', 'fileName', 'languageName', 'fileType', 'fileSize'] as SortField[]).map(field => (
-                <Button
-                  key={field}
-                  variant={sortField === field ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleSort(field)}
-                  className="flex items-center space-x-1"
-                >
-                  <span className="capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</span>
-                  {sortField === field && (
-                    sortDirection === 'asc' ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />
-                  )}
-                </Button>
-              ))}
+        {/* Stats Cards */}
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Total</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">{stats.total}</p>
+              </div>
+              <Download className="w-5 h-5 text-[#ff0000] opacity-50" />
             </div>
-
-            <div className="text-sm text-muted-foreground">
-              {filteredAndSortedHistory.length} of {downloadHistory.length} items
+          </div>
+          
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Active</p>
+                <p className="text-lg font-bold text-green-600">{stats.active}</p>
+              </div>
+              <CheckCircle className="w-5 h-5 text-green-600 opacity-50" />
             </div>
-          </motion.div>
-
-          {/* Download Items */}
-          <motion.div
-            className={viewMode === 'grid' 
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-              : "space-y-3"
-            }
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <AnimatePresence>
-              {filteredAndSortedHistory.map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                >
-                  {viewMode === 'grid' ? (
-                    <DownloadHistoryCard
-                      item={item}
-                      onDownload={() => handleDownload(item)}
-                      onDelete={() => handleDelete(item.id)}
-                    />
-                  ) : (
-                    <div key={item.id} className="bg-card/50 backdrop-blur-sm border rounded-xl p-4">
-                      <p>List item: {item.fileName}</p>
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </AnimatePresence>
-
-            {filteredAndSortedHistory.length === 0 && (
-              <motion.div
-                className="col-span-full text-center py-12"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <Download className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">No Downloads Found</h3>
-                <p className="text-muted-foreground">
-                  {searchTerm || selectedFileTypes.length > 0 || selectedLanguages.length > 0
-                    ? 'No downloads match your current filters.'
-                    : 'You haven\'t downloaded any files yet.'}
-                </p>
-              </motion.div>
-            )}
-          </motion.div>
-        </main>
+          </div>
+          
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Expired</p>
+                <p className="text-lg font-bold text-red-600">{stats.expired}</p>
+              </div>
+              <AlertTriangle className="w-5 h-5 text-red-600 opacity-50" />
+            </div>
+          </div>
+          
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Size</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">{formatFileSize(stats.totalSize)}</p>
+              </div>
+              <HardDrive className="w-5 h-5 text-[#ff0000] opacity-50" />
+            </div>
+          </div>
+        </motion.div>
       </div>
-    </ProtectedRoute>
+
+      {/* Expandable Content */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="p-6 space-y-6">
+              {/* Search and Filters */}
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-4">
+                <div className="flex flex-col lg:flex-row gap-4">
+                  {/* Search */}
+                  <div className="flex-1">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search downloads..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Filters */}
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="flex items-center space-x-2"
+                    >
+                      <Filter className="w-4 h-4" />
+                      <span>Filters</span>
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Filter Options */}
+                {showFilters && (
+                  <motion.div
+                    className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600 space-y-4"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    {/* File Types */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-900 dark:text-white mb-2 block">File Types</label>
+                      <div className="flex flex-wrap gap-2">
+                        {(['voice', 'full', 'captions'] as DownloadFileType[]).map(fileType => (
+                          <Button
+                            key={fileType}
+                            variant={selectedFileTypes.includes(fileType) ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSelectedFileTypes(prev => 
+                              prev.includes(fileType) 
+                                ? prev.filter(type => type !== fileType)
+                                : [...prev, fileType]
+                            )}
+                            className="flex items-center space-x-2"
+                          >
+                            {getFileTypeIcon(fileType)}
+                            <span>{getFileTypeLabel(fileType)}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Languages */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-900 dark:text-white mb-2 block">Languages</label>
+                      <div className="flex flex-wrap gap-2">
+                        {LANGUAGES.slice(0, 8).map(language => (
+                          <Button
+                            key={language.code}
+                            variant={selectedLanguages.includes(language.code) ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSelectedLanguages(prev => 
+                              prev.includes(language.code) 
+                                ? prev.filter(lang => lang !== language.code)
+                                : [...prev, language.code]
+                            )}
+                          >
+                            {language.flag} {language.name}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Sort Options */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Sort by:</span>
+                  {(['downloadedAt', 'fileName', 'languageName', 'fileType', 'fileSize'] as SortField[]).map(field => (
+                    <Button
+                      key={field}
+                      variant={sortField === field ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleSort(field)}
+                      className="flex items-center space-x-1"
+                    >
+                      <span className="capitalize text-xs">{field.replace(/([A-Z])/g, ' $1').trim()}</span>
+                      {sortField === field && (
+                        sortDirection === 'asc' ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />
+                      )}
+                    </Button>
+                  ))}
+                </div>
+
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {filteredAndSortedHistory.length} of {downloadHistory.length} items
+                </div>
+              </div>
+
+              {/* Download Items */}
+              <div className={viewMode === 'grid' 
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                : "space-y-3"
+              }>
+                <AnimatePresence>
+                  {filteredAndSortedHistory.map((item, index) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                    >
+                      {viewMode === 'grid' ? (
+                        <DownloadHistoryCard
+                          item={item}
+                          onDownload={() => handleDownload(item)}
+                          onDelete={() => handleDelete(item.id)}
+                        />
+                      ) : (
+                        <DownloadHistoryListItem
+                          item={item}
+                          onDownload={() => handleDownload(item)}
+                          onDelete={() => handleDelete(item.id)}
+                        />
+                      )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+
+                {filteredAndSortedHistory.length === 0 && (
+                  <motion.div
+                    className="col-span-full text-center py-12"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <Download className="w-16 h-16 text-gray-400 mx-auto mb-4 opacity-50" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Downloads Found</h3>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {searchTerm || selectedFileTypes.length > 0 || selectedLanguages.length > 0
+                        ? 'No downloads match your current filters.'
+                        : 'You haven\'t downloaded any files yet.'}
+                    </p>
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
@@ -630,7 +640,7 @@ function DownloadHistoryCard({
     if (!expiresAt) {
       return { status: 'active', message: 'No expiration' };
     }
-        const expiration = new Date(expiresAt);
+    const expiration = new Date(expiresAt);
     const hoursUntilExpiration = (expiration.getTime() - now.getTime()) / (1000 * 60 * 60);
     
     if (hoursUntilExpiration < 0) {
@@ -646,7 +656,7 @@ function DownloadHistoryCard({
 
   return (
     <motion.div
-      className={`bg-card/50 backdrop-blur-sm border rounded-xl p-4 transition-all duration-300 ${
+      className={`bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200 dark:border-gray-600 rounded-xl p-4 transition-all duration-300 ${
         item.isExpired ? 'opacity-60' : ''
       }`}
       whileHover={{ scale: 1.02 }}
@@ -657,10 +667,10 @@ function DownloadHistoryCard({
           <div className="flex items-center space-x-2">
             {getFileTypeIcon(item.fileType)}
             <div>
-              <h3 className="font-semibold text-foreground text-sm truncate">
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm truncate">
                 {item.fileName}
               </h3>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 {getFileTypeLabel(item.fileType)} • {item.languageName}
               </p>
             </div>
@@ -683,7 +693,7 @@ function DownloadHistoryCard({
             variant="ghost"
             size="sm"
             onClick={onDelete}
-            className="p-1 text-muted-foreground hover:text-red-600"
+            className="p-1 text-gray-400 hover:text-red-600"
           >
             <Trash2 className="w-4 h-4" />
           </Button>
@@ -692,19 +702,19 @@ function DownloadHistoryCard({
 
       {/* Job Info */}
       <div className="mb-3">
-        <p className="text-sm text-foreground font-medium">{item.jobTitle}</p>
-        <p className="text-xs text-muted-foreground">Job #{item.jobId.slice(-8)}</p>
+        <p className="text-sm text-gray-900 dark:text-white font-medium">{item.jobTitle}</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400">Job #{item.jobId.slice(-8)}</p>
       </div>
 
       {/* File Details */}
       <div className="space-y-2 mb-4">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Size:</span>
-          <span className="font-medium">{formatFileSize(item.fileSize)}</span>
+          <span className="text-gray-600 dark:text-gray-400">Size:</span>
+          <span className="font-medium text-gray-900 dark:text-white">{formatFileSize(item.fileSize)}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Downloaded:</span>
-          <span className="font-medium">{formatDate(item.downloadedAt)}</span>
+          <span className="text-gray-600 dark:text-gray-400">Downloaded:</span>
+          <span className="font-medium text-gray-900 dark:text-white">{formatDate(item.downloadedAt)}</span>
         </div>
       </div>
 
@@ -801,7 +811,7 @@ function DownloadHistoryListItem({
 
   return (
     <motion.div
-      className={`bg-card/50 backdrop-blur-sm border rounded-xl p-4 transition-all duration-300 ${
+      className={`bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200 dark:border-gray-600 rounded-xl p-4 transition-all duration-300 ${
         item.isExpired ? 'opacity-60' : ''
       }`}
       whileHover={{ scale: 1.01 }}
@@ -812,10 +822,10 @@ function DownloadHistoryListItem({
           <div className="flex items-center space-x-3">
             {getFileTypeIcon(item.fileType)}
             <div className="min-w-0">
-              <h3 className="font-semibold text-foreground text-sm truncate">
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm truncate">
                 {item.fileName}
               </h3>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 {getFileTypeLabel(item.fileType)} • {item.languageName} • {item.jobTitle}
               </p>
             </div>
@@ -823,17 +833,17 @@ function DownloadHistoryListItem({
         </div>
 
         {/* Middle Section - Details */}
-        <div className="flex items-center space-x-6 text-sm text-muted-foreground">
+        <div className="flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400">
           <div className="text-center">
-            <p className="text-xs text-muted-foreground">Size</p>
-            <p className="font-medium">{formatFileSize(item.fileSize)}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">Size</p>
+            <p className="font-medium text-gray-900 dark:text-white">{formatFileSize(item.fileSize)}</p>
           </div>
           <div className="text-center">
-            <p className="text-xs text-muted-foreground">Downloaded</p>
-            <p className="font-medium">{formatDate(item.downloadedAt)}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">Downloaded</p>
+            <p className="font-medium text-gray-900 dark:text-white">{formatDate(item.downloadedAt)}</p>
           </div>
           <div className="text-center">
-            <p className="text-xs text-muted-foreground">Status</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">Status</p>
             <div className={`px-2 py-1 rounded-full text-xs font-medium ${
               expirationStatus.status === 'expired' 
                 ? 'text-red-600 bg-red-50 dark:bg-red-900/20' 
@@ -864,7 +874,7 @@ function DownloadHistoryListItem({
             variant="ghost"
             size="sm"
             onClick={onDelete}
-            className="p-1 text-muted-foreground hover:text-red-600"
+            className="p-1 text-gray-400 hover:text-red-600"
           >
             <Trash2 className="w-4 h-4" />
           </Button>
