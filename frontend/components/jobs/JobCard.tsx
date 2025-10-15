@@ -10,7 +10,10 @@ import {
   Download, 
   Trash2,
   Languages,
-  FileAudio
+  FileAudio,
+  Video,
+  Zap,
+  Play
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Job } from '@/types';
@@ -229,12 +232,13 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
           
           <div>
             <motion.h3 
-              className="text-xl font-bold text-gray-900 dark:text-white mb-1"
+              className="text-xl font-bold text-gray-900 dark:text-white mb-1 flex items-center space-x-2"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
             >
-              🎬 Job #{job.id.slice(-8)}
+              <Video className="w-5 h-5 text-[#ff0000]" />
+              <span>Job #{job.id.slice(-8)}</span>
             </motion.h3>
             <motion.p 
               className="text-sm text-gray-500 dark:text-gray-400"
@@ -248,14 +252,32 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
         </div>
         
         <motion.div 
-          className={`px-4 py-2 rounded-xl text-sm font-bold shadow-lg ${getStatusColor()}`}
+          className={`px-4 py-2 rounded-xl text-sm font-bold shadow-lg flex items-center space-x-2 ${getStatusColor()}`}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          {job.status === 'complete' ? '✅ Complete' :
-           job.status === 'error' ? '❌ Error' :
-           job.status === 'processing' ? '⚡ Processing' : '⏳ Pending'}
+          {job.status === 'complete' ? (
+            <>
+              <CheckCircle className="w-4 h-4" />
+              <span>Complete</span>
+            </>
+          ) : job.status === 'error' ? (
+            <>
+              <AlertCircle className="w-4 h-4" />
+              <span>Error</span>
+            </>
+          ) : job.status === 'processing' ? (
+            <>
+              <Zap className="w-4 h-4" />
+              <span>Processing</span>
+            </>
+          ) : (
+            <>
+              <Clock className="w-4 h-4" />
+              <span>Pending</span>
+            </>
+          )}
         </motion.div>
       </div>
 
