@@ -180,14 +180,14 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
                 <FileUpload
                   label="Voice Track"
                   required
-                  accept="audio/*"
+                  accept="audio/*,video/mp4"
                   maxSize={100}
                   onFileSelect={(file) => setFormData(prev => ({ ...prev, voiceTrack: file }))}
                   value={formData.voiceTrack}
                 />
                 <div className="text-center text-sm text-muted-foreground">
-                  <p>🎤 Upload your voice-only audio file</p>
-                  <p>Supported formats: MP3, WAV, M4A</p>
+                  <p>🎤 Upload your voice-only audio or video file</p>
+                  <p>Supported formats: MP3, WAV, M4A, MP4</p>
                 </div>
               </div>
             )}
@@ -197,7 +197,7 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
                 <FileUpload
                   label="Background Track (Optional)"
                   required={false}
-                  accept="audio/*"
+                  accept="audio/*,video/mp4"
                   maxSize={100}
                   onFileSelect={(file) => setFormData(prev => ({ ...prev, backgroundTrack: file }))}
                   value={formData.backgroundTrack}

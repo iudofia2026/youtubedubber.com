@@ -39,7 +39,7 @@ export default function NewJobPage() {
 
   const steps = [
     { id: 0, title: 'How It Works', description: 'Learn the process', icon: Scissors },
-    { id: 1, title: 'Voice Track', description: 'Upload your voice-only audio file', icon: Mic },
+    { id: 1, title: 'Voice Track', description: 'Upload your voice-only audio or video file', icon: Mic },
     { id: 2, title: 'Background Track', description: 'Add background music (optional)', icon: Music },
     { id: 3, title: 'Target Languages', description: 'Select languages for dubbing', icon: Globe },
   ];
@@ -55,6 +55,7 @@ export default function NewJobPage() {
         'Import your video into any video editor',
         'Export voice track (speech only, no music)',
         'Export background track (music, SFX, ambient)',
+        'Or upload MP4 video directly (we\'ll extract audio)',
         'Ensure both tracks are the same duration'
       ],
       tips: [
@@ -76,7 +77,7 @@ export default function NewJobPage() {
         'Review file details and confirm'
       ],
       tips: [
-        'Supported formats: MP3, WAV, M4A, FLAC',
+        'Supported formats: MP3, WAV, M4A, MP4',
         'Maximum file size: 100MB per track',
         'Processing time: 2-5 minutes per language'
       ],
@@ -588,7 +589,7 @@ export default function NewJobPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.8 }}
                       >
-                        Upload your voice-only audio file first
+                        Upload your voice-only audio or video file first
                       </motion.p>
                       
                     </div>
@@ -604,7 +605,7 @@ export default function NewJobPage() {
                     <FileUpload
                       label="Voice Track"
                       required
-                      accept="audio/*"
+                      accept="audio/*,video/mp4"
                       maxSize={100}
                       onFileSelect={setVoiceTrack}
                       onDurationChange={setVoiceDuration}
@@ -729,7 +730,7 @@ export default function NewJobPage() {
                   >
                     <FileUpload
                       label="Background Track (Optional)"
-                      accept="audio/*"
+                      accept="audio/*,video/mp4"
                       maxSize={100}
                       onFileSelect={setBackgroundTrack}
                       onDurationChange={setBackgroundDuration}

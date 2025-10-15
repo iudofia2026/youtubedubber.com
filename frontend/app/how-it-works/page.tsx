@@ -18,6 +18,7 @@ export default function HowItWorksPage() {
         'Import your video into any video editor',
         'Export voice track (speech only, no music)',
         'Export background track (music, SFX, ambient)',
+        'Or upload MP4 video directly (we\'ll extract audio)',
         'Ensure both tracks are the same duration'
       ],
       tips: [
@@ -39,7 +40,7 @@ export default function HowItWorksPage() {
         'Review file details and confirm'
       ],
       tips: [
-        'Supported formats: MP3, WAV, M4A, FLAC',
+        'Supported formats: MP3, WAV, M4A, MP4',
         'Maximum file size: 100MB per track',
         'Processing time: 2-5 minutes per language'
       ],
