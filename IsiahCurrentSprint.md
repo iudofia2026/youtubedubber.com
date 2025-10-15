@@ -25,27 +25,34 @@
 
 ## 🎯 NEXT SPRINT CANDIDATES (High Impact, Low Effort)
 
-### 1. Real API Integration (lib/api.ts)
+### 1. MP4 Video Format Support 🚨 **HIGH PRIORITY**
+- **Effort**: 2-3 hours
+- **Impact**: Very High
+- **Summary**: Add MP4 video support for direct video upload and audio extraction
+- **Files**: Backend config, frontend upload validation, help documentation
+- **Status**: **URGENT** - Users expect video format support
+
+### 2. Real API Integration (lib/api.ts)
 - **Effort**: 3-4 hours
 - **Impact**: Very High
 - **Summary**: Replace mock functions with real HTTP requests, implement proper error handling
 
-### 2. Job Details View Enhancement
+### 3. Job Details View Enhancement
 - **Effort**: 2-3 hours
 - **Impact**: High
 - **Summary**: Add audit trail and processing logs, enhanced job information display
 
-### 3. Error Recovery Flows
+### 4. Error Recovery Flows
 - **Effort**: 2-3 hours
 - **Impact**: High
 - **Summary**: Add retry mechanisms for failed operations, create error recovery components
 
-### 4. Authentication System Integration
+### 5. Authentication System Integration
 - **Effort**: 4-5 hours
 - **Impact**: Very High
 - **Summary**: Set up Supabase Auth integration, create login/register forms, implement JWT token management
 
-### 5. Performance Optimization
+### 6. Performance Optimization
 - **Effort**: 2-3 hours
 - **Impact**: High
 - **Summary**: Optimize bundle size, implement code splitting, improve loading performance

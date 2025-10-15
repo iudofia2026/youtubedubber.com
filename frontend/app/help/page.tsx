@@ -32,15 +32,15 @@ export default function HelpCenter() {
     {
       id: 2,
       category: 'audio-upload',
-      question: 'What audio formats are supported?',
-      answer: 'We support all major audio formats including MP3, WAV, M4A, FLAC, and AAC. For best results, we recommend using WAV or high-quality MP3 files. The maximum file size is 500MB per track, and we support stereo and mono audio.',
-      tags: ['audio', 'formats', 'upload']
+      question: 'What audio and video formats are supported?',
+      answer: 'We support all major audio formats including MP3, WAV, M4A, FLAC, and AAC. We also support MP4 video files for direct audio extraction. For best results, we recommend using WAV or high-quality MP3 files. The maximum file size is 500MB per track, and we support stereo and mono audio.',
+      tags: ['audio', 'video', 'formats', 'upload']
     },
     {
       id: 3,
       category: 'audio-upload',
       question: 'How should I prepare my audio tracks?',
-      answer: 'For optimal results, split your video audio into separate voice and background tracks. The voice track should contain only speech (no music or sound effects), while the background track should contain music and sound effects. This separation allows our AI to create more natural-sounding dubs.',
+      answer: 'For optimal results, split your video audio into separate voice and background tracks. You can upload MP4 videos directly and we\'ll extract the audio, or upload pre-split audio tracks. The voice track should contain only speech (no music or sound effects), while the background track should contain music and sound effects. This separation allows our AI to create more natural-sounding dubs.',
       tags: ['audio', 'preparation', 'tracks']
     },
     {
