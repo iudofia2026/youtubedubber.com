@@ -1,9 +1,210 @@
-import { DubbingJobData, SubmitJobResponse, GetJobStatusResponse, LanguageProgress, LANGUAGES, SignedUploadUrls, UploadUrlsRequest, JobCreationRequest, UploadProgress } from '@/types';
+import { DubbingJobData, SubmitJobResponse, GetJobStatusResponse, LanguageProgress, LANGUAGES, SignedUploadUrls, UploadUrlsRequest, JobCreationRequest, UploadProgress, Job } from '@/types';
 
 import { config } from './config';
 
 // API configuration
 const API_BASE = config.apiUrl;
+const API_BASE_NORMALIZED = API_BASE.replace(/\/+$/, '');
+
+type JobStatusValue = GetJobStatusResponse['status'];
+type LanguageStatusValue = LanguageProgress['status'];
+
+const VALID_JOB_STATUSES: ReadonlyArray<JobStatusValue> = [
+  'uploading',
+  'processing',
+  'generating',
+  'finalizing',
+  'complete',
+  'error'
+];
+
+const VALID_LANGUAGE_STATUSES: ReadonlyArray<LanguageStatusValue> = [
+  'pending',
+  'processing',
+  'generating',
+  'finalizing',
+  'complete',
+  'error'
+];
+
+interface BackendLanguageProgress {
+  language_code: string;
+  language_name?: string;
+  flag?: string;
+  status?: string;
+  progress?: number;
+  message?: string;
+  estimated_time_remaining?: number;
+  file_size?: number;
+  download_url?: string;
+}
+
+type BackendJobDownloadUrls = Record<string, {
+  voice?: string;
+  full?: string;
+  captions?: string;
+} | undefined>;
+
+interface BackendJobResponse {
+  id?: string;
+  job_id?: string;
+  status?: string;
+  progress?: number;
+  message?: string;
+  languages?: BackendLanguageProgress[];
+  total_languages?: number;
+  completed_languages?: number;
+  started_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  estimated_completion?: string;
+  voice_track_duration?: number;
+  target_languages?: string[];
+  background_track_uploaded?: boolean;
+  download_urls?: BackendJobDownloadUrls;
+}
+
+interface BackendSubmitJobResponse {
+  job_id?: string;
+  id?: string;
+}
+
+interface MapJobResponseOptions {
+  targetLanguages?: string[];
+}
+
+const isValidJobStatus = (status: unknown): status is JobStatusValue => {
+  return typeof status === 'string' && VALID_JOB_STATUSES.includes(status as JobStatusValue);
+};
+
+const isValidLanguageStatus = (status: unknown): status is LanguageStatusValue => {
+  return typeof status === 'string' && VALID_LANGUAGE_STATUSES.includes(status as LanguageStatusValue);
+};
+
+const resolveDownloadUrl = (downloadUrl?: string): string | undefined => {
+  if (!downloadUrl) {
+    return undefined;
+  }
+
+  if (/^https?:\/\//i.test(downloadUrl)) {
+    return downloadUrl;
+  }
+
+  const trimmedPath = downloadUrl.replace(/^\/+/, '');
+  return `${API_BASE_NORMALIZED}/${trimmedPath}`;
+};
+
+const mapDownloadUrls = (downloadUrls?: BackendJobDownloadUrls): Job['downloadUrls'] | undefined => {
+  if (!downloadUrls) {
+    return undefined;
+  }
+
+  const entries = Object.entries(downloadUrls).reduce<Record<string, { voice: string; full: string; captions?: string }>>((acc, [languageCode, urls]) => {
+    if (!urls) {
+      return acc;
+    }
+
+    const voiceUrl = resolveDownloadUrl(urls.voice);
+    const fullUrl = resolveDownloadUrl(urls.full);
+
+    if (!voiceUrl || !fullUrl) {
+      return acc;
+    }
+
+    const mapped: { voice: string; full: string; captions?: string } = {
+      voice: voiceUrl,
+      full: fullUrl
+    };
+
+    const captionsUrl = resolveDownloadUrl(urls.captions);
+    if (captionsUrl) {
+      mapped.captions = captionsUrl;
+    }
+
+    acc[languageCode] = mapped;
+    return acc;
+  }, {});
+
+  return Object.keys(entries).length > 0 ? entries : undefined;
+};
+
+export const mapLanguageProgress = (language: BackendLanguageProgress): LanguageProgress => {
+  const status = isValidLanguageStatus(language.status) ? language.status : 'processing';
+  const languageInfo = LANGUAGES.find(l => l.code === language.language_code);
+
+  return {
+    languageCode: language.language_code,
+    languageName: language.language_name || languageInfo?.name || language.language_code,
+    flag: languageInfo?.flag || language.flag || '🌐',
+    status,
+    progress: typeof language.progress === 'number' ? language.progress : 0,
+    message: language.message || 'Processing...',
+    estimatedTimeRemaining: language.estimated_time_remaining,
+    fileSize: language.file_size,
+    downloadUrl: resolveDownloadUrl(language.download_url)
+  };
+};
+
+export const mapJobResponse = (job: BackendJobResponse, options: MapJobResponseOptions = {}): GetJobStatusResponse => {
+  const id = job.id || job.job_id;
+
+  if (!id) {
+    throw new Error('Job response is missing an id field.');
+  }
+
+  const languages = job.languages?.map(mapLanguageProgress) || [];
+  const completedLanguages = typeof job.completed_languages === 'number'
+    ? job.completed_languages
+    : languages.filter(language => language.status === 'complete').length;
+
+  const totalLanguages = typeof job.total_languages === 'number'
+    ? job.total_languages
+    : (job.languages?.length || options.targetLanguages?.length || 0);
+
+  const status = isValidJobStatus(job.status) ? job.status : 'processing';
+
+  return {
+    id,
+    status,
+    progress: typeof job.progress === 'number' ? job.progress : 0,
+    message: job.message || 'Processing...',
+    languages,
+    totalLanguages,
+    completedLanguages,
+    startedAt: job.started_at || job.created_at || new Date().toISOString(),
+    estimatedCompletion: job.estimated_completion
+  };
+};
+
+export const mapJobSummary = (job: BackendJobResponse): Job => {
+  const jobStatus = mapJobResponse(job, { targetLanguages: job.target_languages });
+
+  return {
+    id: jobStatus.id,
+    status: jobStatus.status,
+    progress: jobStatus.progress,
+    message: jobStatus.message,
+    createdAt: job.created_at || job.started_at || new Date().toISOString(),
+    updatedAt: job.updated_at || job.created_at || job.started_at || new Date().toISOString(),
+    voiceTrackDuration: job.voice_track_duration ?? 0,
+    targetLanguages: job.target_languages || job.languages?.map(language => language.language_code) || [],
+    backgroundTrack: job.background_track_uploaded ?? false,
+    completedLanguages: jobStatus.completedLanguages,
+    totalLanguages: jobStatus.totalLanguages,
+    estimatedCompletion: jobStatus.estimatedCompletion,
+    downloadUrls: mapDownloadUrls(job.download_urls)
+  };
+};
+
+const mapSubmitJobResponse = (data: BackendSubmitJobResponse): SubmitJobResponse => {
+  const jobId = data.job_id || data.id;
+
+  if (!jobId) {
+    throw new Error('Job submission response missing job_id field.');
+  }
+
+  return { jobId };
+};
 
 // Error types for better error handling
 export interface ApiError {
@@ -383,8 +584,14 @@ export const notifyUploadComplete = async (request: JobCreationRequest): Promise
       throw apiError;
     }
 
-    const jobData = await response.json();
-    return { jobId: jobData.job_id };
+    let jobData: BackendSubmitJobResponse = {};
+    try {
+      jobData = await response.json();
+    } catch {
+      // Backend did not provide a JSON body; mapSubmitJobResponse will surface an error.
+    }
+
+    return mapSubmitJobResponse(jobData);
   });
 };
 
@@ -483,35 +690,8 @@ export const getJobStatus = async (jobId: string, targetLanguages: string[] = []
       throw apiError;
     }
 
-    const jobData = await response.json();
-    
-    // Transform backend response to frontend format
-    const languages: LanguageProgress[] = jobData.languages?.map((lang: any) => {
-      const languageInfo = LANGUAGES.find(l => l.code === lang.language_code);
-      return {
-        languageCode: lang.language_code,
-        languageName: languageInfo?.name || lang.language_name,
-        flag: languageInfo?.flag || '🌐',
-        status: lang.status,
-        progress: lang.progress || 0,
-        message: lang.message || 'Processing...',
-        estimatedTimeRemaining: lang.estimated_time_remaining,
-        fileSize: lang.file_size,
-        downloadUrl: lang.download_url ? `${API_BASE}${lang.download_url}` : undefined
-      };
-    }) || [];
-
-    return {
-      id: jobData.id,
-      status: jobData.status,
-      progress: jobData.progress || 0,
-      message: jobData.message || 'Processing...',
-      languages,
-      totalLanguages: jobData.total_languages || targetLanguages.length,
-      completedLanguages: jobData.completed_languages || 0,
-      startedAt: jobData.started_at || new Date().toISOString(),
-      estimatedCompletion: jobData.estimated_completion
-    };
+    const jobData: BackendJobResponse = await response.json();
+    return mapJobResponse(jobData, { targetLanguages });
   });
 };
 
@@ -526,20 +706,42 @@ export const pollJobStatus = (
   let pollCount = 0;
   let isPolling = true;
   let timeoutId: NodeJS.Timeout | null = null;
+  let consecutiveFailures = 0;
+
+  const stopPolling = () => {
+    isPolling = false;
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
+
+  const scheduleNextPoll = (delay: number) => {
+    if (!isPolling) return;
+    timeoutId = setTimeout(poll, delay);
+  };
   
   const poll = async () => {
     if (!isPolling) return;
     
     try {
       const status = await getJobStatus(jobId, targetLanguages);
+      consecutiveFailures = 0;
       onProgress(status);
       
       // Check if job is complete or failed
-      if (status.status === 'complete' || status.status === 'error') {
-        isPolling = false;
-        if (status.status === 'complete') {
-          onComplete();
-        }
+      if (status.status === 'complete') {
+        stopPolling();
+        onComplete();
+        return;
+      }
+
+      if (status.status === 'error') {
+        stopPolling();
+        const terminalError = new Error(status.message || 'Job failed');
+        terminalError.name = 'JobError';
+        Object.assign(terminalError, { terminal: true });
+        onError(terminalError);
         return;
       }
       
@@ -549,11 +751,33 @@ export const pollJobStatus = (
       const maxDelay = 10000; // 10 seconds max delay
       const delay = Math.min(baseDelay * Math.pow(1.5, pollCount), maxDelay);
       
-      timeoutId = setTimeout(poll, delay);
+      scheduleNextPoll(delay);
       
     } catch (error) {
       console.error('Error polling job status:', error);
-      onError(error as Error);
+      consecutiveFailures++;
+
+      const apiError = error as ApiError;
+      const errorMessage = apiError?.message || 'Failed to fetch job status';
+      const normalizedError = apiError instanceof Error
+        ? apiError
+        : Object.assign(new Error(errorMessage), { cause: apiError });
+      const isNotFound = (apiError as ApiError)?.type === 'not_found' || (apiError as ApiError)?.statusCode === 404;
+      const isNonRetryable = (apiError as ApiError)?.retryable === false;
+      const hasExceededFailures = consecutiveFailures >= 3;
+
+      const shouldStop = isNotFound || isNonRetryable || hasExceededFailures;
+      if (shouldStop) {
+        (normalizedError as Error & { cause?: unknown; terminal?: boolean }).name = 'TerminalPollError';
+        Object.assign(normalizedError, { terminal: true });
+      }
+
+      onError(normalizedError);
+
+      if (shouldStop) {
+        stopPolling();
+        return;
+      }
       
       // Continue polling even on error, but with longer delay
       pollCount++;
@@ -561,7 +785,7 @@ export const pollJobStatus = (
       const maxDelay = 30000; // 30 seconds max delay for errors
       const delay = Math.min(baseDelay * Math.pow(1.5, pollCount), maxDelay);
       
-      timeoutId = setTimeout(poll, delay);
+      scheduleNextPoll(delay);
     }
   };
   
@@ -570,9 +794,6 @@ export const pollJobStatus = (
   
   // Return cleanup function
   return () => {
-    isPolling = false;
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
+    stopPolling();
   };
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Download, CheckCircle, Clock, Globe, Zap, FileAudio, Settings, Activity, AlertTriangle, Info, Play, Volume2, Share2, Copy } from 'lucide-react';
 import Link from 'next/link';
@@ -10,69 +10,193 @@ import { IndividualLanguageProgress } from '@/components/IndividualLanguageProgr
 import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { pollJobStatus } from '@/lib/api';
-import { JobStatus, GetJobStatusResponse } from '@/types';
+import { GetJobStatusResponse, LanguageProgress, LANGUAGES } from '@/types';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useToast } from '@/components/ToastNotifications';
 
 export default function JobStatusPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { addToast } = useToast();
   const jobId = params.id as string;
-  
-  // For now, use default languages - in a real app, this would come from the job data
-  const targetLanguages = React.useMemo(() => ['en', 'es', 'fr'], []);
-  
-  const [jobStatus, setJobStatus] = useState<GetJobStatusResponse>({
+
+  const queryLanguageCodes = React.useMemo(() => {
+    const languagesParam = searchParams?.get('languages');
+    if (!languagesParam) {
+      return [];
+    }
+    return languagesParam
+      .split(',')
+      .map(code => decodeURIComponent(code.trim()))
+      .filter(Boolean);
+  }, [searchParams]);
+
+  const fallbackLanguageProgress = React.useMemo<LanguageProgress[]>(() => {
+    return queryLanguageCodes.map(code => {
+      const languageInfo = LANGUAGES.find(lang => lang.code === code);
+      return {
+        languageCode: code,
+        languageName: languageInfo?.name || code.toUpperCase(),
+        flag: languageInfo?.flag || '🌐',
+        status: 'pending',
+        progress: 0,
+        message: 'Waiting to start',
+      };
+    });
+  }, [queryLanguageCodes]);
+
+  const buildInitialJobStatus = React.useCallback((): GetJobStatusResponse => ({
     id: jobId,
     status: 'uploading',
     progress: 0,
     message: 'Loading job status...',
-    languages: [],
-    totalLanguages: targetLanguages.length,
+    languages: fallbackLanguageProgress,
+    totalLanguages: fallbackLanguageProgress.length || queryLanguageCodes.length,
     completedLanguages: 0,
     startedAt: new Date().toISOString(),
-  });
+  }), [jobId, fallbackLanguageProgress, queryLanguageCodes]);
+
+  const [jobStatus, setJobStatus] = useState<GetJobStatusResponse>(() => buildInitialJobStatus());
   const [isComplete, setIsComplete] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [pollAttempt, setPollAttempt] = useState(0);
   const stopPollingRef = useRef<(() => void) | null>(null);
+  const isMountedRef = useRef(false);
+  const hasShownTerminalErrorRef = useRef(false);
+
+  useEffect(() => {
+    setJobStatus(buildInitialJobStatus());
+    setIsComplete(false);
+    setIsError(false);
+    setErrorMessage(null);
+  }, [buildInitialJobStatus]);
+
+  const clearPolling = React.useCallback(() => {
+    if (stopPollingRef.current) {
+      stopPollingRef.current();
+      stopPollingRef.current = null;
+    }
+  }, []);
+
+  const showTerminalErrorToast = React.useCallback((message: string) => {
+    addToast({
+      type: 'error',
+      title: 'Job status unavailable',
+      message,
+      duration: 7000,
+      action: {
+        label: 'Back to Jobs',
+        onClick: () => router.push('/jobs'),
+      },
+    });
+  }, [addToast, router]);
 
   useEffect(() => {
     if (!jobId) {
-      router.push('/');
+      router.push('/jobs');
       return;
     }
 
-    // Start real job status polling
+    clearPolling();
+    isMountedRef.current = true;
+    hasShownTerminalErrorRef.current = false;
+
     const stopPolling = pollJobStatus(
       jobId,
-      targetLanguages,
+      queryLanguageCodes,
       (status) => {
-        setJobStatus(status);
-        setIsError(false);
-        setErrorMessage(null);
-        if (status.status === 'complete') {
-          setIsComplete(true);
+        if (!isMountedRef.current) {
+          return;
+        }
+
+        const hasApiLanguages = status.languages && status.languages.length > 0;
+        const languagesToUse = hasApiLanguages ? status.languages : fallbackLanguageProgress;
+        const completedLanguages = status.completedLanguages || languagesToUse.filter(lang => lang.status === 'complete').length;
+
+        setJobStatus(prev => ({
+          ...status,
+          languages: languagesToUse,
+          totalLanguages: status.totalLanguages || languagesToUse.length || prev.totalLanguages,
+          completedLanguages,
+        }));
+
+        const jobFinished = status.status === 'complete';
+        const jobErrored = status.status === 'error';
+
+        setIsComplete(jobFinished);
+        setIsError(jobErrored);
+        setErrorMessage(jobErrored ? status.message : null);
+
+        if (!jobErrored) {
+          hasShownTerminalErrorRef.current = false;
         }
       },
       () => {
+        if (!isMountedRef.current) {
+          return;
+        }
         setIsComplete(true);
+        setIsError(false);
+        setErrorMessage(null);
       },
       (error) => {
-        console.error('Job polling error:', error);
-        setIsError(true);
-        setErrorMessage(error.message || 'Failed to fetch job status');
-        // Don't stop polling on error, let it retry
+        if (!isMountedRef.current) {
+          return;
+        }
+
+        const message = error?.message || 'Failed to fetch job status';
+        const errorWithMeta = error as Error & { terminal?: boolean };
+        const isTerminalError = Boolean(errorWithMeta?.terminal);
+
+        setIsComplete(false);
+        setIsError(isTerminalError);
+        setErrorMessage(message);
+        setJobStatus(prev => ({
+          ...prev,
+          status: isTerminalError ? 'error' : prev.status,
+          message,
+        }));
+
+        if (isTerminalError && !hasShownTerminalErrorRef.current) {
+          hasShownTerminalErrorRef.current = true;
+          showTerminalErrorToast(message);
+        }
       }
     );
 
-    stopPollingRef.current = stopPolling;
+    stopPollingRef.current = () => {
+      stopPolling();
+      stopPollingRef.current = null;
+    };
 
     return () => {
-      if (stopPollingRef.current) {
-        stopPollingRef.current();
-      }
+      isMountedRef.current = false;
+      clearPolling();
     };
-  }, [jobId, router, targetLanguages]);
+  }, [
+    jobId,
+    router,
+    queryLanguageCodes,
+    fallbackLanguageProgress,
+    clearPolling,
+    showTerminalErrorToast,
+    pollAttempt,
+  ]);
+
+  const restartPolling = React.useCallback(() => {
+    if (!jobId) {
+      return;
+    }
+    hasShownTerminalErrorRef.current = false;
+    clearPolling();
+    setJobStatus(buildInitialJobStatus());
+    setIsComplete(false);
+    setIsError(false);
+    setErrorMessage(null);
+    setPollAttempt(prev => prev + 1);
+  }, [buildInitialJobStatus, clearPolling, jobId]);
 
   // Show loading state if jobId is not available
   if (!jobId) {
@@ -330,6 +454,42 @@ export default function JobStatusPage() {
             </div>
           </div>
         </motion.div>
+        
+        {isError && (
+          <motion.div
+            className="mb-8 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex items-start space-x-3">
+                <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0" />
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">Unable to load job status</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {errorMessage || 'Something went wrong while retrieving the latest progress. Please try again or return to your jobs list.'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <Link
+                  href="/jobs"
+                  className="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
+                >
+                  Back to Jobs
+                </Link>
+                <button
+                  onClick={restartPolling}
+                  className="inline-flex items-center justify-center rounded-md bg-[#ff0000] px-4 py-2 text-sm font-medium text-white hover:bg-[#cc0000] transition-colors duration-200"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Header */}
         <motion.div
@@ -762,40 +922,12 @@ export default function JobStatusPage() {
         >
           {isError && (
             <motion.button
-              onClick={() => {
-                setIsError(false);
-                setErrorMessage(null);
-                // Restart polling
-                if (stopPollingRef.current) {
-                  stopPollingRef.current();
-                }
-                const stopPolling = pollJobStatus(
-                  jobId,
-                  targetLanguages,
-                  (status) => {
-                    setJobStatus(status);
-                    setIsError(false);
-                    setErrorMessage(null);
-                    if (status.status === 'complete') {
-                      setIsComplete(true);
-                    }
-                  },
-                  () => {
-                    setIsComplete(true);
-                  },
-                  (error) => {
-                    console.error('Job polling error:', error);
-                    setIsError(true);
-                    setErrorMessage(error.message || 'Failed to fetch job status');
-                  }
-                );
-                stopPollingRef.current = stopPolling;
-              }}
+              onClick={restartPolling}
               className="w-full sm:w-auto px-6 py-3 bg-yellow-500 text-white hover:bg-yellow-600 transition-colors duration-200 font-medium"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Retry Job
+              Try Again
             </motion.button>
           )}
           <Link href="/new">
