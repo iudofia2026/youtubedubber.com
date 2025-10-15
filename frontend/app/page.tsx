@@ -374,7 +374,7 @@ export default function Home() {
                   description: 'Split your video audio into separate voice and background tracks for optimal dubbing quality.',
                   icon: Scissors,
                   color: 'from-blue-500 to-cyan-500',
-                  details: ['Import your video', 'Split audio tracks', 'Export voice track', 'Export background track']
+                  details: ['Import your video', 'Split audio tracks', 'Export voice track', 'Or upload MP4 directly']
                 },
                 {
                   step: '02',

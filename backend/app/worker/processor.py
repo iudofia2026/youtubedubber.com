@@ -5,6 +5,7 @@ import asyncio
 import logging
 import tempfile
 import os
+import subprocess
 from typing import List
 from app.database import SessionLocal
 from app.models import DubbingJob, LanguageTask, JobStatus, LanguageTaskStatus
@@ -152,6 +153,13 @@ class JobProcessor:
             if not voice_track_path:
                 raise Exception("Failed to download voice track")
             
+            # Process the media file (extract audio if it's video)
+            await self.job_service.update_language_task_status(
+                task_id, LanguageTaskStatus.PROCESSING, 10, "Processing media file...", db=db
+            )
+            
+            processed_audio_path = await self.process_media_file(voice_track_path)
+            
             # Process the audio file
             await self.job_service.update_language_task_status(
                 task_id, LanguageTaskStatus.PROCESSING, 25, "Transcribing audio...", db=db
@@ -159,7 +167,7 @@ class JobProcessor:
             
             # Transcribe audio
             transcription_result = await self.ai_service.transcribe_audio(
-                voice_track_path, "en"  # Assuming source language is English
+                processed_audio_path, "en"  # Assuming source language is English
             )
             
             await self.job_service.update_language_task_status(
@@ -202,6 +210,8 @@ class JobProcessor:
             # Clean up temporary files
             if os.path.exists(voice_track_path):
                 os.remove(voice_track_path)
+            if processed_audio_path != voice_track_path and os.path.exists(processed_audio_path):
+                os.remove(processed_audio_path)
             
             logger.info(f"Language task {task_id} completed successfully")
             
@@ -231,6 +241,60 @@ class JobProcessor:
         except Exception as e:
             logger.error(f"Error downloading voice track: {e}")
             return None
+    
+    async def extract_audio_from_video(self, video_path: str) -> str:
+        """Extract audio from MP4 video file using FFmpeg"""
+        try:
+            # Create temporary audio file
+            audio_file = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+            audio_file.close()
+            
+            # Use FFmpeg to extract audio from video
+            cmd = [
+                "ffmpeg",
+                "-i", video_path,
+                "-vn",  # No video
+                "-acodec", "pcm_s16le",  # Audio codec
+                "-ar", "44100",  # Sample rate
+                "-ac", "2",  # Stereo
+                "-y",  # Overwrite output file
+                audio_file.name
+            ]
+            
+            logger.info(f"Extracting audio from video: {video_path}")
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            
+            if result.returncode != 0:
+                logger.error(f"FFmpeg error: {result.stderr}")
+                raise Exception(f"Failed to extract audio from video: {result.stderr}")
+            
+            logger.info(f"Successfully extracted audio to: {audio_file.name}")
+            return audio_file.name
+            
+        except subprocess.TimeoutExpired:
+            logger.error("FFmpeg extraction timed out")
+            raise Exception("Video processing timed out")
+        except Exception as e:
+            logger.error(f"Error extracting audio from video: {e}")
+            raise Exception(f"Failed to extract audio from video: {str(e)}")
+    
+    async def process_media_file(self, file_path: str) -> str:
+        """Process media file (audio or video) and return audio file path"""
+        try:
+            file_ext = os.path.splitext(file_path)[1].lower()
+            
+            if file_ext == '.mp4':
+                # Extract audio from video
+                logger.info(f"Processing MP4 video file: {file_path}")
+                return await self.extract_audio_from_video(file_path)
+            else:
+                # File is already audio, return as-is
+                logger.info(f"Processing audio file: {file_path}")
+                return file_path
+                
+        except Exception as e:
+            logger.error(f"Error processing media file: {e}")
+            raise Exception(f"Failed to process media file: {str(e)}")
 
 
 async def main():

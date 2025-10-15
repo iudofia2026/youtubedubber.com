@@ -138,6 +138,14 @@ export function FileUpload({
       showError('Invalid file type', `Please select a file with one of these formats: ${accept}`);
       return;
     }
+    
+    // Additional validation for video files
+    if (file.type.startsWith('video/')) {
+      if (file.type !== 'video/mp4') {
+        showError('Unsupported video format', 'Only MP4 video files are supported');
+        return;
+      }
+    }
 
     // Validate file size (convert MB to bytes)
     if (file.size > maxSize * 1024 * 1024) {

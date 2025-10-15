@@ -233,6 +233,13 @@ class AIService:
             if file_ext not in allowed_extensions:
                 raise Exception(f"Unsupported file format. Allowed: {', '.join(allowed_extensions)}")
             
+            # For MP4 files, we'll extract audio using FFmpeg in the processing pipeline
+            if file_ext == '.mp4':
+                # Additional validation for MP4 files
+                # Check if file has audio track (basic validation)
+                # This will be handled more thoroughly in the processing pipeline
+                pass
+            
             return {
                 "valid": True,
                 "file_size": file_size,
@@ -245,6 +252,36 @@ class AIService:
                 "valid": False,
                 "error": str(e)
             }
+    
+    async def process_media_file(self, media_file_path: str) -> Dict[str, any]:
+        """
+        Process media file for dubbing (handles both audio and video files)
+        """
+        try:
+            # Validate the media file first
+            validation_result = await self.validate_audio_file(media_file_path)
+            if not validation_result["valid"]:
+                raise Exception(f"Media file validation failed: {validation_result['error']}")
+            
+            # Check if it's a video file that needs audio extraction
+            file_ext = os.path.splitext(media_file_path)[1].lower()
+            is_video = file_ext == '.mp4'
+            
+            # For now, return basic file information
+            # In a real implementation, this would process the media
+            return {
+                "file_path": media_file_path,
+                "file_size": validation_result["file_size"],
+                "file_extension": validation_result["file_extension"],
+                "is_video": is_video,
+                "duration": 0,  # Placeholder
+                "sample_rate": 44100,  # Placeholder
+                "channels": 2  # Placeholder
+            }
+            
+        except Exception as e:
+            logger.error(f"Error processing media file: {e}")
+            raise Exception("Failed to process media file")
     
     async def mix_audio_tracks(
         self,

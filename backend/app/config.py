@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     # Storage Configuration
     storage_bucket: str = "yt-dubber-uploads"
     max_file_size: str = "100MB"
-    allowed_audio_types: str = "audio/mpeg,audio/wav,audio/mp3,audio/m4a"
+    allowed_audio_types: str = "audio/mpeg,audio/wav,audio/mp3,audio/m4a,video/mp4"
     
     # Worker Configuration
     worker_poll_interval: int = 5

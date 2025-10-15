@@ -150,7 +150,7 @@ frontend/
 ## 🎯 Features
 
 ### Core Functionality
-- **File Upload System** - Drag & drop audio file uploads with progress tracking
+- **File Upload System** - Drag & drop audio and video file uploads with progress tracking
 - **Language Selection** - Multi-language dubbing support (20+ languages)
 - **Job Management** - Real-time job status tracking with per-language progress
 - **Authentication** - Supabase-powered user management with JWT tokens
@@ -200,13 +200,14 @@ frontend/
 ## 🔧 Current Functionality
 
 ### File Upload System
-- **Voice Track**: Required audio file (voice-only, no music/SFX)
-- **Background Track**: Optional audio file (music, SFX, ambient)
+- **Voice Track**: Required audio or video file (voice-only, no music/SFX)
+- **Background Track**: Optional audio or video file (music, SFX, ambient)
 - **Validation**: 
   - File size limit: 100MB
-  - Audio format support: `audio/*`
+  - Audio/Video format support: `audio/*`, `video/mp4`
   - Duration extraction and validation
   - Duration mismatch detection between tracks
+  - Automatic video-to-audio extraction for MP4 files
 - **Audio Preview Player**: 
   - Real-time audio playback with HTML5 audio controls
   - Play/pause, seek, volume control, and reset functionality

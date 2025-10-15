@@ -61,6 +61,7 @@ A modern, full-stack application for AI-powered video dubbing with real-time pro
 - ⚠️ **Backend**: Core FastAPI endpoints, models, and validation exist, yet audio ingestion, worker processing, and artifact delivery are still placeholder logic. Supabase storage paths are not persisted and vendor integrations are not exercised end-to-end.
 - 🔄 **Integration**: End-to-end testing is in progress. Development mode relies on the `dev-token` bypass; full Supabase auth + signed upload flow remains to be verified with real credentials.
 - 🎯 **Next**: Finish job lifecycle implementation, align API responses with frontend expectations, and replace mock data with live calls.
+- ✅ **MP4 Support**: Full MP4 video format support implemented with automatic audio extraction using FFmpeg.
 
 ## 🆕 Recent Updates (isiah-frontend-oct15 branch)
 

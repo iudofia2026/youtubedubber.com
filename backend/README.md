@@ -8,6 +8,7 @@ A FastAPI-based backend service for the YouTube Multilingual Dubber application,
 - **Supabase Integration**: Authentication, database, and file storage scaffolding
 - **AI Services**: Deepgram (STT/TTS) and OpenAI translation clients wired but not yet exercised end-to-end
 - **Background Processing**: Async worker skeleton in place; audio mixing, storage persistence, and artifact delivery still TODO
+- **Video Support**: Full MP4 video format support with automatic audio extraction using FFmpeg
 - **Docker Support**: Containerized deployment with Docker Compose
 - **Testing**: Unit tests for models/services seeded (needs expansion once the real pipeline lands)
 - **Frontend Alignment**: API shapes drafted to match the Next.js frontend, with response payloads still converging

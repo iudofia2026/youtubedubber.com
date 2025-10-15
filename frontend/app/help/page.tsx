@@ -33,60 +33,67 @@ export default function HelpCenter() {
       id: 2,
       category: 'audio-upload',
       question: 'What audio and video formats are supported?',
-      answer: 'We support all major audio formats including MP3, WAV, M4A, FLAC, and AAC. We also support MP4 video files for direct audio extraction. For best results, we recommend using WAV or high-quality MP3 files. The maximum file size is 500MB per track, and we support stereo and mono audio.',
+      answer: 'We support all major audio formats including MP3, WAV, M4A, FLAC, and AAC, plus MP4 video files. For best results, we recommend using WAV or high-quality MP3 files. Video files will have their audio automatically extracted. The maximum file size is 100MB per track, and we support stereo and mono audio.',
       tags: ['audio', 'video', 'formats', 'upload']
     },
     {
       id: 3,
+      category: 'audio-upload',
+      question: 'Can I upload MP4 video files directly?',
+      answer: 'Yes! You can upload MP4 video files directly and our system will automatically extract the audio for processing. This is perfect if you haven\'t separated your audio tracks yet. We\'ll extract the audio and process it just like any other audio file.',
+      tags: ['video', 'mp4', 'upload', 'extraction']
+    },
+    {
+      id: 4,
       category: 'audio-upload',
       question: 'How should I prepare my audio tracks?',
       answer: 'For optimal results, split your video audio into separate voice and background tracks. You can upload MP4 videos directly and we\'ll extract the audio, or upload pre-split audio tracks. The voice track should contain only speech (no music or sound effects), while the background track should contain music and sound effects. This separation allows our AI to create more natural-sounding dubs.',
       tags: ['audio', 'preparation', 'tracks']
     },
     {
-      id: 4,
+      id: 5,
       category: 'languages',
       question: 'Which languages are supported?',
       answer: 'We currently support 12+ languages including English, Spanish, French, German, Italian, Portuguese, Japanese, Korean, Chinese (Mandarin), Arabic, Hindi, and Russian. We\'re constantly adding new languages based on user demand.',
       tags: ['languages', 'supported', 'multilingual']
     },
     {
-      id: 5,
+      id: 6,
       category: 'processing',
       question: 'How long does processing take?',
       answer: 'Processing time depends on the length of your audio and the number of languages selected. Typically, a 5-minute audio file takes 2-5 minutes to process for a single language. Multiple languages are processed in parallel, so the total time doesn\'t increase significantly.',
       tags: ['processing', 'time', 'duration']
     },
     {
-      id: 6,
+      id: 7,
       category: 'processing',
       question: 'Can I track the progress of my dubbing job?',
       answer: 'Yes! You can track your job progress in real-time from the Jobs page. You\'ll see the current status (Pending, Processing, Complete, or Error) and detailed progress for each language. We also send email notifications when your job is complete.',
       tags: ['processing', 'tracking', 'progress']
     },
     {
-      id: 7,
+      id: 8,
       category: 'download',
       question: 'What files will I receive?',
       answer: 'You\'ll receive separate voice tracks for each language, full mixed audio (voice + background), and optional subtitle files. All files are provided in high-quality MP3 format, and you can also download the original WAV files for professional use.',
       tags: ['download', 'files', 'formats']
     },
     {
-      id: 8,
+      id: 9,
       category: 'billing',
       question: 'How does the credit system work?',
       answer: 'Our credit system is simple and transparent. Each dubbing job costs 1 credit regardless of length or number of languages. Credits never expire, so you can buy them in advance and use them whenever you need. We offer Starter (2 free), Creator (50 credits for $29), and Professional (250 credits for $99) packs.',
       tags: ['billing', 'credits', 'pricing']
     },
     {
-      id: 9,
+      id: 10,
       category: 'troubleshooting',
       question: 'My audio quality is poor. What can I do?',
       answer: 'Poor audio quality usually comes from the source material. Ensure your original audio is clear, has minimal background noise, and the speaker\'s voice is prominent. Avoid audio with heavy reverb or echo. If you\'re still having issues, try using our audio enhancement features or contact support for personalized help.',
       tags: ['troubleshooting', 'quality', 'audio']
     },
     {
-      id: 10,
+      id: 11,
       category: 'troubleshooting',
       question: 'The dubbing doesn\'t sound natural. How can I improve it?',
       answer: 'Natural-sounding dubs depend on several factors: clear source audio, proper language selection, and good pronunciation. Make sure your voice track is clean and the speaker speaks clearly. You can also try different voice settings or contact our support team for optimization tips specific to your content.',
