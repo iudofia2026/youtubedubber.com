@@ -25,8 +25,6 @@ interface JobCardProps {
 }
 
 export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
-  console.log('JobCard rendered with onView:', !!onView, 'job.id:', job.id);
-  
   const getStatusIcon = () => {
     switch (job.status) {
       case 'complete':
@@ -307,12 +305,10 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
             variant="outline"
             size="sm"
             onClick={() => {
-              console.log('View button clicked for job:', job.id, 'onView function:', !!onView);
               onView?.(job.id);
             }}
             onTouchEnd={(e) => {
               e.preventDefault();
-              console.log('View button touch end for job:', job.id, 'onView function:', !!onView);
               onView?.(job.id);
             }}
             className="flex items-center space-x-1 touch-manipulation flex-1 sm:flex-none"

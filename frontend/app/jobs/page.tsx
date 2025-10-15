@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, BarChart3, BarChart } from 'lucide-react';
+import { ArrowLeft, Plus, BarChart } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -104,7 +104,7 @@ export default function JobsPage() {
         ];
         
         setJobs(mockJobs);
-      } catch (error) {
+      } catch (_error) {
         showError('Failed to load jobs', 'There was an error loading your jobs. Please try again.');
       } finally {
         setLoading(false);
@@ -112,6 +112,7 @@ export default function JobsPage() {
     };
 
     loadJobs();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Remove showError from dependencies to prevent infinite re-renders
 
   const handleRefresh = async () => {
@@ -120,7 +121,7 @@ export default function JobsPage() {
       // Simulate API refresh
       await new Promise(resolve => setTimeout(resolve, 500));
       // In real app, would refetch from API
-    } catch (error) {
+    } catch (_error) {
       showError('Refresh failed', 'There was an error refreshing the jobs. Please try again.');
     } finally {
       setLoading(false);
@@ -128,13 +129,17 @@ export default function JobsPage() {
   };
 
   const handleViewJob = (jobId: string) => {
-    console.log('Viewing job:', jobId);
-    router.push(`/jobs/test`);
+    if (!jobId) {
+      showError('Job unavailable', 'We could not open that job. Please try again.');
+      return;
+    }
+
+    router.push(`/jobs/${jobId}`);
   };
 
   const handleDownloadJob = (jobId: string) => {
-    // In real app, would trigger download
-    console.log('Download job:', jobId);
+    void jobId;
+    // In real app, this would trigger a download
   };
 
   const handleDeleteJob = async (jobId: string) => {
@@ -142,7 +147,7 @@ export default function JobsPage() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));
       setJobs(prev => prev.filter(job => job.id !== jobId));
-    } catch (error) {
+    } catch (_error) {
       showError('Delete failed', 'There was an error deleting the job. Please try again.');
     }
   };
