@@ -198,11 +198,21 @@ export function JobListItem({ job, onView, onDownload, onDelete }: JobListItemPr
               </motion.div>
             ) : job.status === 'processing' ? (
               <motion.div
-                className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
+                className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg relative overflow-hidden"
                 animate={{ rotate: 360 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
               >
                 <Loader2 className="w-6 h-6 text-white" />
+                {/* Progress Ring */}
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-transparent border-t-white/30"
+                  style={{
+                    background: `conic-gradient(from 0deg, transparent 0deg, transparent ${360 - (getProgressPercentage() * 3.6)}deg, rgba(255,255,255,0.3) ${360 - (getProgressPercentage() * 3.6)}deg, rgba(255,255,255,0.3) 360deg)`
+                  }}
+                  initial={{ rotate: 0 }}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                />
               </motion.div>
             ) : (
               <motion.div
@@ -296,26 +306,78 @@ export function JobListItem({ job, onView, onDownload, onDelete }: JobListItemPr
                   <span>Background track</span>
                 </div>
               )}
+
+              {/* Inline Progress for Processing Jobs */}
+              {job.status === 'processing' && (
+                <motion.div 
+                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 px-3 py-1.5 rounded-full border border-blue-200 dark:border-blue-700"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex items-center space-x-1">
+                    <motion.div
+                      className="w-2 h-2 bg-blue-500 rounded-full"
+                      animate={{ 
+                        scale: [1, 1.3, 1],
+                        opacity: [0.7, 1, 0.7]
+                      }}
+                      transition={{ duration: 1.2, repeat: Infinity }}
+                    />
+                    <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                      {Math.round(getProgressPercentage())}%
+                    </span>
+                  </div>
+                  <div className="w-20 bg-blue-200 dark:bg-blue-800 rounded-full h-1.5 relative overflow-hidden">
+                    <motion.div
+                      className="bg-gradient-to-r from-blue-500 via-blue-400 to-blue-600 h-1.5 rounded-full relative"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${getProgressPercentage()}%` }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    >
+                      {/* Shimmer effect */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                        animate={{ x: ['-100%', '100%'] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      />
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )}
             </div>
 
-            {/* Progress Bar for Processing Jobs */}
+            {/* Processing Message and Language Progress */}
             {job.status === 'processing' && (
-              <div className="mt-3">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    {job.message || 'Processing...'}
-                  </span>
-                  <span className="text-xs font-medium text-gray-900 dark:text-white">
-                    {Math.round(getProgressPercentage())}%
-                  </span>
+              <div className="mt-2 space-y-2">
+                <div className="text-xs text-gray-600 dark:text-gray-400 italic">
+                  {job.message || 'Processing...'}
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                  <motion.div
-                    className="bg-blue-500 h-1.5 rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${getProgressPercentage()}%` }}
-                    transition={{ duration: 0.5 }}
-                  />
+                
+                {/* Language Progress Dots */}
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs text-gray-500 dark:text-gray-500">Languages:</span>
+                  <div className="flex items-center space-x-1">
+                    {job.targetLanguages.map((lang, index) => {
+                      const isCompleted = index < (job.completedLanguages || 0);
+                      return (
+                        <motion.div
+                          key={lang}
+                          className={`w-2 h-2 rounded-full ${
+                            isCompleted 
+                              ? 'bg-green-500' 
+                              : 'bg-gray-300 dark:bg-gray-600'
+                          }`}
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: index * 0.1 }}
+                        />
+                      );
+                    })}
+                    <span className="text-xs text-gray-500 dark:text-gray-500 ml-1">
+                      {job.completedLanguages || 0}/{job.targetLanguages.length}
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
