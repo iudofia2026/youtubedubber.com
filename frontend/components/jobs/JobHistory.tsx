@@ -3,9 +3,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
+import { Plus, RefreshCw, AlertCircle, Grid3X3, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { JobCard } from './JobCard';
+import { JobListItem } from './JobListItem';
 import { JobFilters, JobStatus, SortOption } from './JobFilters';
 import { EmptyState } from '@/components/LoadingStates';
 import { Job } from '@/types';
@@ -36,6 +37,7 @@ export function JobHistory({
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<JobStatus>('all');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filteredJobs, setFilteredJobs] = useState<Job[]>(jobs);
   const [isInitialized, setIsInitialized] = useState(false);
   const { error: showError } = useToastHelpers();
@@ -47,6 +49,7 @@ export function JobHistory({
     const status = searchParams.get('status') as JobStatus;
     const search = searchParams.get('search');
     const sort = searchParams.get('sort') as SortOption;
+    const view = searchParams.get('view') as 'grid' | 'list';
 
     if (status && ['all', 'pending', 'processing', 'complete', 'error'].includes(status)) {
       setStatusFilter(status);
@@ -64,6 +67,12 @@ export function JobHistory({
       setSortBy(sort);
     } else {
       setSortBy('newest');
+    }
+
+    if (view && ['grid', 'list'].includes(view)) {
+      setViewMode(view);
+    } else {
+      setViewMode('grid');
     }
     
     setIsInitialized(true);
@@ -108,7 +117,7 @@ export function JobHistory({
     setFilteredJobs(filtered);
   }, [jobs, searchQuery, statusFilter, sortBy, isInitialized]);
 
-  const updateURL = useCallback((newParams: { status?: JobStatus; search?: string; sort?: SortOption }) => {
+  const updateURL = useCallback((newParams: { status?: JobStatus; search?: string; sort?: SortOption; view?: 'grid' | 'list' }) => {
     if (typeof window === 'undefined') return;
     
     const params = new URLSearchParams(window.location.search);
@@ -134,6 +143,14 @@ export function JobHistory({
         params.delete('sort');
       } else {
         params.set('sort', newParams.sort);
+      }
+    }
+
+    if (newParams.view !== undefined) {
+      if (newParams.view === 'grid') {
+        params.delete('view');
+      } else {
+        params.set('view', newParams.view);
       }
     }
     
@@ -163,11 +180,17 @@ export function JobHistory({
     updateURL({ sort });
   }, [updateURL]);
 
+  const handleViewModeChange = useCallback((view: 'grid' | 'list') => {
+    setViewMode(view);
+    updateURL({ view });
+  }, [updateURL]);
+
   const handleClearFilters = useCallback(() => {
     setSearchQuery('');
     setStatusFilter('all');
     setSortBy('newest');
-    updateURL({ status: 'all', search: '', sort: 'newest' });
+    setViewMode('grid');
+    updateURL({ status: 'all', search: '', sort: 'newest', view: 'grid' });
   }, [updateURL]);
 
   const handleDeleteJob = useCallback(async (jobId: string) => {
@@ -226,6 +249,17 @@ export function JobHistory({
 
   return (
     <div className="space-y-6">
+      {/* Filters - Moved above header */}
+      <JobFilters
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        statusFilter={statusFilter}
+        onStatusChange={handleStatusChange}
+        sortBy={sortBy}
+        onSortChange={handleSortChange}
+        onClearFilters={handleClearFilters}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -236,6 +270,28 @@ export function JobHistory({
         </div>
         
         <div className="flex items-center space-x-3">
+          {/* View Toggle */}
+          <div className="flex items-center bg-muted rounded-lg p-1">
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => handleViewModeChange('grid')}
+              className="flex items-center space-x-2"
+            >
+              <Grid3X3 className="w-4 h-4" />
+              <span>Grid</span>
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => handleViewModeChange('list')}
+              className="flex items-center space-x-2"
+            >
+              <List className="w-4 h-4" />
+              <span>List</span>
+            </Button>
+          </div>
+
           <Button
             variant="outline"
             onClick={onRefresh}
@@ -255,18 +311,7 @@ export function JobHistory({
         </div>
       </div>
 
-      {/* Filters */}
-      <JobFilters
-        searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
-        statusFilter={statusFilter}
-        onStatusChange={handleStatusChange}
-        sortBy={sortBy}
-        onSortChange={handleSortChange}
-        onClearFilters={handleClearFilters}
-      />
-
-      {/* Jobs Grid */}
+      {/* Jobs Display */}
       {filteredJobs.length === 0 ? (
         <EmptyState
           icon={<AlertCircle className="w-16 h-16 text-gray-400" />}
@@ -288,10 +333,10 @@ export function JobHistory({
         />
       ) : (
         <motion.div
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          className={viewMode === 'grid' ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3" : "space-y-4"}
           layout
         >
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {filteredJobs.map((job) => (
               <motion.div
                 key={job.id}
@@ -301,12 +346,21 @@ export function JobHistory({
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.2 }}
               >
-                <JobCard
-                  job={job}
-                  onView={onViewJob}
-                  onDownload={onDownloadJob}
-                  onDelete={handleDeleteJob}
-                />
+                {viewMode === 'grid' ? (
+                  <JobCard
+                    job={job}
+                    onView={onViewJob}
+                    onDownload={onDownloadJob}
+                    onDelete={handleDeleteJob}
+                  />
+                ) : (
+                  <JobListItem
+                    job={job}
+                    onView={onViewJob}
+                    onDownload={onDownloadJob}
+                    onDelete={handleDeleteJob}
+                  />
+                )}
               </motion.div>
             ))}
           </AnimatePresence>

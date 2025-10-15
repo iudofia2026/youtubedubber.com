@@ -1,0 +1,387 @@
+'use client';
+
+import React from 'react';
+import { motion } from 'framer-motion';
+import { 
+  Clock, 
+  CheckCircle, 
+  AlertCircle, 
+  Loader2, 
+  Download, 
+  Trash2,
+  Languages,
+  FileAudio,
+  Video,
+  Zap,
+  Eye
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Job } from '@/types';
+
+interface JobListItemProps {
+  job: Job;
+  onView?: (jobId: string) => void;
+  onDownload?: (jobId: string) => void;
+  onDelete?: (jobId: string) => void;
+}
+
+export function JobListItem({ job, onView, onDownload, onDelete }: JobListItemProps) {
+  const isViewEnabled = Boolean(onView);
+
+  const handleCardClick = () => {
+    if (!isViewEnabled) return;
+    onView?.(job.id);
+  };
+
+  const handleCardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!isViewEnabled) return;
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onView?.(job.id);
+    }
+  };
+
+  const getStatusColor = () => {
+    switch (job.status) {
+      case 'complete':
+        return 'text-green-600 bg-green-50 dark:bg-green-900/20';
+      case 'error':
+        return 'text-red-600 bg-red-50 dark:bg-red-900/20';
+      case 'pending':
+        return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20';
+      case 'processing':
+        return 'text-blue-600 bg-blue-50 dark:bg-blue-900/20';
+      default:
+        return 'text-gray-600 bg-gray-50 dark:bg-gray-900/20';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const formatDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const getProgressPercentage = () => {
+    if (job.status === 'complete') return 100;
+    if (job.status === 'error') return 0;
+    return job.progress || 0;
+  };
+
+  const getStatusGradient = () => {
+    switch (job.status) {
+      case 'complete':
+        return 'from-green-50 via-emerald-50 to-green-100 dark:from-green-900/20 dark:via-emerald-900/10 dark:to-green-800/20';
+      case 'error':
+        return 'from-red-50 via-rose-50 to-red-100 dark:from-red-900/20 dark:via-rose-900/10 dark:to-red-800/20';
+      case 'pending':
+        return 'from-yellow-50 via-amber-50 to-yellow-100 dark:from-yellow-900/20 dark:via-amber-900/10 dark:to-yellow-800/20';
+      case 'processing':
+        return 'from-blue-50 via-cyan-50 to-blue-100 dark:from-blue-900/20 dark:via-cyan-900/10 dark:to-blue-800/20';
+      default:
+        return 'from-gray-50 via-gray-50 to-gray-100 dark:from-gray-900/20 dark:via-gray-900/10 dark:to-gray-800/20';
+    }
+  };
+
+  const getStatusBorder = () => {
+    switch (job.status) {
+      case 'complete':
+        return 'border-green-200 dark:border-green-700';
+      case 'error':
+        return 'border-red-200 dark:border-red-700';
+      case 'pending':
+        return 'border-yellow-200 dark:border-yellow-700';
+      case 'processing':
+        return 'border-blue-200 dark:border-blue-700';
+      default:
+        return 'border-gray-200 dark:border-gray-700';
+    }
+  };
+
+  return (
+    <motion.div
+      className={`bg-gradient-to-r ${getStatusGradient()} rounded-xl border-2 ${getStatusBorder()} p-4 sm:p-6 transition-all duration-300 touch-manipulation relative overflow-hidden ${isViewEnabled ? 'hover:shadow-xl cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500' : ''}`}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      whileHover={isViewEnabled ? { scale: 1.01, x: 5 } : undefined}
+      whileTap={isViewEnabled ? { scale: 0.99 } : undefined}
+      transition={{ duration: 0.3 }}
+      role={isViewEnabled ? 'button' : undefined}
+      tabIndex={isViewEnabled ? 0 : undefined}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+    >
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        {job.status === 'complete' && (
+          <motion.div
+            className="absolute top-0 right-0 w-32 h-32 bg-green-500 rounded-full blur-2xl"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.6, 0.3]
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
+        )}
+        {job.status === 'error' && (
+          <motion.div
+            className="absolute top-0 right-0 w-32 h-32 bg-red-500 rounded-full blur-2xl"
+            animate={{ 
+              scale: [1, 1.3, 1],
+              opacity: [0.3, 0.7, 0.3]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        )}
+        {job.status === 'processing' && (
+          <motion.div
+            className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-2xl"
+            animate={{ 
+              scale: [1, 1.1, 1],
+              opacity: [0.3, 0.5, 0.3]
+            }}
+            transition={{ duration: 2.5, repeat: Infinity }}
+          />
+        )}
+        {job.status === 'pending' && (
+          <motion.div
+            className="absolute top-0 right-0 w-32 h-32 bg-yellow-500 rounded-full blur-2xl"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.6, 0.3]
+            }}
+            transition={{ duration: 2.8, repeat: Infinity }}
+          />
+        )}
+      </div>
+
+      <div className="relative z-10 flex items-center justify-between">
+        {/* Left Section - Job Info */}
+        <div className="flex items-center space-x-4 flex-1 min-w-0">
+          {/* Status Icon */}
+          <motion.div
+            className="relative flex-shrink-0"
+            animate={job.status === 'processing' ? { rotate: 360 } : {}}
+            transition={job.status === 'processing' ? { duration: 2, repeat: Infinity, ease: "linear" } : {}}
+          >
+            {job.status === 'complete' ? (
+              <motion.div
+                className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
+                <CheckCircle className="w-6 h-6 text-white" />
+              </motion.div>
+            ) : job.status === 'error' ? (
+              <motion.div
+                className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center shadow-lg"
+                animate={{ 
+                  rotate: [0, -5, 5, 0],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <AlertCircle className="w-6 h-6 text-white" />
+              </motion.div>
+            ) : job.status === 'processing' ? (
+              <motion.div
+                className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              >
+                <Loader2 className="w-6 h-6 text-white" />
+              </motion.div>
+            ) : (
+              <motion.div
+                className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg"
+                animate={{ 
+                  y: [0, -3, 0],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{ duration: 2.5, repeat: Infinity }}
+              >
+                <Clock className="w-6 h-6 text-white" />
+              </motion.div>
+            )}
+            
+            {/* Status indicator dot */}
+            <motion.div
+              className={`absolute -top-1 -right-1 w-4 h-4 rounded-full ${
+                job.status === 'complete' ? 'bg-green-400' :
+                job.status === 'error' ? 'bg-red-400' :
+                job.status === 'processing' ? 'bg-blue-400' : 'bg-yellow-400'
+              }`}
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.7, 1, 0.7]
+              }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </motion.div>
+
+          {/* Job Details */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center space-x-3 mb-2">
+              <motion.h3 
+                className="text-lg font-bold text-gray-900 dark:text-white flex items-center space-x-2"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Video className="w-5 h-5 text-[#ff0000]" />
+                <span>Job #{job.id.slice(-8)}</span>
+              </motion.h3>
+              
+              <motion.div 
+                className={`px-3 py-1 rounded-lg text-sm font-bold shadow-lg flex items-center space-x-2 ${getStatusColor()}`}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                {job.status === 'complete' ? (
+                  <>
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Complete</span>
+                  </>
+                ) : job.status === 'error' ? (
+                  <>
+                    <AlertCircle className="w-4 h-4" />
+                    <span>Error</span>
+                  </>
+                ) : job.status === 'processing' ? (
+                  <>
+                    <Zap className="w-4 h-4" />
+                    <span>Processing</span>
+                  </>
+                ) : (
+                  <>
+                    <Clock className="w-4 h-4" />
+                    <span>Pending</span>
+                  </>
+                )}
+              </motion.div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center space-x-1">
+                <FileAudio className="w-4 h-4" />
+                <span>{formatDuration(job.voiceTrackDuration)}</span>
+              </div>
+              
+              <div className="flex items-center space-x-1">
+                <Languages className="w-4 h-4" />
+                <span>{job.targetLanguages.length} language{job.targetLanguages.length !== 1 ? 's' : ''}: {job.targetLanguages.join(', ')}</span>
+              </div>
+
+              <div className="text-xs text-gray-500 dark:text-gray-500">
+                {formatDate(job.createdAt)}
+              </div>
+
+              {job.backgroundTrack && (
+                <div className="flex items-center space-x-1 text-xs">
+                  <FileAudio className="w-3 h-3" />
+                  <span>Background track</span>
+                </div>
+              )}
+            </div>
+
+            {/* Progress Bar for Processing Jobs */}
+            {job.status === 'processing' && (
+              <div className="mt-3">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                    {job.message || 'Processing...'}
+                  </span>
+                  <span className="text-xs font-medium text-gray-900 dark:text-white">
+                    {Math.round(getProgressPercentage())}%
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                  <motion.div
+                    className="bg-blue-500 h-1.5 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${getProgressPercentage()}%` }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Section - Actions */}
+        <div className="flex items-center space-x-2 flex-shrink-0">
+          {job.status === 'complete' && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(event) => {
+                event.stopPropagation();
+                onDownload?.(job.id);
+              }}
+              onTouchEnd={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onDownload?.(job.id);
+              }}
+              className="flex items-center space-x-1 touch-manipulation"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download</span>
+            </Button>
+          )}
+
+          {isViewEnabled && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(event) => {
+                event.stopPropagation();
+                onView?.(job.id);
+              }}
+              onTouchEnd={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onView?.(job.id);
+              }}
+              className="flex items-center space-x-1 touch-manipulation"
+            >
+              <Eye className="w-4 h-4" />
+              <span>View</span>
+            </Button>
+          )}
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(event) => {
+              event.stopPropagation();
+              onDelete?.(job.id);
+            }}
+            onTouchEnd={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onDelete?.(job.id);
+            }}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 touch-manipulation"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
