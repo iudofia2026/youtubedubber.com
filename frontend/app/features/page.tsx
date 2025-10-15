@@ -91,7 +91,7 @@ export default function FeaturesPage() {
       details: 'Maintain perfect audio separation between voice and background music, allowing for precise control over the final mix.'
     },
     {
-      icon: Languages,
+      icon: Globe,
       title: 'Multi-Language Batch Processing',
       description: 'Process multiple languages simultaneously to save time and reduce costs.',
       details: 'Upload once and generate dubs in multiple languages at the same time, with progress tracking for each language.'
@@ -103,7 +103,7 @@ export default function FeaturesPage() {
       details: 'Adjust pitch, speed, and other voice parameters to create the perfect sound for your content.'
     },
     {
-      icon: BarChart3,
+      icon: Settings,
       title: 'Analytics & Insights',
       description: 'Track your dubbing usage and get insights into your content performance.',
       details: 'Monitor processing times, language preferences, and usage patterns to optimize your workflow.'

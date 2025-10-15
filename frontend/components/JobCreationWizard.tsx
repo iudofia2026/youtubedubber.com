@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FileUpload } from './FileUpload';
-import { LanguageSelect } from './LanguageSelect';
+import { LanguageChecklist } from './LanguageChecklist';
 import { LANGUAGES, UploadProgress } from '@/types';
 import { useToastHelpers, useApiErrorHandler } from '@/components/ToastNotifications';
 import { LoadingButton } from '@/components/LoadingStates';
@@ -115,9 +115,9 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
       case 2:
         return true; // Background track is optional
       case 3:
-        return formData.targetLanguage !== '';
+        return formData.targetLanguages.length > 0;
       case 4:
-        return formData.voiceTrack !== null && formData.targetLanguage !== '';
+        return formData.voiceTrack !== null && formData.targetLanguages.length > 0;
       default:
         return false;
     }
@@ -211,9 +211,9 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
 
             {currentStep === 3 && (
               <div className="space-y-6">
-                <LanguageSelect
-                  value={formData.targetLanguage}
-                  onChange={(language) => setFormData(prev => ({ ...prev, targetLanguage: language }))}
+                <LanguageChecklist
+                  value={formData.targetLanguages}
+                  onChange={(languages) => setFormData(prev => ({ ...prev, targetLanguages: languages }))}
                   languages={LANGUAGES}
                 />
                 <div className="text-center text-sm text-muted-foreground">
@@ -246,7 +246,7 @@ export default function JobCreationWizard({ onSubmit }: JobCreationWizardProps) 
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">Target Language:</span>
                       <span className="font-medium">
-                        {formData.targetLanguage || 'Not selected'}
+                        {formData.targetLanguages.length > 0 ? formData.targetLanguages.join(', ') : 'Not selected'}
                       </span>
                     </div>
                   </div>

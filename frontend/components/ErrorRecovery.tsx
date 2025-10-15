@@ -108,7 +108,7 @@ export const ErrorRecovery: React.FC<ErrorRecoveryProps> = ({
             </p>
           )}
           
-          {lastRetryError && (
+          {!!lastRetryError && (
             <p className="mt-1 text-xs text-red-600 dark:text-red-400">
               Last retry failed: {lastRetryErrorMessage || 'Unknown error'}
             </p>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, BarChart } from 'lucide-react';
 import Link from 'next/link';
@@ -13,7 +13,7 @@ import { Job } from '@/types';
 import { useToastHelpers } from '@/components/ToastNotifications';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
-export default function JobsPage() {
+function JobsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -331,5 +331,32 @@ export default function JobsPage() {
         </main>
       </div>
     </ProtectedRoute>
+  );
+}
+
+function JobsPageLoading() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+      <Navigation currentPath="/jobs" />
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-muted rounded w-1/4 mb-4"></div>
+          <div className="h-4 bg-muted rounded w-1/2 mb-8"></div>
+          <div className="grid gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-24 bg-muted rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function JobsPage() {
+  return (
+    <Suspense fallback={<JobsPageLoading />}>
+      <JobsPageContent />
+    </Suspense>
   );
 }

@@ -185,9 +185,25 @@ export const mapJobResponse = (job: BackendJobResponse, options: MapJobResponseO
 export const mapJobSummary = (job: BackendJobResponse): Job => {
   const jobStatus = mapJobResponse(job, { targetLanguages: job.target_languages });
 
+  // Map JobStatus status to Job status
+  const mapStatus = (status: string): 'pending' | 'processing' | 'complete' | 'error' => {
+    switch (status) {
+      case 'uploading':
+      case 'generating':
+      case 'finalizing':
+        return 'processing';
+      case 'complete':
+        return 'complete';
+      case 'error':
+        return 'error';
+      default:
+        return 'pending';
+    }
+  };
+
   return {
     id: jobStatus.id,
-    status: jobStatus.status,
+    status: mapStatus(jobStatus.status),
     progress: jobStatus.progress,
     message: jobStatus.message,
     createdAt: job.created_at || job.started_at || new Date().toISOString(),
