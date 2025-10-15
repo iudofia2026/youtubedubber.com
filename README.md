@@ -77,5 +77,5 @@ Both frontend and backend support hot reload during development. See individual 
 
 ---
 
-**Last Updated**: January 2025  
+**Last Updated**: Oct 10, 2025  
 **Status**: Production Ready
