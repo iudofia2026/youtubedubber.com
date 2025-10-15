@@ -7,17 +7,19 @@
 - [ ] Create Railway account for backend hosting
 - [ ] Set up Supabase production project
 - [ ] Purchase domain (youtubedubber.com)
-- [ ] Set up Stripe account for payments
+- [ ] Set up Stripe account for payments (optional for MVP)
 
 ### Phase 2: Environment Configuration
 - [ ] Configure Vercel environment variables
 - [ ] Configure Railway environment variables
 - [ ] Set up Supabase database and storage
 - [ ] Configure DNS and SSL certificates
+- [ ] Test Supabase authentication flow
 
 ### Phase 3: Testing & Launch
 - [ ] Test complete user workflow
-- [ ] Verify payment processing
+- [ ] Verify file upload and job creation
+- [ ] Test job status tracking
 - [ ] Set up monitoring and alerts
 - [ ] Launch to production
 
