@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Mic, Globe, Zap, DollarSign, Headphones, Volume2, Clock, Shield, Users, Star, CheckCircle, Play, Download, BarChart3, Settings, FileAudio, Languages, Sparkles } from 'lucide-react';
+import { ArrowRight, Mic, Globe, Zap, DollarSign, Headphones, Clock, Shield, CheckCircle, Play, Download, Settings, FileAudio, Sparkles } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
 
@@ -402,7 +402,7 @@ export default function FeaturesPage() {
                   <span className="text-[#ff0000]"> YT Dubber?</span>
                 </h2>
                 <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
-                  See how we compare to YouTube's native dubbing and other platforms in the market.
+                  See how we compare to YouTube&apos;s native dubbing and other platforms in the market.
                 </p>
               </motion.div>
 

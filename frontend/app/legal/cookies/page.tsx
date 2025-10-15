@@ -4,7 +4,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Cookie, Shield, Settings, BarChart3, Target, Database, Eye, Lock, ExternalLink } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
-import { YTdubberIcon } from '@/components/YTdubberIcon';
 
 export default function CookiePolicy() {
   const cookieTypes = [
@@ -183,8 +182,8 @@ export default function CookiePolicy() {
                       and other settings. This can make your next visit easier and the site more useful to you.
                     </p>
                     <p className="text-muted-foreground leading-relaxed">
-                      Cookies can be "persistent" (stored on your device until they expire or you delete them) 
-                      or "session" cookies (stored only during your current browsing session).
+                      Cookies can be &quot;persistent&quot; (stored on your device until they expire or you delete them) 
+                      or &quot;session&quot; cookies (stored only during your current browsing session).
                     </p>
                   </div>
                 </div>
@@ -371,12 +370,12 @@ export default function CookiePolicy() {
                     </h3>
                   </div>
                   <p className="text-muted-foreground mb-4">
-                    When you first visit our website, you'll see a cookie consent banner 
+                    When you first visit our website, you&apos;ll see a cookie consent banner 
                     where you can choose which types of cookies to accept.
                   </p>
                   <p className="text-sm text-muted-foreground">
                     You can change your preferences at any time by clicking the 
-                    "Cookie Settings" link in our footer.
+                    &quot;Cookie Settings&quot; link in our footer.
                   </p>
                 </div>
               </div>

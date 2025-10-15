@@ -1,4 +1,4 @@
-import { DubbingJobData, JobStatus, SubmitJobResponse, GetJobStatusResponse, LanguageProgress, LANGUAGES, SignedUploadUrls, UploadUrlsRequest, JobCreationRequest, UploadProgress } from '@/types';
+import { DubbingJobData, SubmitJobResponse, GetJobStatusResponse, LanguageProgress, LANGUAGES, SignedUploadUrls, UploadUrlsRequest, JobCreationRequest, UploadProgress } from '@/types';
 
 import { config } from './config';
 

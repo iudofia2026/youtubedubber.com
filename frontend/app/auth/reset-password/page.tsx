@@ -7,14 +7,12 @@ import { AuthForm } from '@/components/auth/AuthForm';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
-import { useAuth } from '@/lib/auth-context';
 
 function ResetPasswordContent() {
   const [mode, setMode] = useState<'signin' | 'signup' | 'reset'>('reset');
   const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
 
   useEffect(() => {
     // Check if this is a password reset callback

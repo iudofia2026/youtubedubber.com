@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Download, CheckCircle, Clock, Globe, Users, Zap, BarChart3, FileAudio, Calendar, Settings, Activity, AlertTriangle, Info, Play, Pause, Volume2, Share2, Copy, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Download, CheckCircle, Clock, Globe, Zap, FileAudio, Settings, Activity, AlertTriangle, Info, Play, Volume2, Share2, Copy } from 'lucide-react';
 import Link from 'next/link';
 import { ProgressBar } from '@/components/ProgressBar';
 import { IndividualLanguageProgress } from '@/components/IndividualLanguageProgress';

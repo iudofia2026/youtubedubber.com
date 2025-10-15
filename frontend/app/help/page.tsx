@@ -2,9 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Search, ChevronDown, ChevronUp, HelpCircle, BookOpen, MessageCircle, Video, FileText, Zap, Globe, Mic, Download, AlertCircle, CheckCircle, Clock, Users, Star, ArrowRight, ExternalLink } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, HelpCircle, BookOpen, MessageCircle, Video, FileText, Zap, Globe, Mic, Download, AlertCircle, CheckCircle, Clock, ArrowRight, ExternalLink } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
-import { YTdubberIcon } from '@/components/YTdubberIcon';
 
 export default function HelpCenter() {
   const [searchQuery, setSearchQuery] = useState('');

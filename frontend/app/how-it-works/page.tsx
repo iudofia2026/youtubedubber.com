@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Upload, Globe, Download, Play, Mic, Headphones, Clock, CheckCircle, FileAudio, Languages, Zap, Shield, Users, Star } from 'lucide-react';
+import { ArrowRight, Upload, Globe, Download, Play, Mic, Headphones, Clock, CheckCircle, FileAudio, Zap, Shield } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
 
@@ -221,7 +221,7 @@ export default function HowItWorksPage() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        <Star className="w-5 h-5" />
+                        <CheckCircle className="w-5 h-5" />
                         <span>View Features</span>
                       </motion.button>
                     </Link>
@@ -325,7 +325,7 @@ export default function HowItWorksPage() {
                         
                         <div className="space-y-6">
                           <div>
-                            <h4 className="text-lg font-semibold text-foreground mb-4">What you'll do:</h4>
+                            <h4 className="text-lg font-semibold text-foreground mb-4">What you&apos;ll do:</h4>
                             <ul className="space-y-3">
                               {step.details.map((detail, detailIndex) => (
                                 <motion.li
@@ -355,7 +355,7 @@ export default function HowItWorksPage() {
                                   transition={{ duration: 0.6, delay: index * 0.2 + 0.5 + tipIndex * 0.1 }}
                                   viewport={{ once: true }}
                                 >
-                                  <Star className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-1" />
+                                  <CheckCircle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-1" />
                                   <span className="text-sm text-muted-foreground">{tip}</span>
                                 </motion.li>
                               ))}

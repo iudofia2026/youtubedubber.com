@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, MessageCircle, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle, User, FileText, Zap, Headphones, ExternalLink } from 'lucide-react';
+import { Mail, MessageCircle, Clock, Send, CheckCircle, AlertCircle, User, FileText, Zap, Headphones, ExternalLink } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
-import { YTdubberIcon } from '@/components/YTdubberIcon';
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
@@ -70,7 +69,7 @@ export default function ContactUs() {
         message: '',
         priority: 'medium'
       });
-    } catch (error) {
+    } catch {
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -109,7 +108,7 @@ export default function ContactUs() {
                     Contact Us
                   </h1>
                   <p className="text-lg text-muted-foreground mt-2">
-                    We're here to help you succeed with YT Dubber
+                    We&apos;re here to help you succeed with YT Dubber
                   </p>
                 </div>
               </motion.div>
@@ -139,7 +138,6 @@ export default function ContactUs() {
               </h2>
               <div className="max-w-2xl mx-auto">
                 {contactMethods.map((method, index) => {
-                  const Icon = method.icon;
                   return (
                     <motion.div
                       key={method.title}
@@ -150,7 +148,7 @@ export default function ContactUs() {
                       whileHover={{ y: -5, scale: 1.02 }}
                     >
                       <div className={`w-20 h-20 bg-gradient-to-r ${method.color} rounded-2xl flex items-center justify-center mx-auto mb-6`}>
-                        <Icon className="w-10 h-10 text-white" />
+                        <method.icon className="w-10 h-10 text-white" />
                       </div>
                       <h3 className="text-2xl font-bold text-foreground mb-3">
                         {method.title}
@@ -209,7 +207,7 @@ export default function ContactUs() {
                     >
                       <CheckCircle className="w-5 h-5 text-green-600" />
                       <p className="text-green-800 dark:text-green-200">
-                        Thank you! Your message has been sent successfully. We'll get back to you soon.
+                        Thank you! Your message has been sent successfully. We&apos;ll get back to you soon.
                       </p>
                     </motion.div>
                   )}
@@ -293,7 +291,6 @@ export default function ContactUs() {
                         >
                           <option value="">Select a category</option>
                           {categories.map((category) => {
-                            const Icon = category.icon;
                             return (
                               <option key={category.id} value={category.id}>
                                 {category.name}
