@@ -104,7 +104,7 @@ export default function JobsPage() {
         ];
         
         setJobs(mockJobs);
-      } catch (_error) {
+      } catch {
         showError('Failed to load jobs', 'There was an error loading your jobs. Please try again.');
       } finally {
         setLoading(false);
@@ -121,7 +121,7 @@ export default function JobsPage() {
       // Simulate API refresh
       await new Promise(resolve => setTimeout(resolve, 500));
       // In real app, would refetch from API
-    } catch (_error) {
+    } catch {
       showError('Refresh failed', 'There was an error refreshing the jobs. Please try again.');
     } finally {
       setLoading(false);
@@ -134,7 +134,22 @@ export default function JobsPage() {
       return;
     }
 
-    router.push(`/jobs/${jobId}`);
+    const selectedJob = jobs.find(job => job.id === jobId);
+
+    if (selectedJob && typeof window !== 'undefined') {
+      try {
+        const storageKey = `yt-dubber:job-preview:${jobId}`;
+        window.sessionStorage.setItem(storageKey, JSON.stringify(selectedJob));
+      } catch {
+        // Cache failures are non-critical; continue without blocking navigation
+      }
+    }
+
+    const query = selectedJob?.targetLanguages?.length
+      ? `?${new URLSearchParams({ languages: selectedJob.targetLanguages.join(',') }).toString()}`
+      : '';
+
+    router.push(`/jobs/${jobId}${query}`);
   };
 
   const handleDownloadJob = (jobId: string) => {
@@ -147,7 +162,7 @@ export default function JobsPage() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));
       setJobs(prev => prev.filter(job => job.id !== jobId));
-    } catch (_error) {
+    } catch {
       showError('Delete failed', 'There was an error deleting the job. Please try again.');
     }
   };

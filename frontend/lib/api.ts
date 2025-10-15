@@ -73,6 +73,10 @@ interface MapJobResponseOptions {
   targetLanguages?: string[];
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null;
+};
+
 const isValidJobStatus = (status: unknown): status is JobStatusValue => {
   return typeof status === 'string' && VALID_JOB_STATUSES.includes(status as JobStatusValue);
 };
@@ -80,6 +84,8 @@ const isValidJobStatus = (status: unknown): status is JobStatusValue => {
 const isValidLanguageStatus = (status: unknown): status is LanguageStatusValue => {
   return typeof status === 'string' && VALID_LANGUAGE_STATUSES.includes(status as LanguageStatusValue);
 };
+
+const JOB_PREVIEW_STORAGE_PREFIX = 'yt-dubber:job-preview:';
 
 const resolveDownloadUrl = (downloadUrl?: string): string | undefined => {
   if (!downloadUrl) {
@@ -196,6 +202,87 @@ export const mapJobSummary = (job: BackendJobResponse): Job => {
   };
 };
 
+const getCachedJobPreview = (jobId: string): Job | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const storage = window.sessionStorage;
+  const storageKey = `${JOB_PREVIEW_STORAGE_PREFIX}${jobId}`;
+  const stored = storage.getItem(storageKey);
+
+  if (!stored) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(stored) as Job;
+  } catch {
+    storage.removeItem(storageKey);
+    return null;
+  }
+};
+
+const mapMockJobToStatus = (job: Job, requestedLanguages: string[]): GetJobStatusResponse => {
+  const jobStatusMap: Record<Job['status'], GetJobStatusResponse['status']> = {
+    pending: 'uploading',
+    processing: 'processing',
+    complete: 'complete',
+    error: 'error'
+  };
+
+  const languageStatusMap: Record<Job['status'], LanguageProgress['status']> = {
+    pending: 'pending',
+    processing: 'processing',
+    complete: 'complete',
+    error: 'error'
+  };
+
+  const progressValue = typeof job.progress === 'number' ? job.progress : 0;
+  const messageValue = job.message || 'Processing...';
+  const languageCodes = requestedLanguages.length > 0 ? requestedLanguages : job.targetLanguages;
+
+  const languages = languageCodes.map((code) => {
+    const info = LANGUAGES.find(lang => lang.code === code);
+    const languageStatus = languageStatusMap[job.status] ?? 'processing';
+    const progress = languageStatus === 'complete' ? 100 : progressValue;
+
+    return {
+      languageCode: code,
+      languageName: info?.name || code.toUpperCase(),
+      flag: info?.flag || '🌐',
+      status: languageStatus,
+      progress,
+      message: languageStatus === 'complete' ? 'Complete' : messageValue,
+      downloadUrl: resolveDownloadUrl(job.downloadUrls?.[code]?.full || job.downloadUrls?.[code]?.voice)
+    };
+  });
+
+  const totalLanguages = job.totalLanguages ?? (languages.length || job.targetLanguages.length);
+  const completedLanguages = job.completedLanguages ?? languages.filter(language => language.status === 'complete').length;
+
+  return {
+    id: job.id,
+    status: jobStatusMap[job.status] ?? 'processing',
+    progress: progressValue,
+    message: messageValue,
+    languages,
+    totalLanguages,
+    completedLanguages,
+    startedAt: job.createdAt,
+    estimatedCompletion: job.estimatedCompletion
+  };
+};
+
+const getMockJobStatus = (jobId: string, targetLanguages: string[]): GetJobStatusResponse | null => {
+  const job = getCachedJobPreview(jobId);
+  if (!job) {
+    return null;
+  }
+
+  return mapMockJobToStatus(job, targetLanguages);
+};
+
 const mapSubmitJobResponse = (data: BackendSubmitJobResponse): SubmitJobResponse => {
   const jobId = data.job_id || data.id;
 
@@ -210,7 +297,7 @@ const mapSubmitJobResponse = (data: BackendSubmitJobResponse): SubmitJobResponse
 export interface ApiError {
   type: 'network' | 'validation' | 'server' | 'auth' | 'not_found' | 'rate_limit' | 'unknown';
   message: string;
-  details?: any;
+  details?: unknown;
   statusCode?: number;
   retryable?: boolean;
 }
@@ -218,101 +305,117 @@ export interface ApiError {
 export interface BackendErrorResponse {
   error: string;
   message: string;
-  details?: any;
+  details?: unknown;
   voice_duration?: number;
   background_duration?: number;
   status_code?: number;
 }
 
+const isBackendErrorResponse = (value: unknown): value is BackendErrorResponse => {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const { error, message } = value as { error?: unknown; message?: unknown };
+  return typeof error === 'string' || typeof message === 'string';
+};
+
 // Error handling utilities
-export const createApiError = (error: any, response?: Response): ApiError => {
+export const createApiError = (error: unknown, response?: Response): ApiError => {
   // Network errors
   if (!response) {
+    const errorDetails = error instanceof Error
+      ? { name: error.name, message: error.message, stack: error.stack }
+      : error;
+
     return {
       type: 'network',
       message: 'Network error - please check your connection',
-      details: error.message,
+      details: errorDetails,
       retryable: true
     };
   }
 
   // Parse backend error response
   if (response.headers.get('content-type')?.includes('application/json')) {
-    try {
-      const errorData: BackendErrorResponse = error;
-      
-      switch (response.status) {
-        case 400:
-          if (errorData.error === 'duration_mismatch') {
-            return {
-              type: 'validation',
-              message: `Audio tracks must be the same length. Voice: ${errorData.voice_duration}s, Background: ${errorData.background_duration}s`,
-              details: errorData,
-              statusCode: 400,
-              retryable: false
-            };
-          }
+    const fallbackError: BackendErrorResponse = {
+      error: 'unknown_error',
+      message: typeof error === 'string' ? error : 'An unexpected error occurred'
+    };
+
+    const errorData: BackendErrorResponse = isBackendErrorResponse(error)
+      ? error
+      : fallbackError;
+    
+    switch (response.status) {
+      case 400:
+        if (errorData.error === 'duration_mismatch') {
           return {
             type: 'validation',
-            message: errorData.message || 'Invalid request data',
+            message: `Audio tracks must be the same length. Voice: ${errorData.voice_duration}s, Background: ${errorData.background_duration}s`,
             details: errorData,
             statusCode: 400,
             retryable: false
           };
-        case 401:
-          return {
-            type: 'auth',
-            message: 'Authentication required - please sign in',
-            details: errorData,
-            statusCode: 401,
-            retryable: false
-          };
-        case 403:
-          return {
-            type: 'auth',
-            message: 'Access denied - insufficient permissions',
-            details: errorData,
-            statusCode: 403,
-            retryable: false
-          };
-        case 404:
-          return {
-            type: 'not_found',
-            message: 'Resource not found',
-            details: errorData,
-            statusCode: 404,
-            retryable: false
-          };
-        case 429:
-          return {
-            type: 'rate_limit',
-            message: 'Too many requests - please wait before trying again',
-            details: errorData,
-            statusCode: 429,
-            retryable: true
-          };
-        case 500:
-        case 502:
-        case 503:
-        case 504:
-          return {
-            type: 'server',
-            message: 'Server error - please try again later',
-            details: errorData,
-            statusCode: response.status,
-            retryable: true
-          };
-        default:
-          return {
-            type: 'unknown',
-            message: errorData.message || 'An unexpected error occurred',
-            details: errorData,
-            statusCode: response.status,
-            retryable: response.status >= 500
-          };
-      }
-    } catch (parseError) {
-      // If we can't parse the error response, fall back to generic error
+        }
+        return {
+          type: 'validation',
+          message: errorData.message || 'Invalid request data',
+          details: errorData,
+          statusCode: 400,
+          retryable: false
+        };
+      case 401:
+        return {
+          type: 'auth',
+          message: 'Authentication required - please sign in',
+          details: errorData,
+          statusCode: 401,
+          retryable: false
+        };
+      case 403:
+        return {
+          type: 'auth',
+          message: 'Access denied - insufficient permissions',
+          details: errorData,
+          statusCode: 403,
+          retryable: false
+        };
+      case 404:
+        return {
+          type: 'not_found',
+          message: 'Resource not found',
+          details: errorData,
+          statusCode: 404,
+          retryable: false
+        };
+      case 429:
+        return {
+          type: 'rate_limit',
+          message: 'Too many requests - please wait before trying again',
+          details: errorData,
+          statusCode: 429,
+          retryable: true
+        };
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        return {
+          type: 'server',
+          message: 'Server error - please try again later',
+          details: errorData,
+          statusCode: response.status,
+          retryable: true
+        };
+      default:
+        return {
+          type: 'unknown',
+          message: errorData.message || 'An unexpected error occurred',
+          details: errorData,
+          statusCode: response.status,
+          retryable: response.status >= 500
+        };
     }
   }
 
@@ -379,7 +482,7 @@ export const withRetry = async <T>(
   maxRetries: number = 3,
   baseDelay: number = 1000
 ): Promise<T> => {
-  let lastError: any;
+  let lastError: unknown;
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -677,22 +780,38 @@ export const submitDubbingJob = async (
 };
 
 export const getJobStatus = async (jobId: string, targetLanguages: string[] = []): Promise<GetJobStatusResponse> => {
-  return withRetry(async () => {
-    const headers = await getAuthHeaders();
-    const response = await fetch(`${API_BASE}/api/jobs/${jobId}`, {
-      method: 'GET',
-      headers,
-    });
+  const mockStatus = config.devMode ? getMockJobStatus(jobId, targetLanguages) : null;
+  if (mockStatus) {
+    return mockStatus;
+  }
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const apiError = createApiError(errorData, response);
-      throw apiError;
+  try {
+    return await withRetry(async () => {
+      const headers = await getAuthHeaders();
+      const response = await fetch(`${API_BASE}/api/jobs/${jobId}`, {
+        method: 'GET',
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const apiError = createApiError(errorData, response);
+        throw apiError;
+      }
+
+      const jobData: BackendJobResponse = await response.json();
+      return mapJobResponse(jobData, { targetLanguages });
+    });
+  } catch (error) {
+    if (config.devMode) {
+      const fallbackStatus = getMockJobStatus(jobId, targetLanguages);
+      if (fallbackStatus) {
+        return fallbackStatus;
+      }
     }
 
-    const jobData: BackendJobResponse = await response.json();
-    return mapJobResponse(jobData, { targetLanguages });
-  });
+    throw error;
+  }
 };
 
 // Real job status polling with exponential backoff
