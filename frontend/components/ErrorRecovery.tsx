@@ -3,11 +3,40 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { RefreshCw, AlertCircle, X } from 'lucide-react';
 import { useApiErrorHandler } from '@/components/ToastNotifications';
 
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null;
+};
+
+const extractErrorMessage = (value: unknown): string | undefined => {
+  if (value instanceof Error) {
+    return value.message;
+  }
+
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (isRecord(value) && typeof value.message === 'string') {
+    return value.message;
+  }
+
+  return undefined;
+};
+
+const extractRetryableFlag = (value: unknown): boolean | undefined => {
+  if (!isRecord(value)) {
+    return undefined;
+  }
+
+  const retryable = value['retryable'];
+  return typeof retryable === 'boolean' ? retryable : undefined;
+};
+
 interface ErrorRecoveryProps {
-  error: any;
+  error: unknown;
   onRetry: () => Promise<void>;
   onDismiss?: () => void;
   context?: string;
@@ -25,7 +54,7 @@ export const ErrorRecovery: React.FC<ErrorRecoveryProps> = ({
 }) => {
   const [isRetrying, setIsRetrying] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  const [lastRetryError, setLastRetryError] = useState<any>(null);
+  const [lastRetryError, setLastRetryError] = useState<unknown>(null);
   const { handleApiError } = useApiErrorHandler();
 
   const handleRetry = async () => {
@@ -41,16 +70,19 @@ export const ErrorRecovery: React.FC<ErrorRecoveryProps> = ({
       await onRetry();
       setRetryCount(0);
       setLastRetryError(null);
-    } catch (error) {
-      setLastRetryError(error);
+    } catch (retryError) {
+      setLastRetryError(retryError);
       setRetryCount(prev => prev + 1);
-      handleApiError(error, `${context} (Retry ${retryCount + 1})`);
+      handleApiError(retryError, `${context} (Retry ${retryCount + 1})`);
     } finally {
       setIsRetrying(false);
     }
   };
 
-  const canRetry = retryCount < maxRetries && error?.retryable !== false;
+  const retryableFlag = extractRetryableFlag(error);
+  const canRetry = retryCount < maxRetries && retryableFlag !== false;
+  const errorMessage = extractErrorMessage(error) || 'An unexpected error occurred';
+  const lastRetryErrorMessage = extractErrorMessage(lastRetryError);
 
   return (
     <motion.div
@@ -67,7 +99,7 @@ export const ErrorRecovery: React.FC<ErrorRecoveryProps> = ({
             {context} Failed
           </h4>
           <p className="mt-1 text-sm text-red-700 dark:text-red-300">
-            {error?.message || 'An unexpected error occurred'}
+            {errorMessage}
           </p>
           
           {retryCount > 0 && (
@@ -78,7 +110,7 @@ export const ErrorRecovery: React.FC<ErrorRecoveryProps> = ({
           
           {lastRetryError && (
             <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-              Last retry failed: {lastRetryError?.message || 'Unknown error'}
+              Last retry failed: {lastRetryErrorMessage || 'Unknown error'}
             </p>
           )}
         </div>
@@ -138,13 +170,13 @@ export const ErrorRecovery: React.FC<ErrorRecoveryProps> = ({
 export const useRetryState = (maxRetries: number = 3) => {
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
-  const [lastError, setLastError] = useState<any>(null);
+  const [lastError, setLastError] = useState<unknown>(null);
 
   const canRetry = retryCount < maxRetries;
 
-  const executeWithRetry = async <T>(
+  const executeWithRetry = async <T,>(
     operation: () => Promise<T>,
-    onError?: (error: any, retryCount: number) => void
+    onError?: (error: unknown, retryCount: number) => void
   ): Promise<T> => {
     setIsRetrying(true);
     setLastError(null);

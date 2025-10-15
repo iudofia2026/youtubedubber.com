@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface NetworkStatus {
   isOnline: boolean;
@@ -8,6 +8,28 @@ export interface NetworkStatus {
   connectionType?: string;
   effectiveType?: string;
 }
+
+interface NetworkInformationLike {
+  type?: string;
+  effectiveType?: string;
+  addEventListener?: (type: string, listener: () => void) => void;
+  removeEventListener?: (type: string, listener: () => void) => void;
+}
+
+type NavigatorWithConnection = Navigator & {
+  connection?: NetworkInformationLike;
+  mozConnection?: NetworkInformationLike;
+  webkitConnection?: NetworkInformationLike;
+};
+
+const getNavigatorConnection = (): NetworkInformationLike | undefined => {
+  if (typeof navigator === 'undefined') {
+    return undefined;
+  }
+
+  const nav = navigator as NavigatorWithConnection;
+  return nav.connection || nav.mozConnection || nav.webkitConnection;
+};
 
 export const useNetworkStatus = (): NetworkStatus => {
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>({
@@ -20,7 +42,7 @@ export const useNetworkStatus = (): NetworkStatus => {
 
     const updateNetworkStatus = () => {
       const isOnline = navigator.onLine;
-      const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+      const connection = getNavigatorConnection();
       
       let isSlowConnection = false;
       let connectionType = 'unknown';
@@ -50,15 +72,15 @@ export const useNetworkStatus = (): NetworkStatus => {
     window.addEventListener('offline', updateNetworkStatus);
 
     // Listen for connection changes
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
-    if (connection) {
+    const connection = getNavigatorConnection();
+    if (connection?.addEventListener) {
       connection.addEventListener('change', updateNetworkStatus);
     }
 
     return () => {
       window.removeEventListener('online', updateNetworkStatus);
       window.removeEventListener('offline', updateNetworkStatus);
-      if (connection) {
+      if (connection?.removeEventListener) {
         connection.removeEventListener('change', updateNetworkStatus);
       }
     };
@@ -70,9 +92,9 @@ export const useNetworkStatus = (): NetworkStatus => {
 // Hook for handling offline state with retry logic
 export const useOfflineHandler = () => {
   const { isOnline } = useNetworkStatus();
-  const [pendingActions, setPendingActions] = useState<Array<() => Promise<any>>>([]);
+  const [pendingActions, setPendingActions] = useState<Array<() => Promise<unknown>>>([]);
 
-  const queueAction = (action: () => Promise<any>) => {
+  const queueAction = (action: () => Promise<unknown>): Promise<unknown> => {
     if (isOnline) {
       return action();
     } else {
@@ -81,28 +103,28 @@ export const useOfflineHandler = () => {
     }
   };
 
-  const retryPendingActions = async () => {
+  const retryPendingActions = useCallback(async (): Promise<void> => {
     if (pendingActions.length === 0) return;
 
     const actions = [...pendingActions];
     setPendingActions([]);
 
     const results = await Promise.allSettled(actions.map(action => action()));
-    const failures = results.filter(result => result.status === 'rejected');
+    const failures = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected');
 
     if (failures.length > 0) {
       // Re-queue failed actions
       const failedActions = actions.filter((_, index) => results[index].status === 'rejected');
       setPendingActions(prev => [...prev, ...failedActions]);
     }
-  };
+  }, [pendingActions]);
 
   // Retry pending actions when connection is restored
   useEffect(() => {
     if (isOnline && pendingActions.length > 0) {
       retryPendingActions();
     }
-  }, [isOnline]);
+  }, [isOnline, pendingActions.length, retryPendingActions]);
 
   return {
     isOnline,

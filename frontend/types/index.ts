@@ -180,7 +180,7 @@ export const JOB_STATUS_MESSAGES = {
 export interface ApiError {
   type: 'network' | 'validation' | 'server' | 'auth' | 'not_found' | 'rate_limit' | 'unknown';
   message: string;
-  details?: any;
+  details?: unknown;
   statusCode?: number;
   retryable?: boolean;
 }
@@ -188,7 +188,7 @@ export interface ApiError {
 export interface BackendErrorResponse {
   error: string;
   message: string;
-  details?: any;
+  details?: unknown;
   voice_duration?: number;
   background_duration?: number;
   status_code?: number;

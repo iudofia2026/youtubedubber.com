@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ApiError } from '@/types';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -183,15 +184,28 @@ export const useToastHelpers = () => {
   };
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null;
+};
+
+const isApiErrorLike = (value: unknown): value is ApiError => {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const { type, message } = value as { type?: unknown; message?: unknown };
+  return typeof type === 'string' && typeof message === 'string';
+};
+
 // Enhanced error handling for API errors
 export const useApiErrorHandler = () => {
   const { addToast } = useToast();
 
-  const handleApiError = (error: any, context?: string) => {
+  const handleApiError = (error: unknown, context?: string) => {
     console.error('API Error:', error, context);
 
     // If it's already an ApiError, use it directly
-    if (error.type && error.message) {
+    if (isApiErrorLike(error)) {
       const errorType = error.type;
       const title = getErrorTitle(errorType, context);
       const message = error.message;
@@ -227,7 +241,7 @@ export const useApiErrorHandler = () => {
     addToast({
       type: 'error',
       title: context ? `${context} Failed` : 'Unknown Error',
-      message: 'An unexpected error occurred. Please try again.',
+      message: isRecord(error) ? JSON.stringify(error) : 'An unexpected error occurred. Please try again.',
       duration: 5000
     });
   };

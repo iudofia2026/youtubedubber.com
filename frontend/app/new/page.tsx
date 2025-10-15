@@ -384,7 +384,7 @@ export default function NewJobPage() {
                               
                               <div className="space-y-6">
                                 <div>
-                                  <h4 className="text-lg font-semibold text-foreground mb-4">What you'll do:</h4>
+                                  <h4 className="text-lg font-semibold text-foreground mb-4">What you&apos;ll do:</h4>
                                   <ul className="space-y-3">
                                     {step.details.map((detail, detailIndex) => (
                                       <motion.li
