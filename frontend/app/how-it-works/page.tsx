@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Upload, Globe, Download, Play, Mic, Headphones, Clock, CheckCircle, FileAudio, Zap, Shield } from 'lucide-react';
+import { ArrowRight, Upload, Globe, Download, Play, Mic, Headphones, Clock, CheckCircle, FileAudio, Zap, Shield, Users, Star } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
 
