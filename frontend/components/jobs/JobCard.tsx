@@ -8,9 +8,7 @@ import {
   AlertCircle, 
   Loader2, 
   Download, 
-  Eye, 
   Trash2,
-  Calendar,
   Languages,
   FileAudio
 } from 'lucide-react';
@@ -25,18 +23,19 @@ interface JobCardProps {
 }
 
 export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
-  const getStatusIcon = () => {
-    switch (job.status) {
-      case 'complete':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'error':
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
-      case 'pending':
-        return <Clock className="w-5 h-5 text-yellow-500" />;
-      case 'processing':
-        return <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />;
-      default:
-        return <Clock className="w-5 h-5 text-gray-500" />;
+  const isViewEnabled = Boolean(onView);
+
+  const handleCardClick = () => {
+    if (!isViewEnabled) return;
+    onView?.(job.id);
+  };
+
+  const handleCardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!isViewEnabled) return;
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onView?.(job.id);
     }
   };
 
@@ -110,12 +109,16 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
 
   return (
     <motion.div
-      className={`bg-gradient-to-br ${getStatusGradient()} rounded-xl border-2 ${getStatusBorder()} p-4 sm:p-6 hover:shadow-xl transition-all duration-300 touch-manipulation relative overflow-hidden`}
+      className={`bg-gradient-to-br ${getStatusGradient()} rounded-xl border-2 ${getStatusBorder()} p-4 sm:p-6 transition-all duration-300 touch-manipulation relative overflow-hidden ${isViewEnabled ? 'hover:shadow-xl cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500' : ''}`}
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      whileHover={{ scale: 1.03, y: -5 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={isViewEnabled ? { scale: 1.03, y: -5 } : undefined}
+      whileTap={isViewEnabled ? { scale: 0.98 } : undefined}
       transition={{ duration: 0.3 }}
+      role={isViewEnabled ? 'button' : undefined}
+      tabIndex={isViewEnabled ? 0 : undefined}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
     >
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-5">
@@ -301,29 +304,17 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
       {/* Actions */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700 gap-3">
         <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              onView?.(job.id);
-            }}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              onView?.(job.id);
-            }}
-            className="flex items-center space-x-1 touch-manipulation flex-1 sm:flex-none"
-          >
-            <Eye className="w-4 h-4" />
-            <span>View</span>
-          </Button>
-          
           {job.status === 'complete' && (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onDownload?.(job.id)}
-              onTouchEnd={(e) => {
-                e.preventDefault();
+              onClick={(event) => {
+                event.stopPropagation();
+                onDownload?.(job.id);
+              }}
+              onTouchEnd={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
                 onDownload?.(job.id);
               }}
               className="flex items-center space-x-1 touch-manipulation flex-1 sm:flex-none"
@@ -337,9 +328,13 @@ export function JobCard({ job, onView, onDownload, onDelete }: JobCardProps) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onDelete?.(job.id)}
-          onTouchEnd={(e) => {
-            e.preventDefault();
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete?.(job.id);
+          }}
+          onTouchEnd={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
             onDelete?.(job.id);
           }}
           className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 touch-manipulation self-end sm:self-auto"
