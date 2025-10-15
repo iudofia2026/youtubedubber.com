@@ -1,0 +1,17 @@
+Isiah Current Sprint - October 15, 2025
+
+The following frontend backlog items are in progress by Isiah. Do not pick these up:
+
+1. Align backend responses with frontend DTOs
+   - Owner: Isiah (frontend)
+   - Summary: Normalize FastAPI job/job-status payloads to the existing TypeScript types via shared transformers in frontend/lib/api.ts.
+
+2. Harden job detail polling & error handling
+   - Owner: Isiah (frontend)
+   - Summary: Improve app/jobs/[id]/page.tsx to handle API failures, stop polling once the job completes or errors, and surface friendly messaging.
+
+3. Fix job list navigation to detail view
+   - Owner: Isiah (frontend)
+   - Summary: Update app/jobs/page.tsx so selecting a job routes to /jobs/{jobId} and removes the legacy console scaffolding.
+
+Updated: Oct 15, 2025
