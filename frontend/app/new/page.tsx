@@ -1024,9 +1024,15 @@ export default function NewJobPage() {
               disabled={currentStep === 0}
               onTouchEnd={(e) => {
                 e.preventDefault();
-                if (currentStep > 0) prevStep();
+                if (currentStep > 0) {
+                  prevStep();
+                  // Haptic feedback
+                  if (navigator.vibrate) {
+                    navigator.vibrate(30);
+                  }
+                }
               }}
-              className={`inline-flex items-center justify-center space-x-2 px-6 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation ${
+              className={`inline-flex items-center justify-center space-x-2 px-6 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation min-h-[44px] ${
                 currentStep === 0
                   ? 'bg-muted text-muted-foreground cursor-not-allowed'
                   : 'bg-card text-foreground hover:bg-muted border border-border'
@@ -1044,9 +1050,15 @@ export default function NewJobPage() {
                 disabled={!isStepValid}
                 onTouchEnd={(e) => {
                   e.preventDefault();
-                  if (isStepValid) nextStep();
+                  if (isStepValid) {
+                    nextStep();
+                    // Haptic feedback
+                    if (navigator.vibrate) {
+                      navigator.vibrate(30);
+                    }
+                  }
                 }}
-                className={`inline-flex items-center justify-center space-x-2 px-8 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation ${
+                className={`inline-flex items-center justify-center space-x-2 px-8 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation min-h-[44px] ${
                   isStepValid
                     ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]'
                     : 'bg-muted text-muted-foreground cursor-not-allowed'
@@ -1063,9 +1075,15 @@ export default function NewJobPage() {
                 disabled={isSubmitting || !isFinalStepValid}
                 onTouchEnd={(e) => {
                   e.preventDefault();
-                  if (!isSubmitting && isFinalStepValid) handleSubmit();
+                  if (!isSubmitting && isFinalStepValid) {
+                    handleSubmit();
+                    // Haptic feedback
+                    if (navigator.vibrate) {
+                      navigator.vibrate(50);
+                    }
+                  }
                 }}
-                className={`inline-flex items-center justify-center space-x-2 px-8 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation ${
+                className={`inline-flex items-center justify-center space-x-2 px-8 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation min-h-[44px] ${
                   isSubmitting || !isFinalStepValid
                     ? 'bg-muted text-muted-foreground cursor-not-allowed'
                     : 'bg-[#ff0000] text-white hover:bg-[#cc0000]'

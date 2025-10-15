@@ -88,7 +88,7 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-md mx-auto mobile-form">
       <AnimatePresence mode="wait">
         {mode === 'signin' && (
           <motion.div
@@ -106,14 +106,14 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
 
             <form onSubmit={signInForm.handleSubmit(handleSignIn)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-sm font-medium">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="Enter your email"
-                    className="pl-10"
+                    className="pl-10 h-12 text-base touch-manipulation"
                     {...signInForm.register('email')}
                   />
                 </div>
@@ -123,71 +123,113 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-12 h-12 text-base touch-manipulation"
                     {...signInForm.register('password')}
                   />
-                  <button
+                  <motion.button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      setShowPassword(!showPassword);
+                      // Haptic feedback
+                      if (navigator.vibrate) {
+                        navigator.vibrate(30);
+                      }
+                    }}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+                  </motion.button>
                 </div>
                 {signInForm.formState.errors.password && (
                   <p className="text-sm text-destructive">{signInForm.formState.errors.password.message}</p>
                 )}
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
+                <div className="flex items-center space-x-3">
                   <Checkbox
                     id="rememberMe"
                     {...signInForm.register('rememberMe')}
+                    className="touch-manipulation min-h-[44px] min-w-[44px]"
                   />
-                  <Label htmlFor="rememberMe" className="text-sm">Remember me</Label>
+                  <Label htmlFor="rememberMe" className="text-sm touch-manipulation min-h-[44px] flex items-center">Remember me</Label>
                 </div>
-                <button
+                <motion.button
                   type="button"
                   onClick={() => onModeChange('reset')}
-                  className="text-sm text-[#ff0000] hover:underline"
+                  className="text-sm text-[#ff0000] hover:underline touch-manipulation min-h-[44px] flex items-center"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    onModeChange('reset');
+                    // Haptic feedback
+                    if (navigator.vibrate) {
+                      navigator.vibrate(30);
+                    }
+                  }}
                 >
                   Forgot password?
-                </button>
+                </motion.button>
               </div>
 
-              <Button
+              <motion.button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#ff0000] hover:bg-[#cc0000]"
+                className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-medium py-4 px-6 rounded-lg transition-colors duration-200 touch-manipulation min-h-[44px] flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  if (!isLoading) {
+                    // Haptic feedback
+                    if (navigator.vibrate) {
+                      navigator.vibrate(50);
+                    }
+                  }
+                }}
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
-                    Sign In
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <span>Sign In</span>
+                    <ArrowRight className="w-4 h-4" />
                   </>
                 )}
-              </Button>
+              </motion.button>
             </form>
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
                 Don&apos;t have an account?{' '}
-                <button
+                <motion.button
                   onClick={() => onModeChange('signup')}
-                  className="text-[#ff0000] hover:underline font-medium"
+                  className="text-[#ff0000] hover:underline font-medium touch-manipulation min-h-[44px] flex items-center"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    onModeChange('signup');
+                    // Haptic feedback
+                    if (navigator.vibrate) {
+                      navigator.vibrate(30);
+                    }
+                  }}
                 >
                   Sign up
-                </button>
+                </motion.button>
               </p>
             </div>
           </motion.div>
@@ -209,14 +251,14 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
 
             <form onSubmit={signUpForm.handleSubmit(handleSignUp)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="fullName" className="text-sm font-medium">Full Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="fullName"
                     type="text"
                     placeholder="Enter your full name"
-                    className="pl-10"
+                    className="pl-10 h-12 text-base touch-manipulation"
                     {...signUpForm.register('fullName')}
                   />
                 </div>
@@ -226,14 +268,14 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="signup-email">Email</Label>
+                <Label htmlFor="signup-email" className="text-sm font-medium">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="signup-email"
                     type="email"
                     placeholder="Enter your email"
-                    className="pl-10"
+                    className="pl-10 h-12 text-base touch-manipulation"
                     {...signUpForm.register('email')}
                   />
                 </div>
@@ -243,23 +285,33 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="signup-password">Password</Label>
+                <Label htmlFor="signup-password" className="text-sm font-medium">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="signup-password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Create a password"
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-12 h-12 text-base touch-manipulation"
                     {...signUpForm.register('password')}
                   />
-                  <button
+                  <motion.button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      setShowPassword(!showPassword);
+                      // Haptic feedback
+                      if (navigator.vibrate) {
+                        navigator.vibrate(30);
+                      }
+                    }}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+                  </motion.button>
                 </div>
                 {signUpForm.formState.errors.password && (
                   <p className="text-sm text-destructive">{signUpForm.formState.errors.password.message}</p>
@@ -267,35 +319,46 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="Confirm your password"
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-12 h-12 text-base touch-manipulation"
                     {...signUpForm.register('confirmPassword')}
                   />
-                  <button
+                  <motion.button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      setShowConfirmPassword(!showConfirmPassword);
+                      // Haptic feedback
+                      if (navigator.vibrate) {
+                        navigator.vibrate(30);
+                      }
+                    }}
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+                  </motion.button>
                 </div>
                 {signUpForm.formState.errors.confirmPassword && (
                   <p className="text-sm text-destructive">{signUpForm.formState.errors.confirmPassword.message}</p>
                 )}
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-start space-x-3">
                 <Checkbox
                   id="acceptTerms"
                   {...signUpForm.register('acceptTerms')}
+                  className="touch-manipulation min-h-[44px] min-w-[44px] mt-1"
                 />
-                <Label htmlFor="acceptTerms" className="text-sm">
+                <Label htmlFor="acceptTerms" className="text-sm touch-manipulation min-h-[44px] flex items-start pt-1">
                   I agree to the{' '}
                   <a href="/legal/terms" className="text-[#ff0000] hover:underline" target="_blank" rel="noopener noreferrer">
                     Terms of Service
@@ -310,31 +373,52 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
                 <p className="text-sm text-destructive">{signUpForm.formState.errors.acceptTerms.message}</p>
               )}
 
-              <Button
+              <motion.button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#ff0000] hover:bg-[#cc0000]"
+                className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-medium py-4 px-6 rounded-lg transition-colors duration-200 touch-manipulation min-h-[44px] flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  if (!isLoading) {
+                    // Haptic feedback
+                    if (navigator.vibrate) {
+                      navigator.vibrate(50);
+                    }
+                  }
+                }}
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
-                    Create Account
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <span>Create Account</span>
+                    <ArrowRight className="w-4 h-4" />
                   </>
                 )}
-              </Button>
+              </motion.button>
             </form>
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
                 Already have an account?{' '}
-                <button
+                <motion.button
                   onClick={() => onModeChange('signin')}
-                  className="text-[#ff0000] hover:underline font-medium"
+                  className="text-[#ff0000] hover:underline font-medium touch-manipulation min-h-[44px] flex items-center"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    onModeChange('signin');
+                    // Haptic feedback
+                    if (navigator.vibrate) {
+                      navigator.vibrate(30);
+                    }
+                  }}
                 >
                   Sign in
-                </button>
+                </motion.button>
               </p>
             </div>
           </motion.div>
@@ -356,14 +440,14 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
 
             <form onSubmit={resetForm.handleSubmit(handleResetPassword)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="reset-email">Email</Label>
+                <Label htmlFor="reset-email" className="text-sm font-medium">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="reset-email"
                     type="email"
                     placeholder="Enter your email"
-                    className="pl-10"
+                    className="pl-10 h-12 text-base touch-manipulation"
                     {...resetForm.register('email')}
                   />
                 </div>
@@ -372,31 +456,52 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
                 )}
               </div>
 
-              <Button
+              <motion.button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#ff0000] hover:bg-[#cc0000]"
+                className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-medium py-4 px-6 rounded-lg transition-colors duration-200 touch-manipulation min-h-[44px] flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  if (!isLoading) {
+                    // Haptic feedback
+                    if (navigator.vibrate) {
+                      navigator.vibrate(50);
+                    }
+                  }
+                }}
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
-                    Send Reset Instructions
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <span>Send Reset Instructions</span>
+                    <ArrowRight className="w-4 h-4" />
                   </>
                 )}
-              </Button>
+              </motion.button>
             </form>
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
                 Remember your password?{' '}
-                <button
+                <motion.button
                   onClick={() => onModeChange('signin')}
-                  className="text-[#ff0000] hover:underline font-medium"
+                  className="text-[#ff0000] hover:underline font-medium touch-manipulation min-h-[44px] flex items-center"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    onModeChange('signin');
+                    // Haptic feedback
+                    if (navigator.vibrate) {
+                      navigator.vibrate(30);
+                    }
+                  }}
                 >
                   Sign in
-                </button>
+                </motion.button>
               </p>
             </div>
           </motion.div>

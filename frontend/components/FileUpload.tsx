@@ -181,6 +181,20 @@ export function FileUpload({
     fileInputRef.current?.click();
   };
 
+  // Mobile touch handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
+    // Add haptic feedback for mobile
+    if (navigator.vibrate) {
+      navigator.vibrate(30);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
+    handleClick();
+  };
+
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -204,8 +218,8 @@ export function FileUpload({
       
       <motion.div
         className={`
-          relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center cursor-pointer touch-manipulation
-          transition-all duration-300
+          relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center cursor-pointer touch-manipulation min-h-[120px] sm:min-h-[160px]
+          transition-all duration-300 mobile-card
           ${isDragOver 
             ? 'border-[var(--youtube-red)] bg-red-50 dark:bg-red-900/10' 
             : 'border-border hover:border-[var(--youtube-red)] hover:bg-muted/50'
@@ -216,10 +230,8 @@ export function FileUpload({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={handleClick}
-        onTouchEnd={(e) => {
-          e.preventDefault();
-          handleClick();
-        }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         animate={{
@@ -272,69 +284,99 @@ export function FileUpload({
 
             {/* Audio Preview Player */}
             {audioUrl && (
-              <div className="bg-muted/30 rounded-lg p-4 space-y-3">
-                <div className="flex items-center justify-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={togglePlayPause}
-                    className="h-8 w-8 p-0"
-                  >
-                    {isPlaying ? (
-                      <Pause className="h-4 w-4" />
-                    ) : (
-                      <Play className="h-4 w-4" />
-                    )}
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={resetAudio}
-                    className="h-8 w-8 p-0"
-                  >
-                    <RotateCcw className="h-4 w-4" />
-                  </Button>
+              <div className="bg-muted/30 rounded-lg p-4 space-y-4">
+                {/* Mobile-optimized controls */}
+                <div className="flex flex-col sm:flex-row items-center justify-center space-y-3 sm:space-y-0 sm:space-x-3">
+                  {/* Play/Pause and Reset buttons */}
+                  <div className="flex items-center space-x-3">
+                    <motion.button
+                      onClick={togglePlayPause}
+                      className="flex items-center justify-center w-12 h-12 bg-[var(--youtube-red)] text-white rounded-full touch-manipulation mobile-audio-controls"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onTouchStart={handleTouchStart}
+                    >
+                      {isPlaying ? (
+                        <Pause className="h-5 w-5" />
+                      ) : (
+                        <Play className="h-5 w-5" />
+                      )}
+                    </motion.button>
+                    
+                    <motion.button
+                      onClick={resetAudio}
+                      className="flex items-center justify-center w-10 h-10 bg-muted text-foreground rounded-full touch-manipulation mobile-audio-controls"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onTouchStart={handleTouchStart}
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </motion.button>
+                  </div>
 
-                  <div className="flex items-center space-x-2 ml-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
+                  {/* Volume controls - mobile optimized */}
+                  <div className="flex items-center space-x-3 w-full sm:w-auto">
+                    <motion.button
                       onClick={toggleMute}
-                      className="h-8 w-8 p-0"
+                      className="flex items-center justify-center w-10 h-10 bg-muted text-foreground rounded-full touch-manipulation mobile-audio-controls"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onTouchStart={handleTouchStart}
                     >
                       {isMuted ? (
                         <VolumeX className="h-4 w-4" />
                       ) : (
                         <Volume2 className="h-4 w-4" />
                       )}
-                    </Button>
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.1"
-                      value={isMuted ? 0 : volume}
-                      onChange={handleVolumeChange}
-                      className="w-16 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
-                    />
+                    </motion.button>
+                    
+                    <div className="flex-1 sm:flex-none">
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={isMuted ? 0 : volume}
+                        onChange={handleVolumeChange}
+                        className="w-full sm:w-20 h-2 bg-muted rounded-lg appearance-none cursor-pointer touch-manipulation mobile-progress"
+                        style={{
+                          background: `linear-gradient(to right, var(--youtube-red) 0%, var(--youtube-red) ${(isMuted ? 0 : volume) * 100}%, #e5e5e5 ${(isMuted ? 0 : volume) * 100}%, #e5e5e5 100%)`
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="space-y-1">
-                  <input
-                    type="range"
-                    min="0"
-                    max={duration || 0}
-                    step="0.1"
-                    value={currentTime}
-                    onChange={handleSeek}
-                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>{formatTime(currentTime)}</span>
-                    <span>{durationFormatted || '0:00'}</span>
+                {/* Progress Bar - Mobile Optimized */}
+                <div className="space-y-2">
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min="0"
+                      max={duration || 0}
+                      step="0.1"
+                      value={currentTime}
+                      onChange={handleSeek}
+                      className="w-full h-3 bg-muted rounded-lg appearance-none cursor-pointer touch-manipulation mobile-progress"
+                      style={{
+                        background: `linear-gradient(to right, var(--youtube-red) 0%, var(--youtube-red) ${duration ? (currentTime / duration) * 100 : 0}%, #e5e5e5 ${duration ? (currentTime / duration) * 100 : 0}%, #e5e5e5 100%)`
+                      }}
+                    />
+                    {/* Mobile touch area indicator */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div 
+                        className="h-3 bg-transparent rounded-lg"
+                        style={{ 
+                          width: `${duration ? (currentTime / duration) * 100 : 0}%`,
+                          background: 'rgba(255, 0, 0, 0.2)'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span className="font-mono">{formatTime(currentTime)}</span>
+                    <span className="font-mono">{durationFormatted || '0:00'}</span>
                   </div>
                 </div>
 
@@ -373,21 +415,36 @@ export function FileUpload({
           </motion.div>
         ) : (
           <motion.div
-            className="space-y-4"
+            className="space-y-4 flex flex-col items-center justify-center h-full"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="w-12 h-12 mx-auto text-muted-foreground">
+            <motion.div 
+              className="w-16 h-16 sm:w-20 sm:h-20 mx-auto text-muted-foreground"
+              animate={{ 
+                y: [0, -5, 0],
+                scale: [1, 1.05, 1]
+              }}
+              transition={{ 
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
               <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
-            </div>
-            <div>
-              <p className="font-medium">
-                {isDragOver ? 'Drop your file here' : 'Click to upload or drag and drop'}
+            </motion.div>
+            <div className="text-center space-y-2">
+              <p className="font-medium text-base sm:text-lg">
+                {isDragOver ? 'Drop your file here' : 'Tap to upload or drag and drop'}
               </p>
               <p className="text-sm text-muted-foreground">
                 {accept} (max {maxSize}MB)
+              </p>
+              {/* Mobile-specific hint */}
+              <p className="text-xs text-muted-foreground sm:hidden">
+                Tap anywhere in this area to select a file
               </p>
             </div>
           </motion.div>

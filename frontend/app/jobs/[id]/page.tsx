@@ -9,8 +9,9 @@ import { ProgressBar } from '@/components/ProgressBar';
 import { IndividualLanguageProgress } from '@/components/IndividualLanguageProgress';
 import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
+import { DownloadManager } from '@/components/downloads/DownloadManager';
 import { pollJobStatus } from '@/lib/api';
-import { GetJobStatusResponse, LanguageProgress, LANGUAGES } from '@/types';
+import { GetJobStatusResponse, LanguageProgress, LANGUAGES, Job } from '@/types';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useToast } from '@/components/ToastNotifications';
 
@@ -62,6 +63,7 @@ export default function JobStatusPage() {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [pollAttempt, setPollAttempt] = useState(0);
+  const [showDownloadManager, setShowDownloadManager] = useState(false);
   const stopPollingRef = useRef<(() => void) | null>(null);
   const isMountedRef = useRef(false);
   const hasShownTerminalErrorRef = useRef(false);
@@ -248,15 +250,48 @@ export default function JobStatusPage() {
     return `${Math.floor(diffInSeconds / 3600)}h remaining`;
   };
 
+  // Convert job status to Job object for download manager
+  const getJobForDownload = (): Job | null => {
+    if (!jobStatus) return null;
+
+    // Create download URLs from language progress
+    const downloadUrls: Job['downloadUrls'] = {};
+    jobStatus.languages.forEach(lang => {
+      if (lang.downloadUrl) {
+        downloadUrls[lang.languageCode] = {
+          voice: lang.downloadUrl,
+          full: lang.downloadUrl,
+          captions: lang.downloadUrl // Assuming same URL for now
+        };
+      }
+    });
+
+    return {
+      id: jobStatus.id,
+      status: jobStatus.status === 'complete' ? 'complete' : 'processing',
+      progress: jobStatus.progress,
+      message: jobStatus.message,
+      createdAt: jobStatus.startedAt,
+      updatedAt: new Date().toISOString(),
+      voiceTrackDuration: 0, // This would come from job data
+      targetLanguages: jobStatus.languages.map(lang => lang.languageCode),
+      backgroundTrack: false, // This would come from job data
+      completedLanguages: jobStatus.completedLanguages,
+      totalLanguages: jobStatus.totalLanguages,
+      estimatedCompletion: jobStatus.estimatedCompletion,
+      downloadUrls: Object.keys(downloadUrls).length > 0 ? downloadUrls : undefined
+    };
+  };
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-background">
         <Navigation currentPath="/jobs" />
         
         <main className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
-          {/* Compact Header */}
+          {/* Mobile-optimized Header */}
           <motion.div
-            className="flex items-center justify-between mb-6"
+            className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -264,14 +299,15 @@ export default function JobStatusPage() {
             <div className="flex items-center space-x-4">
               <Link
                 href="/jobs"
-                className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group"
+                className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group touch-manipulation min-h-[44px]"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
-                <span>Back to Jobs</span>
+                <span className="hidden sm:inline">Back to Jobs</span>
+                <span className="sm:hidden">Back</span>
               </Link>
-              <div className="h-4 w-px bg-border"></div>
+              <div className="h-4 w-px bg-border hidden sm:block"></div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
                   Job {jobId.slice(-8)}
                 </h1>
                 <p className="text-sm text-muted-foreground">
@@ -280,10 +316,10 @@ export default function JobStatusPage() {
               </div>
             </div>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
               {isComplete ? (
                 <motion.div
-                  className="flex items-center space-x-2 text-green-600 bg-green-50 dark:bg-green-900/20 px-3 py-1.5 rounded-full"
+                  className="flex items-center space-x-2 text-green-600 bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-full touch-manipulation min-h-[44px]"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 200, damping: 15 }}
@@ -293,7 +329,7 @@ export default function JobStatusPage() {
                 </motion.div>
               ) : isError ? (
                 <motion.div
-                  className="flex items-center space-x-2 text-red-600 bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-full"
+                  className="flex items-center space-x-2 text-red-600 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-full touch-manipulation min-h-[44px]"
                   animate={{ opacity: [0.5, 1, 0.5] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
@@ -302,7 +338,7 @@ export default function JobStatusPage() {
                 </motion.div>
               ) : (
                 <motion.div
-                  className="flex items-center space-x-2 text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full"
+                  className="flex items-center space-x-2 text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-3 py-2 rounded-full touch-manipulation min-h-[44px]"
                   animate={{ opacity: [0.5, 1, 0.5] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
@@ -313,7 +349,7 @@ export default function JobStatusPage() {
               
               <Link
                 href="/new"
-                className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group"
+                className="inline-flex items-center justify-center space-x-2 px-4 py-3 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group touch-manipulation min-h-[44px] w-full sm:w-auto"
               >
                 <span>New Job</span>
                 <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
@@ -350,10 +386,10 @@ export default function JobStatusPage() {
             </motion.div>
           )}
 
-          {/* Main Dashboard Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Dashboard Grid - Mobile Optimized */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Left Column - Progress & Stats */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Overall Progress Card */}
               <motion.div
                 className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6"
@@ -393,7 +429,7 @@ export default function JobStatusPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <AnimatePresence>
                     {jobStatus.languages.map((language, index) => (
                       <motion.div
@@ -402,6 +438,7 @@ export default function JobStatusPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className="mobile-card"
                       >
                         <IndividualLanguageProgress
                           language={language}
@@ -415,7 +452,7 @@ export default function JobStatusPage() {
             </div>
 
             {/* Right Column - Quick Stats & Actions */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Quick Stats */}
               <motion.div
                 className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 space-y-4"
@@ -527,27 +564,108 @@ export default function JobStatusPage() {
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
                 {isComplete && (
-                  <button className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-[#ff0000] text-white rounded-lg hover:bg-[#cc0000] transition-colors">
+                  <motion.button 
+                    onClick={() => setShowDownloadManager(true)}
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-4 bg-[#ff0000] text-white rounded-lg hover:bg-[#cc0000] transition-colors touch-manipulation min-h-[44px]"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      setShowDownloadManager(true);
+                      // Haptic feedback
+                      if (navigator.vibrate) {
+                        navigator.vibrate(50);
+                      }
+                    }}
+                  >
                     <Download className="w-4 h-4" />
                     <span>Download All</span>
-                  </button>
+                  </motion.button>
                 )}
                 
                 <Link href="/new" className="block">
-                  <button className="w-full flex items-center justify-center space-x-2 px-4 py-3 border border-[#ff0000] text-[#ff0000] rounded-lg hover:bg-[#ff0000] hover:text-white transition-colors">
+                  <motion.button 
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-4 border border-[#ff0000] text-[#ff0000] rounded-lg hover:bg-[#ff0000] hover:text-white transition-colors touch-manipulation min-h-[44px]"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      // Haptic feedback
+                      if (navigator.vibrate) {
+                        navigator.vibrate(30);
+                      }
+                    }}
+                  >
                     <span>Create New Job</span>
-                  </button>
+                  </motion.button>
                 </Link>
                 
                 <Link href="/jobs" className="block">
-                  <button className="w-full flex items-center justify-center space-x-2 px-4 py-3 border border-border text-foreground rounded-lg hover:bg-muted transition-colors">
+                  <motion.button 
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-4 border border-border text-foreground rounded-lg hover:bg-muted transition-colors touch-manipulation min-h-[44px]"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      // Haptic feedback
+                      if (navigator.vibrate) {
+                        navigator.vibrate(30);
+                      }
+                    }}
+                  >
                     <span>View All Jobs</span>
-                  </button>
+                  </motion.button>
                 </Link>
               </motion.div>
             </div>
           </div>
         </main>
+
+        {/* Download Manager Modal */}
+        <AnimatePresence>
+          {showDownloadManager && getJobForDownload() && (
+            <motion.div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                  setShowDownloadManager(false);
+                }
+              }}
+            >
+              <motion.div
+                className="w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              >
+                <DownloadManager
+                  job={getJobForDownload()!}
+                  onClose={() => setShowDownloadManager(false)}
+                  onDownloadComplete={(item) => {
+                    addToast({
+                      type: 'success',
+                      title: 'Download Complete',
+                      message: `${item.fileName} has been downloaded successfully.`,
+                      duration: 3000
+                    });
+                  }}
+                  onDownloadError={(item, error) => {
+                    addToast({
+                      type: 'error',
+                      title: 'Download Failed',
+                      message: `Failed to download ${item.fileName}. ${error}`,
+                      duration: 5000
+                    });
+                  }}
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </ProtectedRoute>
   );

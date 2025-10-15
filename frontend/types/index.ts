@@ -200,3 +200,56 @@ export interface NetworkStatus {
   connectionType?: string;
   effectiveType?: string;
 }
+
+// Download system types
+export type DownloadFileType = 'voice' | 'full' | 'captions';
+
+export type DownloadStatus = 'pending' | 'downloading' | 'completed' | 'failed' | 'cancelled';
+
+export interface DownloadItem {
+  id: string;
+  jobId: string;
+  languageCode: string;
+  languageName: string;
+  fileType: DownloadFileType;
+  fileName: string;
+  fileSize?: number;
+  duration?: number;
+  downloadUrl: string;
+  status: DownloadStatus;
+  progress: number; // 0-100
+  error?: string;
+  startedAt?: string;
+  completedAt?: string;
+  expiresAt?: string;
+}
+
+export interface DownloadProgress {
+  itemId: string;
+  progress: number;
+  status: DownloadStatus;
+  message?: string;
+  error?: string;
+}
+
+export interface BulkDownloadOptions {
+  jobId: string;
+  languages: string[];
+  fileTypes: DownloadFileType[];
+  includeCaptions?: boolean;
+}
+
+export interface DownloadHistoryItem {
+  id: string;
+  jobId: string;
+  jobTitle: string;
+  languageCode: string;
+  languageName: string;
+  fileType: DownloadFileType;
+  fileName: string;
+  fileSize?: number;
+  downloadedAt: string;
+  expiresAt?: string;
+  isExpired: boolean;
+  downloadUrl?: string;
+}

@@ -916,3 +916,190 @@ export const pollJobStatus = (
     stopPolling();
   };
 };
+
+// Download system functions
+
+/**
+ * Download a file from a URL with progress tracking
+ */
+export const downloadFile = async (
+  url: string,
+  filename: string,
+  onProgress?: (progress: number) => void
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    
+    xhr.addEventListener('progress', (event) => {
+      if (event.lengthComputable && onProgress) {
+        const progress = Math.round((event.loaded / event.total) * 100);
+        onProgress(progress);
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        // Create download link
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        resolve();
+      } else {
+        reject(new Error(`Download failed with status ${xhr.status}`));
+      }
+    });
+
+    xhr.addEventListener('error', () => {
+      reject(new Error('Download failed due to network error'));
+    });
+
+    xhr.addEventListener('abort', () => {
+      reject(new Error('Download was cancelled'));
+    });
+
+    xhr.open('GET', url);
+    xhr.send();
+  });
+};
+
+/**
+ * Get download URL for a specific job, language, and file type
+ */
+export const getDownloadUrl = (
+  jobId: string,
+  languageCode: string,
+  fileType: 'voice' | 'full' | 'captions'
+): string => {
+  const baseUrl = API_BASE_NORMALIZED;
+  return `${baseUrl}/api/jobs/${jobId}/download?lang=${languageCode}&type=${fileType}`;
+};
+
+/**
+ * Download multiple files in sequence
+ */
+export const downloadMultipleFiles = async (
+  downloads: Array<{ url: string; filename: string }>,
+  onProgress?: (completed: number, total: number) => void,
+  onFileComplete?: (filename: string) => void
+): Promise<void> => {
+  const total = downloads.length;
+  let completed = 0;
+
+  for (const download of downloads) {
+    try {
+      await downloadFile(download.url, download.filename);
+      completed++;
+      onProgress?.(completed, total);
+      onFileComplete?.(download.filename);
+      
+      // Small delay between downloads to avoid overwhelming the browser
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (error) {
+      console.error(`Failed to download ${download.filename}:`, error);
+      // Continue with next download even if one fails
+    }
+  }
+};
+
+/**
+ * Get download history from localStorage (in real app, this would be from API)
+ */
+export const getDownloadHistory = (): Array<{
+  id: string;
+  jobId: string;
+  jobTitle: string;
+  languageCode: string;
+  languageName: string;
+  fileType: 'voice' | 'full' | 'captions';
+  fileName: string;
+  fileSize?: number;
+  downloadedAt: string;
+  expiresAt?: string;
+  isExpired: boolean;
+  downloadUrl?: string;
+}> => {
+  if (typeof window === 'undefined') return [];
+  
+  try {
+    const history = localStorage.getItem('yt-dubber-download-history');
+    return history ? JSON.parse(history) : [];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * Add item to download history
+ */
+export const addToDownloadHistory = (item: {
+  jobId: string;
+  jobTitle: string;
+  languageCode: string;
+  languageName: string;
+  fileType: 'voice' | 'full' | 'captions';
+  fileName: string;
+  fileSize?: number;
+  downloadUrl?: string;
+}): void => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const history = getDownloadHistory();
+    const newItem = {
+      id: `${item.jobId}-${item.languageCode}-${item.fileType}-${Date.now()}`,
+      ...item,
+      downloadedAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // 48 hours
+      isExpired: false
+    };
+    
+    history.unshift(newItem);
+    
+    // Keep only last 100 items
+    if (history.length > 100) {
+      history.splice(100);
+    }
+    
+    localStorage.setItem('yt-dubber-download-history', JSON.stringify(history));
+  } catch (error) {
+    console.error('Failed to save download history:', error);
+  }
+};
+
+/**
+ * Remove item from download history
+ */
+export const removeFromDownloadHistory = (itemId: string): void => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const history = getDownloadHistory();
+    const filtered = history.filter(item => item.id !== itemId);
+    localStorage.setItem('yt-dubber-download-history', JSON.stringify(filtered));
+  } catch (error) {
+    console.error('Failed to remove from download history:', error);
+  }
+};
+
+/**
+ * Clear expired downloads from history
+ */
+export const clearExpiredDownloads = (): void => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const history = getDownloadHistory();
+    const now = new Date();
+    const filtered = history.filter(item => {
+      if (!item.expiresAt) return true;
+      return new Date(item.expiresAt) > now;
+    });
+    localStorage.setItem('yt-dubber-download-history', JSON.stringify(filtered));
+  } catch (error) {
+    console.error('Failed to clear expired downloads:', error);
+  }
+};

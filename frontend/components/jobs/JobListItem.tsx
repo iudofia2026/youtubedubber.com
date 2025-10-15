@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Clock, 
   CheckCircle, 
@@ -13,9 +13,11 @@ import {
   FileAudio,
   Video,
   Zap,
-  Eye
+  Eye,
+  MoreVertical
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DownloadManager } from '@/components/downloads/DownloadManager';
 import { Job } from '@/types';
 
 interface JobListItemProps {
@@ -27,6 +29,12 @@ interface JobListItemProps {
 
 export function JobListItem({ job, onView, onDownload, onDelete }: JobListItemProps) {
   const isViewEnabled = Boolean(onView);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(null);
+  const [showActions, setShowActions] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+  const [showDownloadManager, setShowDownloadManager] = useState(false);
+  const itemRef = useRef<HTMLDivElement>(null);
 
   const handleCardClick = () => {
     if (!isViewEnabled) return;
@@ -41,6 +49,65 @@ export function JobListItem({ job, onView, onDownload, onDelete }: JobListItemPr
       onView?.(job.id);
     }
   };
+
+  // Touch gesture handlers for mobile swipe actions
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+    setIsPressed(true);
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    setTouchEnd({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    setIsPressed(false);
+    if (!touchStart || !touchEnd) return;
+    
+    const distanceX = touchStart.x - touchEnd.x;
+    const distanceY = touchStart.y - touchEnd.y;
+    const isLeftSwipe = distanceX > 50;
+    const isRightSwipe = distanceX < -50;
+    const isUpSwipe = distanceY > 50;
+    const isDownSwipe = distanceY < -50;
+    
+    // Show actions on left swipe
+    if (isLeftSwipe && Math.abs(distanceY) < 100) {
+      setShowActions(true);
+      // Haptic feedback
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }
+    
+    // Hide actions on right swipe
+    if (isRightSwipe && Math.abs(distanceY) < 100) {
+      setShowActions(false);
+    }
+    
+    // Close actions on tap
+    if (Math.abs(distanceX) < 10 && Math.abs(distanceY) < 10) {
+      if (showActions) {
+        setShowActions(false);
+      } else {
+        handleCardClick();
+      }
+    }
+  }, [touchStart, touchEnd, showActions, handleCardClick]);
+
+  // Handle action button clicks
+  const handleActionClick = useCallback((action: () => void, e: React.MouseEvent) => {
+    e.stopPropagation();
+    action();
+    setShowActions(false);
+  }, []);
 
   const getStatusColor = () => {
     switch (job.status) {
@@ -112,9 +179,14 @@ export function JobListItem({ job, onView, onDownload, onDelete }: JobListItemPr
 
   return (
     <motion.div
-      className={`bg-gradient-to-r ${getStatusGradient()} rounded-xl border-2 ${getStatusBorder()} p-4 sm:p-6 transition-all duration-300 touch-manipulation relative overflow-hidden ${isViewEnabled ? 'hover:shadow-xl cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500' : ''}`}
+      ref={itemRef}
+      className={`bg-gradient-to-r ${getStatusGradient()} rounded-xl border-2 ${getStatusBorder()} p-4 sm:p-6 transition-all duration-300 touch-manipulation relative overflow-hidden mobile-card ${isViewEnabled ? 'hover:shadow-xl cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500' : ''} ${isPressed ? 'scale-98' : ''}`}
       initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
+      animate={{ 
+        opacity: 1, 
+        x: showActions ? -100 : 0,
+        scale: isPressed ? 0.99 : 1
+      }}
       whileHover={isViewEnabled ? { scale: 1.01, x: 5 } : undefined}
       whileTap={isViewEnabled ? { scale: 0.99 } : undefined}
       transition={{ duration: 0.3 }}
@@ -122,6 +194,9 @@ export function JobListItem({ job, onView, onDownload, onDelete }: JobListItemPr
       tabIndex={isViewEnabled ? 0 : undefined}
       onClick={handleCardClick}
       onKeyDown={handleCardKeyDown}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-5">
@@ -384,15 +459,63 @@ export function JobListItem({ job, onView, onDownload, onDelete }: JobListItemPr
           </div>
         </div>
 
-        {/* Right Section - Actions */}
-        <div className="flex items-center space-x-2 flex-shrink-0">
+        {/* Mobile Swipe Actions */}
+        <AnimatePresence>
+          {showActions && (
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-gray-900/90 to-gray-800/90 flex items-center justify-end pr-4 rounded-xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center space-x-3">
+                {isViewEnabled && (
+                  <motion.button
+                    onClick={(e) => handleActionClick(() => onView?.(job.id), e)}
+                    className="flex items-center justify-center w-12 h-12 bg-blue-500 text-white rounded-full touch-manipulation"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Eye className="w-5 h-5" />
+                  </motion.button>
+                )}
+                
+                {job.status === 'complete' && onDownload && (
+                  <motion.button
+                    onClick={(e) => handleActionClick(() => setShowDownloadManager(true), e)}
+                    className="flex items-center justify-center w-12 h-12 bg-green-500 text-white rounded-full touch-manipulation"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Download className="w-5 h-5" />
+                  </motion.button>
+                )}
+                
+                {onDelete && (
+                  <motion.button
+                    onClick={(e) => handleActionClick(() => onDelete?.(job.id), e)}
+                    className="flex items-center justify-center w-12 h-12 bg-red-500 text-white rounded-full touch-manipulation"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </motion.button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Desktop Actions */}
+        <div className="hidden sm:flex items-center space-x-2 flex-shrink-0">
           {job.status === 'complete' && (
             <Button
               variant="outline"
               size="sm"
               onClick={(event) => {
                 event.stopPropagation();
-                onDownload?.(job.id);
+                setShowDownloadManager(true);
               }}
               onTouchEnd={(event) => {
                 event.preventDefault();
@@ -443,7 +566,51 @@ export function JobListItem({ job, onView, onDownload, onDelete }: JobListItemPr
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
+
+        {/* Mobile Action Indicator */}
+        <div className="sm:hidden flex items-center justify-center">
+          <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+            <span>Swipe left</span>
+            <MoreVertical className="w-3 h-3" />
+          </div>
+        </div>
       </div>
+
+      {/* Download Manager Modal */}
+      <AnimatePresence>
+        {showDownloadManager && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowDownloadManager(false);
+              }
+            }}
+          >
+            <motion.div
+              className="w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            >
+              <DownloadManager
+                job={job}
+                onClose={() => setShowDownloadManager(false)}
+                onDownloadComplete={(item) => {
+                  console.log('Download completed:', item);
+                }}
+                onDownloadError={(item, error) => {
+                  console.error('Download error:', item, error);
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

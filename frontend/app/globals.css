@@ -231,6 +231,56 @@
     .mobile-button-group > * {
       width: 100%;
     }
+    
+    /* Enhanced mobile navigation */
+    .mobile-nav-item {
+      min-height: 44px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    
+    .mobile-nav-item:active {
+      transform: scale(0.98);
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Mobile swipe gestures */
+    .swipe-container {
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Mobile card interactions */
+    .mobile-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .mobile-card:active {
+      transform: scale(0.98);
+    }
+    
+    /* Mobile form optimizations */
+    .mobile-form input,
+    .mobile-form textarea,
+    .mobile-form select {
+      font-size: 16px;
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+    
+    /* Mobile progress indicators */
+    .mobile-progress {
+      height: 8px;
+      border-radius: 4px;
+    }
+    
+    /* Mobile audio controls */
+    .mobile-audio-controls {
+      min-height: 44px;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
   }
   
   /* Desktop-specific styles remain unchanged */
@@ -244,5 +294,52 @@
     .mobile-button-group > * {
       width: auto;
     }
+  }
+  
+  /* Mobile-specific utility classes */
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+  
+  @media (min-width: 769px) {
+    .mobile-only {
+      display: none;
+    }
+    
+    .desktop-only {
+      display: block;
+    }
+  }
+  
+  /* Mobile haptic feedback simulation */
+  .haptic-light {
+    animation: haptic-light 0.1s ease;
+  }
+  
+  .haptic-medium {
+    animation: haptic-medium 0.15s ease;
+  }
+  
+  .haptic-heavy {
+    animation: haptic-heavy 0.2s ease;
+  }
+  
+  @keyframes haptic-light {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.98); }
+  }
+  
+  @keyframes haptic-medium {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.96); }
+  }
+  
+  @keyframes haptic-heavy {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.94); }
   }
 }
