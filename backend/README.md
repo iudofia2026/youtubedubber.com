@@ -5,27 +5,32 @@ A FastAPI-based backend service for the YouTube Multilingual Dubber application,
 ## 🚀 Features
 
 - **FastAPI Framework**: Modern, fast web framework for building APIs
-- **Supabase Integration**: Authentication, database, and file storage
-- **AI Services**: Integration with Deepgram (STT/TTS) and OpenAI (Translation)
-- **Background Processing**: Async job processing for dubbing tasks
+- **Supabase Integration**: Authentication, database, and file storage scaffolding
+- **AI Services**: Deepgram (STT/TTS) and OpenAI translation clients wired but not yet exercised end-to-end
+- **Background Processing**: Async worker skeleton in place; audio mixing, storage persistence, and artifact delivery still TODO
 - **Docker Support**: Containerized deployment with Docker Compose
-- **Comprehensive Testing**: Unit tests, integration tests, and CI/CD pipeline
-- **Frontend Integration**: Perfectly aligned with the Next.js frontend
+- **Testing**: Unit tests for models/services seeded (needs expansion once the real pipeline lands)
+- **Frontend Alignment**: API shapes drafted to match the Next.js frontend, with response payloads still converging
 
 ## 🎯 **Current Project Status**
 
-- **Frontend**: Complete and stable ✅
-- **Backend Phase 0**: ✅ **COMPLETED** - Foundation ready
-- **Backend Phase 1**: ✅ **COMPLETED** - Upload flow ready  
-- **Frontend Integration**: 🎯 **READY FOR TESTING** - All APIs match frontend expectations
-- **Documentation**: Comprehensive guides and API documentation ✅
-- **Environment**: Fully configured for development and production ✅
+- **Frontend**: UI and mock flows are ready for wiring; relies on development bypass token ⚠️
+- **Backend Phase 0**: ✅ **COMPLETED** – Configuration, models, auth scaffolding, and rate limiting are in place
+- **Backend Phase 1**: 🚧 **IN PROGRESS** – Signed upload URLs work, but Supabase storage persistence and metadata capture remain TODO
+- **Frontend Integration**: ⚠️ **BLOCKED** – Job status/listing responses use placeholder data and mismatch the frontend’s expectations
+- **Documentation**: Core setup documented; status sections now reflect outstanding work
+- **Environment**: Local development scripts run, but production credentials/config still required
 
-## 🚀 **Ready for Frontend Integration**
+## 🚧 Integration Status
 
-The backend is now **100% ready** for frontend integration testing. All API endpoints, authentication, and data structures match the frontend expectations exactly.
+The backend is **not yet ready** for full frontend integration. Endpoint contracts exist, but several critical gaps remain:
 
-### Quick Start for Integration Testing:
+- Jobs created via `/api/jobs` do not store uploaded file paths or durations, so the worker cannot operate on real audio
+- The background processor (`app/worker/processor.py`) still generates placeholder artifacts instead of calling Supabase/Deepgram/OpenAI
+- `GET /api/jobs` and `GET /api/jobs/{id}` return stubbed language progress that differs from the frontend types
+- Development mode relies on a `Bearer dev-token` header; Supabase JWT verification has not been validated with real keys
+
+### Quick Start (Current Development Flow):
 ```bash
 # Terminal 1: Start Backend
 cd backend
@@ -40,6 +45,8 @@ npm run dev
 # Frontend will be available at http://localhost:3000
 # API documentation at http://localhost:8000/docs
 ```
+
+> **Note:** Until Supabase credentials are configured, authenticate requests with `Authorization: Bearer dev-token` so the backend uses the development bypass.
 
 ## 📁 Project Structure
 
@@ -739,54 +746,48 @@ The backend is now **production-ready** and **fully tested** for frontend integr
 - **BK-034 – Automated retention & delete-now**  
   Scheduler integration and user-triggered deletion endpoint building on BK-013.
 
-## 🎯 **Success Criteria Met**
+## 🎯 **Success Criteria Overview**
 
 ### **Security Requirements**
-- [x] JWT vulnerability fixed
-- [x] Rate limiting prevents abuse
-- [x] Error messages don't leak information
-- [x] Input validation blocks malicious requests
-- [x] Security headers protect against common attacks
-- [x] Monitoring captures security events
+- [x] JWT parsing hardened and development bypass isolated to explicit token
+- [x] Rate limiting middleware enabled on sensitive routes
+- [x] Error responses sanitised to avoid leaking internal details
+- [ ] Monitoring/alerting – logging hooks exist, but end-to-end verification with Supabase + worker is still pending
 
 ### **Functional Requirements**
-- [x] All API endpoints implemented
-- [x] Authentication works correctly
-- [x] File upload/download functional
-- [x] Job management complete
-- [x] Error handling comprehensive
-- [x] ElevenLabs dependency removed
+- [ ] Upload URLs issued and recorded in the database
+- [ ] Job creation persists voice/background storage paths and durations
+- [ ] Worker generates real transcripts/audio and uploads artifacts
+- [ ] Job status/list endpoints return per-language progress sourced from the database
+- [x] Development-mode authentication (`Bearer dev-token`) available for local testing
 
 ### **Production Readiness**
-- [x] Environment configurations ready
-- [x] Docker deployment ready
-- [x] Security measures implemented
-- [x] Monitoring and logging active
-- [x] Documentation complete
-- [x] Testing framework ready
+- [ ] Environment configuration validated with real Supabase keys
+- [ ] Docker images tested against a clean database + storage bucket
+- [ ] Automated tests expanded to cover the full job lifecycle
+- [ ] Observability and retention scripts implemented
 
 ## 🚨 **Known Limitations**
 
 ### **Current Limitations**
-1. **Background Worker**: Basic implementation, ready for Redis/Dramatiq upgrade
-2. **File Storage**: Requires Supabase storage bucket configuration
-3. **Performance**: Not yet optimized for high load (ready for optimization)
-4. **Monitoring**: Basic logging implemented, ready for advanced monitoring
+1. **Job Persistence**: `/api/jobs` does not store upload URLs, durations, or artefact paths, so workers cannot process real audio.
+2. **Worker Pipeline**: `app/worker/processor.py` generates placeholder audio and never touches Supabase storage or vendor APIs.
+3. **API Contract Drift**: Job status/list responses omit snake_case fields (`language_code`, `download_url`, etc.) that the frontend expects.
+4. **Authentication**: Supabase JWT validation is untested; development currently relies on `Bearer dev-token`.
 
-### **Mitigation Strategies**
-1. **Worker**: Current implementation sufficient for MVP, can upgrade later
-2. **Storage**: Supabase storage is production-ready, just needs configuration
-3. **Performance**: Can optimize based on real usage patterns
-4. **Monitoring**: Current logging sufficient for initial deployment
+### **Mitigation / Next Steps**
+1. Persist upload metadata (Supabase paths, hashes, durations) during job creation.
+2. Wire the worker to download from Supabase, call Deepgram/OpenAI, and upload generated assets.
+3. Align response schemas with `frontend/lib/api.ts` expectations and add integration tests.
+4. Configure real Supabase credentials and verify JWT + signed URL flows.
 
 ## 📞 **Support & Maintenance**
 
 ### **Documentation**
-- `README.md` - Basic setup and usage
-- `SECURITY_IMPLEMENTATION_SUMMARY.md` - Security details
-- `NEXT_STEPS.md` - Roadmap and next steps
-- `DEPLOYMENT_GUIDE.md` - Production deployment
-- `PHASE_0_COMPLETION_SUMMARY.md` - Implementation status
+- `README.md` - Setup and current status (this document)
+- `DEPLOYMENT_GUIDE.md` - Production deployment outline (update once end-to-end flow is verified)
+- `SECURITY_IMPLEMENTATION_SUMMARY.md` - Security considerations
+- `PHASE_0_COMPLETION_SUMMARY.md` - Historical implementation notes
 
 ### **Logs & Monitoring**
 - Application logs: `logs/app_*.log`
@@ -795,19 +796,15 @@ The backend is now **production-ready** and **fully tested** for frontend integr
 - Health check: `GET /health`
 - API docs: `GET /docs`
 
-## 🎉 **Ready to Proceed**
+## 🎯 **Immediate Focus**
 
-The YT Dubber backend is now **production-ready** with:
-- ✅ **Complete security implementation**
-- ✅ **Clean architecture with Deepgram + OpenAI only**
-- ✅ **Comprehensive documentation**
-- ✅ **Ready for frontend integration**
-- ✅ **Ready for production deployment**
-
-**Next Action**: Begin frontend integration testing to validate the complete user workflow.
+- Persist real upload metadata when issuing signed URLs and creating jobs
+- Update job status/list endpoints to return real data (and add regression tests)
+- Replace placeholder worker logic with actual Supabase/Deepgram/OpenAI calls
+- Exercise authentication with real Supabase JWTs before exposing the API
 
 ---
 
-**Last Updated**: January 2025  
-**Status**: Production Ready  
-**Next Milestone**: Frontend Integration Complete
+**Last Updated**: October 15, 2025  
+**Status**: In Progress  
+**Next Milestone**: End-to-end job lifecycle implemented

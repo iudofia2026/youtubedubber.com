@@ -58,6 +58,13 @@ A Next.js application for AI-powered multilingual video dubbing, enabling YouTub
 5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
+## ⚠️ Current State
+
+- The UI flows are complete, but when `NEXT_PUBLIC_DEV_MODE=true` the app bypasses Supabase auth and serves mocked job data instead of calling the backend.
+- `lib/api.ts` still returns simulated responses; the upload wizard does not yet persist files or poll real job status from FastAPI.
+- Authentication components are scaffolded around Supabase, but production credentials and end-to-end verification remain TODO.
+- Job dashboards and status pages will continue to show placeholder data until the backend API responses are aligned.
+
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -921,7 +928,7 @@ lib/
    - Create download history view
    - **Effort**: 3-4 hours, **Impact**: High (completes user journey)
 
-**Current Status**: Foundation complete + error handling + job management + enhanced upload flow + navigation fixes + authentication system implemented + comprehensive marketing pages (Features, Pricing, How it Works) + homepage How it Works section + streamlined navigation. Ready for next phase of high-impact features.
+**Current Status**: Foundation complete (UI, validation, marketing pages, auth scaffolding) with mocked job data and development-mode auth. Backend wiring, Supabase configuration, and real API integration remain the next critical milestones.
 
 ## 🔐 Authentication System Implementation
 
@@ -932,6 +939,7 @@ lib/
 - **Environment Configuration**: Graceful fallback when Supabase credentials are not configured
 - **Type Safety**: Full TypeScript integration with Supabase types and database schema
 - **Error Handling**: Comprehensive error handling for all auth operations
+- **Important**: Without real Supabase credentials the app falls back to the development bypass (`dev-token`); production login flows still need validation.
 
 #### 2. Authentication Forms
 - **Login Form** (`/auth/signin`): Email/password with remember me option

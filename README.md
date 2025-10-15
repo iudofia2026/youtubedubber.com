@@ -57,10 +57,10 @@ A modern, full-stack application for AI-powered video dubbing with real-time pro
 
 ## 🎯 Current Status
 
-- ✅ **Frontend**: Complete with authentication, file upload, job management
-- ✅ **Backend**: Production-ready with security, API endpoints, job processing
-- ✅ **Integration**: Full-stack integration complete
-- 🎯 **Next**: Production deployment and API key configuration
+- ⚠️ **Frontend**: UI flows (upload wizard, jobs dashboard, status view) are implemented but still use mocked data in several places. Real API polling and Supabase-backed auth need to be wired up before launch.
+- ⚠️ **Backend**: Core FastAPI endpoints, models, and validation exist, yet audio ingestion, worker processing, and artifact delivery are still placeholder logic. Supabase storage paths are not persisted and vendor integrations are not exercised end-to-end.
+- 🔄 **Integration**: End-to-end testing is in progress. Development mode relies on the `dev-token` bypass; full Supabase auth + signed upload flow remains to be verified with real credentials.
+- 🎯 **Next**: Finish job lifecycle implementation, align API responses with frontend expectations, and replace mock data with live calls.
 
 ## 📁 Project Structure
 
@@ -77,5 +77,5 @@ Both frontend and backend support hot reload during development. See individual 
 
 ---
 
-**Last Updated**: Oct 10, 2025  
-**Status**: Production Ready
+**Last Updated**: Oct 15, 2025  
+**Status**: In Progress
