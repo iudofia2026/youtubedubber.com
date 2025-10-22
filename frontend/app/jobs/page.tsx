@@ -9,7 +9,6 @@ import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { JobHistory } from '@/components/jobs/JobHistory';
-import { DownloadHistorySection } from '@/components/downloads/DownloadHistorySection';
 import { Job } from '@/types';
 import { useToastHelpers } from '@/components/ToastNotifications';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -317,16 +316,6 @@ function JobsPageContent() {
               </Link>
             </motion.div>
           </div>
-        </motion.div>
-
-        {/* Download History Section */}
-        <motion.div
-          className="mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <DownloadHistorySection />
         </motion.div>
 
         {/* Job History Component */}
