@@ -105,8 +105,7 @@ def verify_jwt_token(token: str) -> dict:
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
+    credentials: HTTPAuthorizationCredentials = Depends(security)
 ) -> UserResponse:
     """
     Get current authenticated user from JWT token
@@ -122,25 +121,22 @@ async def get_current_user(
             user_id = "dev-user-123"
             email = "dev@youtubedubber.com"
             
-            # Check if dev user exists in database, create if not
-            user = db.query(User).filter(User.id == user_id).first()
+            # Use Supabase to check/create dev user
+            from app.services.supabase_db_service import SupabaseDBService
+            db_service = SupabaseDBService()
+            
+            user = db_service.get_user(user_id)
             
             if not user:
                 # Create new dev user
-                user = User(
-                    id=user_id,
-                    email=email
-                )
-                db.add(user)
-                db.commit()
-                db.refresh(user)
+                user = db_service.create_user(user_id, email)
                 logger.info(f"Created dev user: {user_id}")
             
             return UserResponse(
-                id=user.id,
-                email=user.email,
-                created_at=user.created_at,
-                updated_at=user.updated_at
+                id=user['id'],
+                email=user['email'],
+                created_at=user.get('created_at', '2025-01-01T00:00:00Z'),
+                updated_at=user.get('updated_at', '2025-01-01T00:00:00Z')
             )
         
         # Verify the JWT token
@@ -153,31 +149,27 @@ async def get_current_user(
         if not user_id or not email:
             raise AuthError("Invalid token: missing user information")
         
-        # Check if user exists in database, create if not
-        user = db.query(User).filter(User.id == user_id).first()
+        # Use Supabase to check/create user
+        from app.services.supabase_db_service import SupabaseDBService
+        db_service = SupabaseDBService()
+        
+        user = db_service.get_user(user_id)
         
         if not user:
             # Create new user
-            user = User(
-                id=user_id,
-                email=email
-            )
-            db.add(user)
-            db.commit()
-            db.refresh(user)
+            user = db_service.create_user(user_id, email)
             logger.info(f"Created new user: {user_id}")
         else:
             # Update email if it has changed
-            if user.email != email:
-                user.email = email
-                db.commit()
+            if user['email'] != email:
+                db_service.update_user(user_id, {'email': email})
                 logger.info(f"Updated user email: {user_id}")
         
         return UserResponse(
-            id=user.id,
-            email=user.email,
-            created_at=user.created_at,
-            updated_at=user.updated_at
+            id=user['id'],
+            email=user['email'],
+            created_at=user.get('created_at', '2025-01-01T00:00:00Z'),
+            updated_at=user.get('updated_at', '2025-01-01T00:00:00Z')
         )
         
     except AuthError:
@@ -188,14 +180,13 @@ async def get_current_user(
 
 
 async def get_current_user_optional(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
+    credentials: HTTPAuthorizationCredentials = Depends(security)
 ) -> Optional[UserResponse]:
     """
     Get current user if authenticated, otherwise return None
     """
     try:
-        return await get_current_user(credentials, db)
+        return await get_current_user(credentials)
     except AuthError:
         return None
 
