@@ -15,11 +15,12 @@ logger = logging.getLogger(__name__)
 
 class AIService:
     """Service for AI operations (STT, Translation, TTS)"""
-    
+
     def __init__(self):
-        # Initialize OpenAI client
-        openai.api_key = settings.openai_api_key
-        
+        # Initialize OpenAI client with new API
+        from openai import AsyncOpenAI
+        self.openai_client = AsyncOpenAI(api_key=settings.openai_api_key)
+
         # Initialize Deepgram client
         self.deepgram = DeepgramClient(settings.deepgram_api_key)
     
@@ -95,9 +96,9 @@ class AIService:
             
             target_lang_name = language_names.get(target_language, target_language)
             source_lang_name = language_names.get(source_language, source_language)
-            
-            response = await openai.ChatCompletion.acreate(
-                model="gpt-3.5-turbo",
+
+            response = await self.openai_client.chat.completions.create(
+                model="gpt-4o-mini",  # Using latest efficient model
                 messages=[
                     {
                         "role": "system",
@@ -111,7 +112,7 @@ class AIService:
                 max_tokens=2000,
                 temperature=0.3
             )
-            
+
             return response.choices[0].message.content.strip()
             
         except Exception as e:
@@ -131,7 +132,7 @@ class AIService:
             # Map language codes to Deepgram voices
             voice_mapping = {
                 "en": "aura-asteria-en",
-                "es": "aura-luna-es", 
+                "es": "aura-luna-es",
                 "fr": "aura-stella-fr",
                 "de": "aura-arcas-de",
                 "ja": "aura-asteria-en",  # Fallback to English voice
@@ -143,21 +144,36 @@ class AIService:
                 "ar": "aura-asteria-en",  # Fallback to English voice
                 "hi": "aura-asteria-en"   # Fallback to English voice
             }
-            
+
             selected_voice = voice or voice_mapping.get(language, "aura-asteria-en")
-            
+
+            # Create temporary file for the speech output
+            temp_file = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+            temp_file.close()
+
+            # Generate speech and save to file
+            options = {
+                "text": text
+            }
+
             response = self.deepgram.speak.v("1").save(
-                {
-                    "text": text,
-                    "model": selected_voice
-                }
+                temp_file.name,
+                options,
+                model=selected_voice
             )
-            
-            return response
-            
+
+            # Read the generated file
+            with open(temp_file.name, "rb") as f:
+                audio_data = f.read()
+
+            # Clean up temp file
+            os.remove(temp_file.name)
+
+            return audio_data
+
         except Exception as e:
-            logger.error(f"Error generating speech: {e}")
-            raise Exception("Failed to generate speech")
+            logger.error(f"Error generating speech: {e}", exc_info=True)
+            raise Exception(f"Failed to generate speech: {str(e)}")
     
     async def process_audio_file(
         self,

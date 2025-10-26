@@ -37,11 +37,27 @@ export default function NewJobPage() {
   const [hasPastJobs, setHasPastJobs] = useState<boolean | null>(null);
   const [isCheckingJobs, setIsCheckingJobs] = useState(true);
 
+  // Handle file removal with proper state reset
+  const handleVoiceTrackChange = useCallback((file: File | null) => {
+    setVoiceTrack(file);
+    if (!file) {
+      setVoiceDuration(null);
+    }
+  }, []);
+
+  const handleBackgroundTrackChange = useCallback((file: File | null) => {
+    setBackgroundTrack(file);
+    if (!file) {
+      setBackgroundDuration(null);
+    }
+  }, []);
+
   const steps = [
     { id: 0, title: 'How It Works', description: 'Learn the process', icon: Scissors },
     { id: 1, title: 'Voice Track', description: 'Upload your voice-only audio or video file', icon: Mic },
     { id: 2, title: 'Background Track', description: 'Add background music (optional)', icon: Music },
     { id: 3, title: 'Target Languages', description: 'Select languages for dubbing', icon: Globe },
+    { id: 4, title: 'Review & Submit', description: 'Review your job and submit for processing', icon: Upload },
   ];
 
   // How it works steps content
@@ -165,27 +181,32 @@ export default function NewJobPage() {
       return false;
     }
 
+    if (step === 4) {
+      // Check final step validity inline to avoid circular dependency
+      if (!voiceTrack || targetLanguages.length === 0) {
+        return false;
+      }
+
+      // Check duration mismatch if both tracks are present
+      if (voiceTrack && backgroundTrack && voiceDuration && backgroundDuration) {
+        if (!areDurationsEqual(voiceDuration, backgroundDuration)) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
     return true;
-  }, [voiceTrack, targetLanguages]);
+  }, [voiceTrack, targetLanguages, backgroundTrack, voiceDuration, backgroundDuration]);
 
   const isStepValid = useMemo(() => {
     return validateStep(currentStep);
   }, [validateStep, currentStep]);
 
   const isFinalStepValid = useMemo(() => {
-    if (!voiceTrack || targetLanguages.length === 0) {
-      return false;
-    }
-
-    // Check duration mismatch if both tracks are present
-    if (voiceTrack && backgroundTrack && voiceDuration && backgroundDuration) {
-      if (!areDurationsEqual(voiceDuration, backgroundDuration)) {
-        return false;
-      }
-    }
-
-    return true;
-  }, [voiceTrack, targetLanguages, backgroundTrack, voiceDuration, backgroundDuration]);
+    return validateStep(4); // Use the same validation logic for step 4
+  }, [validateStep]);
 
   const nextStep = useCallback(() => {
     if (isStepValid && currentStep < steps.length) {
@@ -607,7 +628,7 @@ export default function NewJobPage() {
                       required
                       accept="audio/*,video/mp4"
                       maxSize={100}
-                      onFileSelect={setVoiceTrack}
+                      onFileSelect={handleVoiceTrackChange}
                       onDurationChange={setVoiceDuration}
                       error={errors.voiceTrack}
                       value={voiceTrack}
@@ -732,7 +753,7 @@ export default function NewJobPage() {
                       label="Background Track (Optional)"
                       accept="audio/*,video/mp4"
                       maxSize={100}
-                      onFileSelect={setBackgroundTrack}
+                      onFileSelect={handleBackgroundTrackChange}
                       onDurationChange={setBackgroundDuration}
                       value={backgroundTrack}
                       duration={backgroundDuration}
@@ -939,6 +960,186 @@ export default function NewJobPage() {
                   </motion.div>
                 </div>
               )}
+
+              {/* Step 4: Review & Submit */}
+              {currentStep === 4 && (
+                <div className="space-y-8">
+                  {/* Welcome Header */}
+                  <motion.div
+                    className="text-center max-w-4xl mx-auto"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
+                    <motion.div
+                      className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full mb-6 shadow-lg"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <motion.div
+                        animate={{ 
+                          scale: [1, 1.1, 1],
+                          rotate: [0, 5, -5, 0]
+                        }}
+                        transition={{ 
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        <Upload className="w-10 h-10 text-white" />
+                      </motion.div>
+                    </motion.div>
+                    
+                    <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight">
+                      You're Almost There! 🎉
+                    </h2>
+                    <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                      Your multilingual dubbing job is ready to process. Review the details below and submit when you're ready.
+                    </p>
+                  </motion.div>
+
+                  {/* Job Summary Card */}
+                  <motion.div
+                    className="max-w-4xl mx-auto"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                  >
+                    <div className="bg-gradient-to-br from-card to-muted/30 border border-border rounded-2xl p-6 sm:p-8 shadow-lg">
+                      <h3 className="text-xl font-bold text-foreground mb-6 text-center">Job Summary</h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* File Details */}
+                        <div className="space-y-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-[#ff0000]/10 rounded-lg flex items-center justify-center">
+                              <Mic className="w-5 h-5 text-[#ff0000]" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-foreground">Voice Track</p>
+                              <p className="text-sm text-muted-foreground">{voiceTrack?.name}</p>
+                              {voiceDuration && (
+                                <p className="text-xs text-[#ff0000] font-medium">
+                                  Duration: {formatDuration(voiceDuration)}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          {backgroundTrack && (
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-[#ff0000]/10 rounded-lg flex items-center justify-center">
+                                <Music className="w-5 h-5 text-[#ff0000]" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-foreground">Background Track</p>
+                                <p className="text-sm text-muted-foreground">{backgroundTrack.name}</p>
+                                {backgroundDuration && (
+                                  <p className="text-xs text-[#ff0000] font-medium">
+                                    Duration: {formatDuration(backgroundDuration)}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Language Details */}
+                        <div className="space-y-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-[#ff0000]/10 rounded-lg flex items-center justify-center">
+                              <Globe className="w-5 h-5 text-[#ff0000]" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-foreground">Target Languages</p>
+                              <p className="text-sm text-muted-foreground">{targetLanguages.length} language{targetLanguages.length !== 1 ? 's' : ''} selected</p>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {targetLanguages.map((lang, index) => (
+                                  <span key={index} className="text-xs bg-[#ff0000]/10 text-[#ff0000] px-2 py-1 rounded-full">
+                                    {lang}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Pricing Card */}
+                  <motion.div
+                    className="max-w-2xl mx-auto"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.8 }}
+                  >
+                    <div className="bg-gradient-to-r from-[#ff0000]/5 to-[#ff0000]/10 border border-[#ff0000]/20 rounded-2xl p-6 text-center">
+                      <div className="flex items-center justify-center space-x-2 mb-4">
+                        <Zap className="w-6 h-6 text-[#ff0000]" />
+                        <h3 className="text-xl font-bold text-foreground">Processing Cost</h3>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="text-3xl font-bold text-[#ff0000]">
+                          {targetLanguages.length * 2} Credits
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {targetLanguages.length} language{targetLanguages.length !== 1 ? 's' : ''} × 2 credits each
+                        </p>
+                        
+                        <div className="flex items-center justify-center space-x-4 text-sm">
+                          <div className="flex items-center space-x-1">
+                            <CheckCircle className="w-4 h-4 text-green-500" />
+                            <span className="text-muted-foreground">High-quality AI voices</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <CheckCircle className="w-4 h-4 text-green-500" />
+                            <span className="text-muted-foreground">Fast processing</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Benefits & Trust Signals */}
+                  <motion.div
+                    className="max-w-4xl mx-auto"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 1.0 }}
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="text-center p-4">
+                        <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                        </div>
+                        <h4 className="font-semibold text-foreground mb-2">Professional Quality</h4>
+                        <p className="text-sm text-muted-foreground">AI-powered voices that sound natural and engaging</p>
+                      </div>
+                      
+                      <div className="text-center p-4">
+                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <h4 className="font-semibold text-foreground mb-2">Fast Processing</h4>
+                        <p className="text-sm text-muted-foreground">Your dubs will be ready in 2-5 minutes per language</p>
+                      </div>
+                      
+                      <div className="text-center p-4">
+                        <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Download className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <h4 className="font-semibold text-foreground mb-2">Multiple Formats</h4>
+                        <p className="text-sm text-muted-foreground">Download voice-only, full-mix, and subtitle files</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
             </motion.div>
           </AnimatePresence>
 
@@ -1045,7 +1246,7 @@ export default function NewJobPage() {
               <span>Previous</span>
             </motion.button>
 
-            {currentStep < steps.length ? (
+            {currentStep < steps.length - 1 ? (
               <motion.button
                 onClick={nextStep}
                 disabled={!isStepValid}

@@ -189,22 +189,40 @@ class JobProcessor:
             speech_audio = await self.ai_service.generate_speech(
                 translated_text, language_code
             )
-            
+
+            # TODO: Add audio mixing with background track if present
+            # If job.background_track_url exists:
+            #   1. Download background track
+            #   2. Save speech_audio to temp file
+            #   3. Use ai_service.mix_audio_tracks() to combine them
+            #   4. Upload mixed audio instead of speech_audio alone
+            # This would provide a complete dubbed experience with music/ambient audio
+
+            await self.job_service.update_language_task_status(
+                task_id, LanguageTaskStatus.PROCESSING, 90, "Uploading generated audio...", db=db
+            )
+
             # Save generated audio to storage
             audio_filename = f"dubbed_{language_code}_{uuid.uuid4().hex[:8]}.mp3"
             audio_path = self.storage_service.get_artifact_path(
                 job.user_id, job_id, language_code, "audio", audio_filename
             )
-            
-            # Upload to storage (simplified for MVP)
-            # In a real implementation, you'd upload the audio bytes to Supabase Storage
-            download_url = f"/downloads/{audio_path}"
-            
+
+            # Upload audio bytes to Supabase Storage
+            logger.info(f"Uploading generated audio to: {audio_path}")
+            public_url = await self.storage_service.upload_file(
+                file_path=audio_path,
+                file_data=speech_audio,
+                content_type="audio/mpeg"
+            )
+
+            logger.info(f"Generated audio uploaded successfully to: {public_url}")
+
             # Update task with results
             await self.job_service.update_language_task_status(
-                task_id, LanguageTaskStatus.COMPLETE, 100, 
-                "Language processing completed successfully", 
-                download_url=download_url, db=db
+                task_id, LanguageTaskStatus.COMPLETE, 100,
+                "Language processing completed successfully",
+                download_url=public_url, db=db
             )
             
             # Clean up temporary files
@@ -226,20 +244,25 @@ class JobProcessor:
         try:
             if not job.voice_track_url:
                 raise Exception("No voice track URL found")
-            
-            # For MVP, we'll create a placeholder file
-            # In a real implementation, you'd download from Supabase Storage
-            temp_file = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+
+            logger.info(f"Downloading voice track from: {job.voice_track_url}")
+
+            # Download file from Supabase Storage
+            file_data = await self.storage_service.download_file(job.voice_track_url)
+
+            # Determine file extension from URL
+            file_ext = os.path.splitext(job.voice_track_url)[1] or ".mp3"
+
+            # Save to temporary file
+            temp_file = tempfile.NamedTemporaryFile(suffix=file_ext, delete=False)
+            temp_file.write(file_data)
             temp_file.close()
-            
-            # Create a placeholder audio file (in real implementation, download from storage)
-            with open(temp_file.name, "wb") as f:
-                f.write(b"placeholder audio data")
-            
+
+            logger.info(f"Downloaded voice track to: {temp_file.name}")
             return temp_file.name
-            
+
         except Exception as e:
-            logger.error(f"Error downloading voice track: {e}")
+            logger.error(f"Error downloading voice track: {e}", exc_info=True)
             return None
     
     async def extract_audio_from_video(self, video_path: str) -> str:

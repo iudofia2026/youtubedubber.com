@@ -257,19 +257,68 @@ class SupabaseStorageService:
             logger.error(f"Error generating signed download URL: {e}")
             raise Exception("Failed to generate download URL")
     
+    async def download_file(self, bucket: str, file_path: str) -> bytes:
+        """
+        Download a file from storage
+        """
+        try:
+            response = self.client.storage.from_(bucket).download(file_path)
+
+            if not response:
+                raise Exception(f"Failed to download file: {file_path}")
+
+            return response
+
+        except Exception as e:
+            logger.error(f"Error downloading file: {e}")
+            raise Exception(f"Failed to download file: {str(e)}")
+
+    async def upload_file(
+        self,
+        bucket: str,
+        file_path: str,
+        file_data: bytes,
+        content_type: str = None
+    ) -> str:
+        """
+        Upload a file to storage
+        """
+        try:
+            options = {}
+            if content_type:
+                options['content-type'] = content_type
+
+            response = self.client.storage.from_(bucket).upload(
+                file_path,
+                file_data,
+                options
+            )
+
+            if not response:
+                raise Exception(f"Failed to upload file: {file_path}")
+
+            # Get public URL
+            public_url = self.client.storage.from_(bucket).get_public_url(file_path)
+
+            return public_url
+
+        except Exception as e:
+            logger.error(f"Error uploading file: {e}")
+            raise Exception(f"Failed to upload file: {str(e)}")
+
     async def delete_file(self, bucket: str, file_path: str) -> bool:
         """
         Delete a file from storage
         """
         try:
             response = self.client.storage.from_(bucket).remove([file_path])
-            
+
             if response.get('error'):
                 logger.error(f"Failed to delete file: {response['error']}")
                 return False
-            
+
             return True
-            
+
         except Exception as e:
             logger.error(f"Error deleting file: {e}")
             return False

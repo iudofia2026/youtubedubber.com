@@ -226,25 +226,26 @@ export function FileUpload({
       
       <motion.div
         className={`
-          relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center cursor-pointer touch-manipulation min-h-[120px] sm:min-h-[160px]
+          relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center touch-manipulation min-h-[120px] sm:min-h-[160px]
           transition-all duration-300 mobile-card
-          ${isDragOver 
+          ${value ? 'cursor-default' : 'cursor-pointer'}
+          ${isDragOver && !value
             ? 'border-[var(--youtube-red)] bg-red-50 dark:bg-red-900/10' 
             : 'border-border hover:border-[var(--youtube-red)] hover:bg-muted/50'
           }
           ${error ? 'border-destructive' : ''}
         `}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={handleClick}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        onDragOver={value ? undefined : handleDragOver}
+        onDragLeave={value ? undefined : handleDragLeave}
+        onDrop={value ? undefined : handleDrop}
+        onClick={value ? undefined : handleClick}
+        onTouchStart={value ? undefined : handleTouchStart}
+        onTouchEnd={value ? undefined : handleTouchEnd}
+        whileHover={value ? {} : { scale: 1.02 }}
+        whileTap={value ? {} : { scale: 0.98 }}
         animate={{
-          borderColor: isDragOver ? 'var(--youtube-red)' : undefined,
-          backgroundColor: isDragOver ? 'rgba(255, 0, 0, 0.05)' : undefined
+          borderColor: isDragOver && !value ? 'var(--youtube-red)' : undefined,
+          backgroundColor: isDragOver && !value ? 'rgba(255, 0, 0, 0.05)' : undefined
         }}
       >
         <input
@@ -298,11 +299,17 @@ export function FileUpload({
                   {/* Play/Pause and Reset buttons */}
                   <div className="flex items-center space-x-3">
                     <motion.button
-                      onClick={togglePlayPause}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        togglePlayPause();
+                      }}
                       className="flex items-center justify-center w-12 h-12 bg-[var(--youtube-red)] text-white rounded-full touch-manipulation mobile-audio-controls"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onTouchStart={handleTouchStart}
+                      onTouchStart={(e) => {
+                        e.stopPropagation();
+                        handleTouchStart(e);
+                      }}
                     >
                       {isPlaying ? (
                         <Pause className="h-5 w-5" />
@@ -312,11 +319,17 @@ export function FileUpload({
                     </motion.button>
                     
                     <motion.button
-                      onClick={resetAudio}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        resetAudio();
+                      }}
                       className="flex items-center justify-center w-10 h-10 bg-muted text-foreground rounded-full touch-manipulation mobile-audio-controls"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onTouchStart={handleTouchStart}
+                      onTouchStart={(e) => {
+                        e.stopPropagation();
+                        handleTouchStart(e);
+                      }}
                     >
                       <RotateCcw className="h-4 w-4" />
                     </motion.button>
@@ -325,11 +338,17 @@ export function FileUpload({
                   {/* Volume controls - mobile optimized */}
                   <div className="flex items-center space-x-3 w-full sm:w-auto">
                     <motion.button
-                      onClick={toggleMute}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleMute();
+                      }}
                       className="flex items-center justify-center w-10 h-10 bg-muted text-foreground rounded-full touch-manipulation mobile-audio-controls"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onTouchStart={handleTouchStart}
+                      onTouchStart={(e) => {
+                        e.stopPropagation();
+                        handleTouchStart(e);
+                      }}
                     >
                       {isMuted ? (
                         <VolumeX className="h-4 w-4" />
@@ -346,6 +365,8 @@ export function FileUpload({
                         step="0.1"
                         value={isMuted ? 0 : volume}
                         onChange={handleVolumeChange}
+                        onClick={(e) => e.stopPropagation()}
+                        onTouchStart={(e) => e.stopPropagation()}
                         className="w-full sm:w-20 h-2 bg-muted rounded-lg appearance-none cursor-pointer touch-manipulation mobile-progress"
                         style={{
                           background: `linear-gradient(to right, var(--youtube-red) 0%, var(--youtube-red) ${(isMuted ? 0 : volume) * 100}%, #e5e5e5 ${(isMuted ? 0 : volume) * 100}%, #e5e5e5 100%)`
@@ -365,6 +386,8 @@ export function FileUpload({
                       step="0.1"
                       value={currentTime}
                       onChange={handleSeek}
+                      onClick={(e) => e.stopPropagation()}
+                      onTouchStart={(e) => e.stopPropagation()}
                       className="w-full h-3 bg-muted rounded-lg appearance-none cursor-pointer touch-manipulation mobile-progress"
                       style={{
                         background: `linear-gradient(to right, var(--youtube-red) 0%, var(--youtube-red) ${duration ? (currentTime / duration) * 100 : 0}%, #e5e5e5 ${duration ? (currentTime / duration) * 100 : 0}%, #e5e5e5 100%)`
@@ -409,12 +432,26 @@ export function FileUpload({
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
-                onFileSelect(null as unknown as File);
+                // Reset all audio state when removing file
+                setIsPlaying(false);
+                setCurrentTime(0);
+                setVolume(1);
+                setIsMuted(false);
+                // Call parent with null to remove file
+                onFileSelect(null);
+                onDurationChange?.(null);
               }}
               onTouchEnd={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onFileSelect(null as unknown as File);
+                // Reset all audio state when removing file
+                setIsPlaying(false);
+                setCurrentTime(0);
+                setVolume(1);
+                setIsMuted(false);
+                // Call parent with null to remove file
+                onFileSelect(null);
+                onDurationChange?.(null);
               }}
               className="touch-manipulation w-full"
             >

@@ -541,10 +541,16 @@ const getAuthHeaders = async (): Promise<Record<string, string>> => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.access_token) {
           headers['Authorization'] = `Bearer ${session.access_token}`;
+          return headers;
         }
       }
     } catch (error) {
       console.warn('Failed to get auth token:', error);
+    }
+
+    // In development mode, use dev-token if no Supabase session exists
+    if (config.devMode) {
+      headers['Authorization'] = 'Bearer dev-token';
     }
   }
 
@@ -691,23 +697,39 @@ export const uploadFileToStorage = async (
 export const notifyUploadComplete = async (request: JobCreationRequest): Promise<SubmitJobResponse> => {
   return withRetry(async () => {
     const headers = await getAuthHeaders();
+    
+    console.log('Sending job creation request:', {
+      url: `${API_BASE}/api/jobs`,
+      headers,
+      body: request
+    });
+    
     const response = await fetch(`${API_BASE}/api/jobs`, {
       method: 'POST',
       headers,
       body: JSON.stringify(request),
     });
 
+    console.log('Job creation response:', {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('Job creation error response:', errorData);
       const apiError = createApiError(errorData, response);
       throw apiError;
     }
 
-    let jobData: BackendSubmitJobResponse = {};
+    let jobData: BackendSubmitJobResponse;
     try {
       jobData = await response.json();
-    } catch {
-      // Backend did not provide a JSON body; mapSubmitJobResponse will surface an error.
+      console.log('Job creation success response:', jobData);
+    } catch (error) {
+      console.error('Failed to parse job creation response:', error);
+      throw new Error('Backend did not provide a valid JSON response');
     }
 
     return mapSubmitJobResponse(jobData);
@@ -786,10 +808,25 @@ export const submitDubbingJob = async (
 
   } catch (error) {
     console.error('Error submitting dubbing job:', error);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Upload failed';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === 'object' && error !== null) {
+      // Handle API errors
+      const apiError = error as any;
+      if (apiError.message) {
+        errorMessage = apiError.message;
+      } else if (apiError.type) {
+        errorMessage = `API Error: ${apiError.type}`;
+      }
+    }
+    
     onProgress?.({
       progress: 0,
       status: 'error',
-      message: error instanceof Error ? error.message : 'Upload failed'
+      message: errorMessage
     });
     throw error;
   }
