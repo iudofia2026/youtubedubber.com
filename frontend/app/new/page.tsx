@@ -43,6 +43,7 @@ export default function NewJobPage() {
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [bannerAnimationComplete, setBannerAnimationComplete] = useState(false);
   const [showPullTab, setShowPullTab] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
   
   // Refs for accessibility
   const modalRef = useRef<HTMLDivElement>(null);
@@ -55,14 +56,18 @@ export default function NewJobPage() {
       // Show pull tab after a short delay
       const pullTabTimer = setTimeout(() => {
         setShowPullTab(true);
+        setHasUserInteracted(true);
       }, 1000);
       
       return () => clearTimeout(pullTabTimer);
     } else {
       setBannerAnimationComplete(false);
-      setShowPullTab(false);
+      // Keep pull tab visible if user has interacted with it
+      if (!hasUserInteracted) {
+        setShowPullTab(false);
+      }
     }
-  }, [bannerDismissed]);
+  }, [bannerDismissed, hasUserInteracted]);
 
   // Handle banner interactions
   const handleDismissBanner = useCallback(() => {
@@ -72,7 +77,8 @@ export default function NewJobPage() {
   const handleRestoreBanner = useCallback(() => {
     setBannerDismissed(false);
     setBannerAnimationComplete(false);
-    setShowPullTab(false);
+    // Keep the restore button visible after restoring banner
+    // Don't hide the pull tab - let it stay for easy toggling
   }, []);
 
   // Handle file removal with proper state reset
@@ -445,7 +451,7 @@ export default function NewJobPage() {
           )}
         </AnimatePresence>
 
-        {/* Compact I/O Restore Panel */}
+        {/* Compact I/O Toggle Panel */}
         <AnimatePresence>
           {showPullTab && (
             <motion.div
@@ -456,21 +462,25 @@ export default function NewJobPage() {
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
               <motion.button
-                onClick={handleRestoreBanner}
-                className="group relative bg-[#ff0000] text-white w-12 h-20 rounded-l-lg shadow-lg hover:bg-[#cc0000] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center"
+                onClick={bannerDismissed ? handleRestoreBanner : handleDismissBanner}
+                className={`group relative w-12 h-20 rounded-l-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center ${
+                  bannerDismissed 
+                    ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]' 
+                    : 'bg-green-600 text-white hover:bg-green-700'
+                }`}
                 whileHover={{ 
                   scale: 1.05,
                   x: -2
                 }}
                 whileTap={{ scale: 0.95 }}
-                aria-label="Restore guide banner"
+                aria-label={bannerDismissed ? "Restore guide banner" : "Dismiss guide banner"}
               >
                 {/* I/O Icon */}
                 <motion.div
                   className="w-6 h-6 flex items-center justify-center"
                   animate={{
                     scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
+                    rotate: bannerDismissed ? [0, 5, -5, 0] : [0, -5, 5, 0]
                   }}
                   transition={{
                     duration: 2,
@@ -489,9 +499,23 @@ export default function NewJobPage() {
                   transition={{ delay: 0.2 }}
                 >
                   <span className="text-xs font-medium tracking-wider whitespace-nowrap">
-                    GUIDE
+                    {bannerDismissed ? 'GUIDE' : 'HIDE'}
                   </span>
                 </motion.div>
+                
+                {/* Status Indicator */}
+                <motion.div
+                  className="absolute top-2 right-2 w-2 h-2 rounded-full"
+                  animate={{
+                    backgroundColor: bannerDismissed ? '#ff0000' : '#10b981',
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
                 
                 {/* Subtle Pulse Effect */}
                 <motion.div
