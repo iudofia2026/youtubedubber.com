@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from app.config import settings
-from app.api import jobs, upload, payments
+from app.api import jobs, payments
 from app.schemas import HealthResponse, BackendErrorResponse
 # from app.database import create_tables  # Removed - using Supabase REST API
 from app.middleware.rate_limit import limiter, rate_limit_handler, RateLimitExceeded, health_rate_limit
@@ -72,7 +72,6 @@ if settings.debug:
 
 # Include API routers
 app.include_router(jobs.router, prefix="/api/jobs", tags=["jobs"])
-app.include_router(upload.router, prefix="/api/jobs", tags=["upload"])
 app.include_router(payments.router, prefix="/api", tags=["payments"])
 
 

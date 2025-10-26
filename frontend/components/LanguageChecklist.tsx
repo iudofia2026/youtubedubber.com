@@ -66,12 +66,6 @@ export function LanguageChecklist({ value, onChange, languages, error }: Languag
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h3 className="text-2xl font-bold text-foreground mb-2">
-          Choose Your Target Languages
-        </h3>
-        <p className="text-muted-foreground mb-4">
-          Select the languages you want to dub your content into
-        </p>
         {value.length > 0 && (
           <motion.div
             className="inline-flex items-center space-x-2 bg-[#ff0000]/10 border border-[#ff0000]/20 px-4 py-2 rounded-full"
