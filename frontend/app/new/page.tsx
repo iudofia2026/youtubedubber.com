@@ -337,78 +337,6 @@ export default function NewJobPage() {
               <span>View Jobs</span>
               <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
             </Link>
-            
-            {/* Guide Toggle Button - Fixed width to prevent layout shift */}
-            <div className="w-12 h-20">
-              <AnimatePresence>
-                {showPullTab && (
-                  <motion.button
-                    onClick={bannerDismissed ? handleRestoreBanner : handleDismissBanner}
-                    className={`group relative w-12 h-20 rounded-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center ${
-                      bannerDismissed 
-                        ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]' 
-                        : 'bg-green-600 text-white hover:bg-green-700'
-                    }`}
-                  whileHover={{ 
-                    scale: 1.05
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  aria-label={bannerDismissed ? "Restore guide banner" : "Dismiss guide banner"}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                >
-                  {/* I/O Icon */}
-                  <motion.div
-                    className="w-6 h-6 flex items-center justify-center"
-                    animate={{
-                      scale: [1, 1.1, 1],
-                      rotate: bannerDismissed ? [0, 5, -5, 0] : [0, -5, 5, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <Power className="w-5 h-5" />
-                  </motion.div>
-                  
-                  {/* Text Label */}
-                  <motion.div
-                    className="mt-1"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <span className="text-xs font-medium tracking-wider">
-                      {bannerDismissed ? 'GUIDE' : 'HIDE'}
-                    </span>
-                  </motion.div>
-                  
-                  {/* Subtle Pulse Effect */}
-                  <motion.div
-                    className="absolute inset-0 border border-white/30 rounded-lg"
-                    animate={{
-                      scale: [1, 1.02, 1],
-                      opacity: [0.3, 0.6, 0.3]
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                  
-                    {/* Hover Glow Effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    />
-                  </motion.button>
-                )}
-              </AnimatePresence>
-            </div>
           </div>
           
         </motion.div>
@@ -537,6 +465,79 @@ export default function NewJobPage() {
             }
           }}
         >
+          {/* Guide Toggle Button - Positioned in content area */}
+          <div className="flex justify-end mb-6">
+            <div className="w-12 h-20">
+              <AnimatePresence>
+                {showPullTab && (
+                  <motion.button
+                    onClick={bannerDismissed ? handleRestoreBanner : handleDismissBanner}
+                    className={`group relative w-12 h-20 rounded-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center ${
+                      bannerDismissed 
+                        ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]' 
+                        : 'bg-green-600 text-white hover:bg-green-700'
+                    }`}
+                    whileHover={{ 
+                      scale: 1.05
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label={bannerDismissed ? "Restore guide banner" : "Dismiss guide banner"}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                  >
+                    {/* I/O Icon */}
+                    <motion.div
+                      className="w-6 h-6 flex items-center justify-center"
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        rotate: bannerDismissed ? [0, 5, -5, 0] : [0, -5, 5, 0]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <Power className="w-5 h-5" />
+                    </motion.div>
+                    
+                    {/* Text Label */}
+                    <motion.div
+                      className="mt-1"
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      <span className="text-xs font-medium tracking-wider">
+                        {bannerDismissed ? 'GUIDE' : 'HIDE'}
+                      </span>
+                    </motion.div>
+                    
+                    {/* Subtle Pulse Effect */}
+                    <motion.div
+                      className="absolute inset-0 border border-white/30 rounded-lg"
+                      animate={{
+                        scale: [1, 1.02, 1],
+                        opacity: [0.3, 0.6, 0.3]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                    
+                    {/* Hover Glow Effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
