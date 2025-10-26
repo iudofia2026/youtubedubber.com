@@ -432,12 +432,26 @@ export function FileUpload({
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
-                onFileSelect(null as unknown as File);
+                // Reset all audio state when removing file
+                setIsPlaying(false);
+                setCurrentTime(0);
+                setVolume(1);
+                setIsMuted(false);
+                // Call parent with null to remove file
+                onFileSelect(null);
+                onDurationChange?.(null);
               }}
               onTouchEnd={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onFileSelect(null as unknown as File);
+                // Reset all audio state when removing file
+                setIsPlaying(false);
+                setCurrentTime(0);
+                setVolume(1);
+                setIsMuted(false);
+                // Call parent with null to remove file
+                onFileSelect(null);
+                onDurationChange?.(null);
               }}
               className="touch-manipulation w-full"
             >

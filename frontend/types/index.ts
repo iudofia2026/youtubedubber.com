@@ -5,8 +5,8 @@ export interface FileUploadProps {
   required?: boolean;
   accept: string;
   maxSize: number; // in MB
-  onFileSelect: (file: File) => void;
-  onDurationChange?: (duration: number) => void;
+  onFileSelect: (file: File | null) => void;
+  onDurationChange?: (duration: number | null) => void;
   onUploadProgress?: (progress: UploadProgress) => void;
   onUploadComplete?: (file: File) => void;
   onUploadError?: (error: string) => void;
