@@ -8,7 +8,8 @@ import os
 import subprocess
 from typing import List
 from app.database import SessionLocal
-from app.models import DubbingJob, LanguageTask, JobStatus, LanguageTaskStatus
+from app.models import DubbingJob, LanguageTask
+from app.schemas import JobStatus, LanguageTaskStatus
 from app.services.job_service import JobService
 from app.services.ai_service import AIService
 from app.services.storage_service import StorageService

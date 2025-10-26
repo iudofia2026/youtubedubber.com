@@ -68,7 +68,7 @@ class SignedUploadUrls(BaseModel):
 
 class SubmitJobResponse(BaseModel):
     """Response schema for job submission"""
-    jobId: str = Field(..., description="Unique job identifier")
+    job_id: str = Field(..., description="Unique job identifier")
 
 
 class LanguageProgress(BaseModel):
