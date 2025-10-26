@@ -117,26 +117,17 @@ async def get_current_user(
         
         # Check for development mode token
         if credentials.credentials == "dev-token":
-            # Development mode - create or get dev user
+            # Development mode - return mock dev user without Supabase
             user_id = "dev-user-123"
             email = "dev@youtubedubber.com"
             
-            # Use Supabase to check/create dev user
-            from app.services.supabase_db_service import SupabaseDBService
-            db_service = SupabaseDBService()
-            
-            user = db_service.get_user(user_id)
-            
-            if not user:
-                # Create new dev user
-                user = db_service.create_user(user_id, email)
-                logger.info(f"Created dev user: {user_id}")
+            logger.info(f"Using dev-token authentication for user: {user_id}")
             
             return UserResponse(
-                id=user['id'],
-                email=user['email'],
-                created_at=user.get('created_at', '2025-01-01T00:00:00Z'),
-                updated_at=user.get('updated_at', '2025-01-01T00:00:00Z')
+                id=user_id,
+                email=email,
+                created_at="2025-01-01T00:00:00Z",
+                updated_at="2025-01-01T00:00:00Z"
             )
         
         # Verify the JWT token

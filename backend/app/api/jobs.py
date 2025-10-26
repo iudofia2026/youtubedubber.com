@@ -52,19 +52,17 @@ async def create_job(
     This endpoint matches the frontend API contract exactly
     """
     try:
-        # For development mode, skip validation
-        if settings.supabase_url == "https://test.supabase.co":
+        # For development mode, skip validation and return mock response
+        if settings.supabase_url == "https://test.supabase.co" or settings.debug:
             logger.info(f"Development mode: Creating job {request.job_id} for user {current_user.id}")
             
-            job_service = SupabaseJobService()
+            # Log job creation to dedicated log file for development
+            job_log_path = Path("uploads.log")
+            with open(job_log_path, "a") as log_file:
+                from datetime import datetime
+                log_file.write(f"[{datetime.now().isoformat()}] DEV JOB CREATED: {request.job_id} for user {current_user.id} with languages {request.languages}\n")
             
-            # Create the job
-            job_status = await job_service.create_job(
-                user_id=current_user.id,
-                job_data=request
-            )
-            
-            logger.info(f"Created job {request.job_id} successfully")
+            logger.info(f"Created job {request.job_id} successfully (dev mode)")
             
             return SubmitJobResponse(job_id=request.job_id)
         
@@ -122,6 +120,45 @@ async def get_job_status(
         validated_job_id = validate_job_id(job_id)
         
         logger.info(f"Getting status for job {validated_job_id} for user {current_user.id}")
+        
+        # For development mode, return mock job status
+        if settings.supabase_url == "https://test.supabase.co" or settings.debug:
+            from app.schemas import JobStatusResponse, LanguageProgress
+            from datetime import datetime, timedelta
+            
+            # Create mock language progress
+            languages = [
+                LanguageProgress(
+                    language_code="es",
+                    language_name="Spanish",
+                    flag="🇪🇸",
+                    status="processing",
+                    progress=45,
+                    message="Generating Spanish dub...",
+                    estimated_time_remaining=120
+                ),
+                LanguageProgress(
+                    language_code="fr", 
+                    language_name="French",
+                    flag="🇫🇷",
+                    status="pending",
+                    progress=0,
+                    message="Waiting to start...",
+                    estimated_time_remaining=180
+                )
+            ]
+            
+            return JobStatusResponse(
+                id=validated_job_id,
+                status="processing",
+                progress=25,
+                message="Processing audio files...",
+                languages=languages,
+                total_languages=len(languages),
+                completed_languages=0,
+                started_at=datetime.utcnow().isoformat(),
+                estimated_completion=(datetime.utcnow() + timedelta(minutes=5)).isoformat()
+            )
         
         job_service = SupabaseJobService()
         
