@@ -57,14 +57,18 @@ npm run dev
 - ✅ **Development Tools**: Environment ready with bypass modes for quick testing
 
 ### What Needs Work
-- ⚠️ **Frontend API Integration**: Currently uses mock data - needs real HTTP calls to backend
-- ⚠️ **Backend AI Processing**: Endpoint scaffolds exist but return placeholder data
-  - Speech-to-Text (Deepgram) not wired
-  - Translation (OpenAI) not connected
-  - Text-to-Speech (Deepgram) returns stubs
-  - Audio mixing incomplete
+- ⚠️ **Frontend API Integration**: DEV_MODE needs to be disabled for production (currently enabled for local testing)
+- ⚠️ **Backend AI Processing**: Core pipeline implemented, but needs real-world testing
+  - ✅ Speech-to-Text (Deepgram) - integrated and functional
+  - ✅ Translation (OpenAI GPT-4o-mini) - integrated and functional
+  - ✅ Text-to-Speech (Deepgram Aura) - integrated and functional
+  - ✅ File upload/download to Supabase Storage - fully implemented
+  - ⚠️ Audio mixing with background track - documented but not yet implemented
 
-- ⚠️ **Production Deployment**: Needs real API credentials (Supabase, Deepgram, OpenAI)
+- ⚠️ **Production Deployment**: Environment variables configured locally, needs production setup
+  - API credentials (Supabase, Deepgram, OpenAI) - configured in local .env files
+  - Database migrations need to be run on production database
+  - Background worker process needs deployment configuration
 
 ## 🛠 Tech Stack
 

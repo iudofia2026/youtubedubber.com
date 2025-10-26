@@ -743,8 +743,8 @@ The backend is now **production-ready** and **fully tested** for frontend integr
   GET /jobs and GET /jobs/{id} returning per-language progress, stage timestamps, and artifact metadata.  
 - **BK-022 – In-process worker engine**  
   Background worker loop polling pending jobs, controlling concurrency, and emitting progress heartbeats. Tested with mocked vendors.  
-- **BK-023 – Vendor integration (Deepgram STT/TTS + OpenAI translate)**  
-  Implement service clients, mockable interfaces, and store transcripts/audio per language.  
+- ✅ **BK-023 – Vendor integration (Deepgram STT/TTS + OpenAI translate)**
+  COMPLETED: Service clients implemented with Deepgram STT/TTS and OpenAI GPT-4o-mini translation. File upload/download to Supabase Storage integrated.  
 - **BK-024 – Media processing pipeline**  
   Alignment + mixing via librosa/ffmpeg, caption and manifest generation, upload outputs back to Supabase Storage. Includes golden-sample tests.  
 - **BK-025 – Artifact download endpoint**  
@@ -786,16 +786,18 @@ The backend is now **production-ready** and **fully tested** for frontend integr
 ## 🚨 **Known Limitations**
 
 ### **Current Limitations**
-1. **Job Persistence**: `/api/jobs` does not store upload URLs, durations, or artefact paths, so workers cannot process real audio.
-2. **Worker Pipeline**: `app/worker/processor.py` generates placeholder audio and never touches Supabase storage or vendor APIs.
-3. **API Contract Drift**: Job status/list responses omit snake_case fields (`language_code`, `download_url`, etc.) that the frontend expects.
-4. **Authentication**: Supabase JWT validation is untested; development currently relies on `Bearer dev-token`.
+1. ✅ **Job Persistence**: FIXED - `/api/jobs` now stores upload URLs and durations in the database.
+2. ✅ **Worker Pipeline**: FIXED - `app/worker/processor.py` now downloads from Supabase, calls Deepgram STT/TTS and OpenAI translation, and uploads generated audio.
+3. ⚠️ **API Contract Drift**: Job status/list responses may need alignment with frontend expectations - requires integration testing.
+4. ⚠️ **Authentication**: Supabase JWT validation implemented but untested in production; development uses `Bearer dev-token`.
+5. ⚠️ **Audio Mixing**: Background track mixing not yet implemented - only voice dubbing is functional.
 
 ### **Mitigation / Next Steps**
-1. Persist upload metadata (Supabase paths, hashes, durations) during job creation.
-2. Wire the worker to download from Supabase, call Deepgram/OpenAI, and upload generated assets.
-3. Align response schemas with `frontend/lib/api.ts` expectations and add integration tests.
-4. Configure real Supabase credentials and verify JWT + signed URL flows.
+1. ✅ COMPLETED: Persist upload metadata (Supabase paths, durations) during job creation.
+2. ✅ COMPLETED: Wire the worker to download from Supabase, call Deepgram/OpenAI, and upload generated assets.
+3. TODO: Implement background track mixing in processor using FFmpeg.
+4. TODO: End-to-end integration testing with real files and API credentials.
+5. TODO: Configure production Supabase credentials and verify JWT + signed URL flows in production environment.
 
 ## 📞 **Support & Maintenance**
 
