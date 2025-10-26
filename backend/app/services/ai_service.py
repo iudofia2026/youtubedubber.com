@@ -15,11 +15,12 @@ logger = logging.getLogger(__name__)
 
 class AIService:
     """Service for AI operations (STT, Translation, TTS)"""
-    
+
     def __init__(self):
-        # Initialize OpenAI client
-        openai.api_key = settings.openai_api_key
-        
+        # Initialize OpenAI client with new API
+        from openai import AsyncOpenAI
+        self.openai_client = AsyncOpenAI(api_key=settings.openai_api_key)
+
         # Initialize Deepgram client
         self.deepgram = DeepgramClient(settings.deepgram_api_key)
     
@@ -95,9 +96,9 @@ class AIService:
             
             target_lang_name = language_names.get(target_language, target_language)
             source_lang_name = language_names.get(source_language, source_language)
-            
-            response = await openai.ChatCompletion.acreate(
-                model="gpt-3.5-turbo",
+
+            response = await self.openai_client.chat.completions.create(
+                model="gpt-4o-mini",  # Using latest efficient model
                 messages=[
                     {
                         "role": "system",
@@ -111,7 +112,7 @@ class AIService:
                 max_tokens=2000,
                 temperature=0.3
             )
-            
+
             return response.choices[0].message.content.strip()
             
         except Exception as e:
