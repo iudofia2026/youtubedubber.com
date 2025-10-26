@@ -465,34 +465,30 @@ export default function NewJobPage() {
             }
           }}
         >
-          {/* Guide Toggle Button - Positioned in content area */}
-          <div className="flex justify-end mb-6">
+          {/* Guide Toggle Button - Positioned far to the side */}
+          <div className="flex justify-end mb-6 -mr-16">
             <div className="w-12 h-20">
               <AnimatePresence>
-                {showPullTab && (
+                {showPullTab && !bannerDismissed && (
                   <motion.button
-                    onClick={bannerDismissed ? handleRestoreBanner : handleDismissBanner}
-                    className={`group relative w-12 h-20 rounded-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center ${
-                      bannerDismissed 
-                        ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]' 
-                        : 'bg-green-600 text-white hover:bg-green-700'
-                    }`}
+                    onClick={handleDismissBanner}
+                    className="group relative w-12 h-20 rounded-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center bg-[#ff0000] text-white hover:bg-[#cc0000]"
                     whileHover={{ 
                       scale: 1.05
                     }}
                     whileTap={{ scale: 0.95 }}
-                    aria-label={bannerDismissed ? "Restore guide banner" : "Dismiss guide banner"}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    aria-label="Dismiss guide banner"
+                    initial={{ x: "100%" }}
+                    animate={{ x: 0 }}
+                    exit={{ x: "100%" }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
                   >
                     {/* I/O Icon */}
                     <motion.div
                       className="w-6 h-6 flex items-center justify-center"
                       animate={{
                         scale: [1, 1.1, 1],
-                        rotate: bannerDismissed ? [0, 5, -5, 0] : [0, -5, 5, 0]
+                        rotate: [0, 5, -5, 0]
                       }}
                       transition={{
                         duration: 2,
@@ -511,7 +507,7 @@ export default function NewJobPage() {
                       transition={{ delay: 0.1 }}
                     >
                       <span className="text-xs font-medium tracking-wider">
-                        {bannerDismissed ? 'GUIDE' : 'HIDE'}
+                        HIDE
                       </span>
                     </motion.div>
                     
@@ -538,6 +534,77 @@ export default function NewJobPage() {
               </AnimatePresence>
             </div>
           </div>
+          
+          {/* Restore Button - Only shows when banner is dismissed */}
+          <AnimatePresence>
+            {bannerDismissed && (
+              <motion.div
+                className="fixed right-4 top-1/2 -translate-y-1/2 z-50"
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+              >
+                <motion.button
+                  onClick={handleRestoreBanner}
+                  className="group relative w-12 h-20 rounded-l-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center bg-[#ff0000] text-white hover:bg-[#cc0000]"
+                  whileHover={{ 
+                    scale: 1.05,
+                    x: -2
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label="Restore guide banner"
+                >
+                  {/* I/O Icon */}
+                  <motion.div
+                    className="w-6 h-6 flex items-center justify-center"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <Power className="w-5 h-5" />
+                  </motion.div>
+                  
+                  {/* Vertical Text */}
+                  <motion.div
+                    className="absolute -left-8 top-1/2 -translate-y-1/2 transform -rotate-90 origin-center"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <span className="text-xs font-medium tracking-wider whitespace-nowrap">
+                      GUIDE
+                    </span>
+                  </motion.div>
+                  
+                  {/* Subtle Pulse Effect */}
+                  <motion.div
+                    className="absolute inset-0 border border-white/30 rounded-l-lg"
+                    animate={{
+                      scale: [1, 1.02, 1],
+                      opacity: [0.3, 0.6, 0.3]
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                  
+                  {/* Hover Glow Effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-white/10 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  />
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
