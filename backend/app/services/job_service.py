@@ -38,8 +38,19 @@ class JobService:
             # Check if job already exists
             existing_job = db.query(DubbingJob).filter(DubbingJob.id == job_data.job_id).first()
             if existing_job:
-                logger.info(f"Job {job_data.job_id} already exists, returning status")
-                return await self.get_job_status(job_data.job_id, user_id, db)
+                logger.info(f"Job {job_data.job_id} already exists, returning simple status")
+                from app.schemas import JobStatusResponse
+                return JobStatusResponse(
+                    id=job_data.job_id,
+                    status=existing_job.status,
+                    progress=existing_job.progress,
+                    message=existing_job.message or "Job exists",
+                    languages=[],
+                    totalLanguages=len(job_data.languages),
+                    completedLanguages=0,
+                    startedAt=existing_job.started_at.isoformat() if existing_job.started_at else datetime.utcnow().isoformat(),
+                    estimatedCompletion=None
+                )
             
             logger.info(f"Creating main job record for {job_data.job_id}")
 
@@ -173,7 +184,7 @@ class JobService:
                     message=task.message or "Processing...",
                     estimatedTimeRemaining=task.estimated_time_remaining if hasattr(task, 'estimated_time_remaining') else None,
                     fileSize=task.file_size if hasattr(task, 'file_size') else None,
-                    downloadUrl=task.download_url
+                    downloadUrl=task.audio_url if hasattr(task, 'audio_url') else None
                 ))
             
             return JobStatusResponse(
@@ -190,7 +201,8 @@ class JobService:
             
         except Exception as e:
             logger.error(f"Error getting job status: {e}")
-            raise Exception("Failed to get job status")
+            # Preserve the original error message for proper handling
+            raise e
     
     async def update_job_status(
         self,

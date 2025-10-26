@@ -4,16 +4,18 @@ Main FastAPI application
 from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from app.config import settings
 from app.api import jobs, upload, payments
 from app.schemas import HealthResponse, BackendErrorResponse
-from app.database import create_tables
+# from app.database import create_tables  # Removed - using Supabase REST API
 from app.middleware.rate_limit import limiter, rate_limit_handler, RateLimitExceeded, health_rate_limit
 from app.middleware.security import SecurityHeadersMiddleware, RequestLoggingMiddleware, get_cors_middleware, RateLimitHeadersMiddleware
+from app.middleware.api_logging import APILoggingMiddleware
 from app.utils.security import create_safe_error_response, sanitize_error_message
 import logging
 from datetime import datetime
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -37,6 +39,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
 
 # Add security middleware (order matters - first added is outermost)
+app.add_middleware(APILoggingMiddleware)  # Add comprehensive API logging
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(RateLimitHeadersMiddleware)
@@ -98,93 +101,152 @@ async def health_check():
     )
 
 
-@app.get("/test-db")
-async def test_database():
+@app.put("/mock-upload/{file_path:path}")
+async def mock_upload(file_path: str, request: Request):
     """
-    Test database connection
+    Mock upload endpoint for development - actually saves files to disk
     """
     try:
-        from app.database import get_db
-        from app.models import User
-        from sqlalchemy.orm import Session
+        # Read the uploaded file data
+        body = await request.body()
         
-        db = next(get_db())
-        user_count = db.query(User).count()
+        logger.info(f"Mock upload received: {file_path}, size: {len(body)} bytes")
         
+        # Create uploads directory if it doesn't exist
+        uploads_dir = Path("uploads")
+        uploads_dir.mkdir(exist_ok=True)
+        
+        # Save file to disk
+        file_path_full = uploads_dir / file_path
+        file_path_full.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(file_path_full, "wb") as f:
+            f.write(body)
+        
+        logger.info(f"File saved to: {file_path_full}")
+        
+        # Log file upload details to dedicated log file
+        upload_log_path = Path("uploads.log")
+        with open(upload_log_path, "a") as log_file:
+            from datetime import datetime
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            log_file.write(f"[{timestamp}] UPLOAD: {file_path} | Size: {len(body)} bytes | Saved to: {file_path_full}\n")
+        
+        # Return success response
         return {
-            "status": "success",
-            "message": "Database connection successful",
-            "user_count": user_count
+            "message": "File uploaded successfully (mock)",
+            "file_path": file_path,
+            "size": len(body),
+            "saved_to": str(file_path_full)
         }
     except Exception as e:
-        return {
-            "status": "error",
-            "message": f"Database connection failed: {str(e)}"
-        }
+        logger.error(f"Mock upload error: {e}")
+        raise HTTPException(status_code=500, detail="Mock upload failed")
 
 
-@app.get("/test-job-creation")
-async def test_job_creation():
+@app.get("/download/{filename}")
+async def download_file(filename: str):
     """
-    Test job creation directly
+    Download generated audio files
     """
     try:
-        from app.database import get_db
-        from app.models import DubbingJob, LanguageTask, JobEvent
-        from app.schemas import JobStatus, LanguageTaskStatus
-        import uuid
+        # Security: Only allow specific file extensions
+        allowed_extensions = ['.mp3', '.wav', '.m4a']
+        file_ext = Path(filename).suffix.lower()
         
-        db = next(get_db())
+        if file_ext not in allowed_extensions:
+            raise HTTPException(status_code=400, detail="Invalid file type")
         
-        # Create a test job
-        job_id = f"test_job_{uuid.uuid4().hex[:8]}"
+        # Construct file path
+        file_path = Path("downloads") / filename
         
-        job = DubbingJob(
-            id=job_id,
-            user_id="dev-user-123",
-            status=JobStatus.PROCESSING,
-            progress=0,
-            message="Test job created",
-            target_languages=["es"]
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        # Return file with appropriate headers
+        return FileResponse(
+            path=str(file_path),
+            filename=filename,
+            media_type='audio/mpeg' if file_ext == '.mp3' else 'audio/wav'
         )
         
-        db.add(job)
-        db.commit()
-        db.refresh(job)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Download error: {e}")
+        raise HTTPException(status_code=500, detail="Download failed")
+
+
+@app.get("/downloads")
+async def list_downloads():
+    """
+    List available download files
+    """
+    try:
+        downloads_dir = Path("downloads")
+        if not downloads_dir.exists():
+            return {"files": []}
         
-        # Check if job was created
-        created_job = db.query(DubbingJob).filter(DubbingJob.id == job_id).first()
+        files = []
+        for file_path in downloads_dir.glob("*"):
+            if file_path.is_file():
+                stat = file_path.stat()
+                files.append({
+                    "filename": file_path.name,
+                    "size": stat.st_size,
+                    "modified": stat.st_mtime,
+                    "download_url": f"/download/{file_path.name}"
+                })
+        
+        # Sort by modification time (newest first)
+        files.sort(key=lambda x: x["modified"], reverse=True)
+        
+        return {"files": files}
+        
+    except Exception as e:
+        logger.error(f"List downloads error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to list downloads")
+
+
+@app.get("/test-supabase")
+async def test_supabase():
+    """
+    Test Supabase connection
+    """
+    try:
+        from app.services.supabase_db_service import SupabaseDBService
+        
+        db_service = SupabaseDBService()
+        # Test by getting a specific user
+        test_user = db_service.get_user("dev-user-123")
         
         return {
             "status": "success",
-            "message": "Job creation test successful",
-            "job_id": job_id,
-            "job_exists": created_job is not None,
-            "job_status": created_job.status if created_job else None
+            "message": "Supabase connection successful",
+            "test_user_exists": test_user is not None
         }
     except Exception as e:
         return {
             "status": "error",
-            "message": f"Job creation test failed: {str(e)}"
+            "message": f"Supabase connection failed: {str(e)}"
         }
 
 
-@app.post("/test-job-service")
-async def test_job_service():
+@app.get("/test-supabase-job")
+async def test_supabase_job():
     """
-    Test job service directly
+    Test Supabase job creation
     """
     try:
-        from app.database import get_db
-        from app.services.job_service import JobService
+        from app.services.supabase_job_service import SupabaseJobService
         from app.schemas import JobCreationRequest
+        import uuid
         
-        db = next(get_db())
-        job_service = JobService()
+        job_service = SupabaseJobService()
         
         # Create a test job using the service
         job_data = JobCreationRequest(
-            job_id="test_service_job",
+            job_id=f"test_supabase_job_{uuid.uuid4().hex[:8]}",
             voice_track_uploaded=True,
             background_track_uploaded=False,
             languages=["es"]
@@ -192,194 +254,18 @@ async def test_job_service():
         
         result = await job_service.create_job(
             user_id="dev-user-123",
-            job_data=job_data,
-            db=db
+            job_data=job_data
         )
         
         return {
             "status": "success",
-            "message": "Job service test successful",
+            "message": "Supabase job creation test successful",
             "result": result
         }
     except Exception as e:
         return {
             "status": "error",
-            "message": f"Job service test failed: {str(e)}"
-        }
-
-
-@app.post("/test-simple-job")
-async def test_simple_job():
-    """
-    Test simple job creation without service
-    """
-    try:
-        from app.database import get_db
-        from app.models import DubbingJob
-        from app.schemas import JobStatus
-        import uuid
-        
-        db = next(get_db())
-        
-        # Create a simple job
-        job_id = f"simple_job_{uuid.uuid4().hex[:8]}"
-        
-        job = DubbingJob(
-            id=job_id,
-            user_id="dev-user-123",
-            status=JobStatus.PROCESSING,
-            progress=0,
-            message="Simple test job",
-            target_languages=["es"]
-        )
-        
-        db.add(job)
-        db.commit()
-        db.refresh(job)
-        
-        # Check if job was created
-        created_job = db.query(DubbingJob).filter(DubbingJob.id == job_id).first()
-        
-        return {
-            "status": "success",
-            "message": "Simple job creation successful",
-            "job_id": job_id,
-            "job_exists": created_job is not None,
-            "job_status": created_job.status if created_job else None
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": f"Simple job creation failed: {str(e)}"
-        }
-
-
-@app.post("/test-language-task")
-async def test_language_task():
-    """
-    Test language task creation
-    """
-    try:
-        from app.database import get_db
-        from app.models import DubbingJob, LanguageTask
-        from app.schemas import JobStatus, LanguageTaskStatus
-        import uuid
-        
-        db = next(get_db())
-        
-        # Create a job first
-        job_id = f"task_job_{uuid.uuid4().hex[:8]}"
-        
-        job = DubbingJob(
-            id=job_id,
-            user_id="dev-user-123",
-            status=JobStatus.PROCESSING,
-            progress=0,
-            message="Test job for language task",
-            target_languages=["es"]
-        )
-        
-        db.add(job)
-        db.commit()
-        db.refresh(job)
-        
-        # Create a language task
-        task_id = f"task_{uuid.uuid4().hex[:12]}"
-        
-        language_task = LanguageTask(
-            id=task_id,
-            job_id=job_id,
-            language_code="es",
-            status=LanguageTaskStatus.PENDING,
-            progress=0,
-            message="Test language task"
-        )
-        
-        db.add(language_task)
-        db.commit()
-        db.refresh(language_task)
-        
-        # Check if task was created
-        created_task = db.query(LanguageTask).filter(LanguageTask.id == task_id).first()
-        
-        return {
-            "status": "success",
-            "message": "Language task creation successful",
-            "job_id": job_id,
-            "task_id": task_id,
-            "task_exists": created_task is not None,
-            "task_status": created_task.status if created_task else None
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": f"Language task creation failed: {str(e)}"
-        }
-
-
-@app.post("/test-job-event")
-async def test_job_event():
-    """
-    Test job event creation
-    """
-    try:
-        from app.database import get_db
-        from app.models import DubbingJob, JobEvent
-        from app.schemas import JobStatus
-        import uuid
-        
-        db = next(get_db())
-        
-        # Create a job first
-        job_id = f"event_job_{uuid.uuid4().hex[:8]}"
-        
-        job = DubbingJob(
-            id=job_id,
-            user_id="dev-user-123",
-            status=JobStatus.PROCESSING,
-            progress=0,
-            message="Test job for job event",
-            target_languages=["es"]
-        )
-        
-        db.add(job)
-        db.commit()
-        db.refresh(job)
-        
-        # Create a job event
-        event_id = f"event_{uuid.uuid4().hex[:12]}"
-        
-        job_event = JobEvent(
-            id=event_id,
-            job_id=job_id,
-            event_type="created",
-            message="Test job event",
-            event_metadata={
-                "languages": ["es"],
-                "voice_track_uploaded": True,
-                "background_track_uploaded": False
-            }
-        )
-        
-        db.add(job_event)
-        db.commit()
-        db.refresh(job_event)
-        
-        # Check if event was created
-        created_event = db.query(JobEvent).filter(JobEvent.id == event_id).first()
-        
-        return {
-            "status": "success",
-            "message": "Job event creation successful",
-            "job_id": job_id,
-            "event_id": event_id,
-            "event_exists": created_event is not None,
-            "event_type": created_event.event_type if created_event else None
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": f"Job event creation failed: {str(e)}"
+            "message": f"Supabase job creation test failed: {str(e)}"
         }
 
 
@@ -427,13 +313,8 @@ async def startup_event():
     """
     logger.info("Starting YT Dubber API...")
     
-    # Create database tables
-    try:
-        create_tables()
-        logger.info("Database tables created successfully")
-    except Exception as e:
-        logger.error(f"Error creating database tables: {e}")
-        # Don't fail startup if tables already exist
+    # Database tables are managed by Supabase - no need to create them here
+    logger.info("Using Supabase REST API for database operations")
     
     logger.info("YT Dubber API started successfully")
 
@@ -460,5 +341,6 @@ if settings.debug:
             "storage_bucket": settings.storage_bucket,
             "max_file_size": settings.max_file_size,
             "worker_poll_interval": settings.worker_poll_interval,
-            "max_concurrent_jobs": settings.max_concurrent_jobs
+            "max_concurrent_jobs": settings.max_concurrent_jobs,
+            "supabase_url": settings.supabase_url
         }

@@ -6,7 +6,7 @@ import logging
 from typing import Dict, List, Optional, Tuple
 from app.config import settings
 import openai
-from deepgram import DeepgramClient, PrerecordedOptions, FileSource
+from deepgram import DeepgramClient
 import tempfile
 import os
 
@@ -22,48 +22,34 @@ class AIService:
         self.openai_client = AsyncOpenAI(api_key=settings.openai_api_key)
 
         # Initialize Deepgram client
-        self.deepgram = DeepgramClient(settings.deepgram_api_key)
+        self.deepgram = DeepgramClient(api_key=settings.deepgram_api_key)
     
     async def transcribe_audio(
         self,
         audio_file_path: str,
         language: str = "en"
-    ) -> Dict[str, any]:
+    ) -> str:
         """
-        Transcribe audio using Deepgram
+        Transcribe audio using Deepgram v5 - simplified version
         """
         try:
             with open(audio_file_path, "rb") as audio_file:
                 buffer_data = audio_file.read()
             
-            payload: FileSource = {
-                "buffer": buffer_data,
-            }
-            
-            options = PrerecordedOptions(
+            # Deepgram v5 API with simplified parameters to avoid Pydantic issues
+            response = self.deepgram.listen.v1.media.transcribe_file(
+                request=buffer_data,
                 model="nova-2",
                 language=language,
                 smart_format=True,
-                punctuate=True,
-                utterances=True,
-                diarize=True,
-                paragraphs=True
+                punctuate=True
             )
             
-            response = self.deepgram.listen.prerecorded.v("1").transcribe_file(
-                payload, options
-            )
-            
-            # Extract transcript and timing information
+            # Extract just the transcript text
             transcript = response.results.channels[0].alternatives[0].transcript
-            words = response.results.channels[0].alternatives[0].words
             
-            return {
-                "transcript": transcript,
-                "words": words,
-                "confidence": response.results.channels[0].alternatives[0].confidence,
-                "duration": response.metadata.duration
-            }
+            logger.info(f"Transcribed audio: {len(transcript)} characters")
+            return transcript
             
         except Exception as e:
             logger.error(f"Error transcribing audio: {e}")
@@ -119,6 +105,77 @@ class AIService:
             logger.error(f"Error translating text: {e}")
             raise Exception("Failed to translate text")
     
+    async def translate_text_chunked(
+        self,
+        text: str,
+        target_language: str,
+        source_language: str = "en",
+        max_chunk_length: int = 1000
+    ) -> str:
+        """
+        Translate long text by breaking it into chunks and translating each chunk
+        
+        Args:
+            text: Text to translate
+            target_language: Target language code
+            source_language: Source language code
+            max_chunk_length: Maximum characters per chunk (default: 1500 to stay under 2000 limit)
+        
+        Returns:
+            Translated text
+        """
+        try:
+            if len(text) <= max_chunk_length:
+                # Text is short enough, translate directly
+                return await self.translate_text(text, target_language, source_language)
+            
+            logger.info(f"Translating long text ({len(text)} chars) in chunks of {max_chunk_length}")
+            
+            # Split text into sentences for better chunking
+            sentences = text.split('. ')
+            chunks = []
+            current_chunk = ""
+            
+            for sentence in sentences:
+                # Add period back if it's not the last sentence
+                if not sentence.endswith('.') and sentence != sentences[-1]:
+                    sentence += '.'
+                
+                # Check if adding this sentence would exceed the limit
+                if len(current_chunk) + len(sentence) + 1 <= max_chunk_length:
+                    if current_chunk:
+                        current_chunk += " " + sentence
+                    else:
+                        current_chunk = sentence
+                else:
+                    # Current chunk is full, save it and start a new one
+                    if current_chunk:
+                        chunks.append(current_chunk)
+                    current_chunk = sentence
+            
+            # Add the last chunk if it has content
+            if current_chunk:
+                chunks.append(current_chunk)
+            
+            logger.info(f"Split text into {len(chunks)} chunks")
+            
+            # Translate each chunk
+            translated_chunks = []
+            for i, chunk in enumerate(chunks):
+                logger.info(f"Translating chunk {i+1}/{len(chunks)} ({len(chunk)} chars)")
+                translated_chunk = await self.translate_text(chunk, target_language, source_language)
+                translated_chunks.append(translated_chunk)
+            
+            # Combine translated chunks
+            translated_text = " ".join(translated_chunks)
+            logger.info(f"Translation complete: {len(translated_text)} characters")
+            
+            return translated_text
+            
+        except Exception as e:
+            logger.error(f"Error translating chunked text: {e}")
+            raise Exception("Failed to translate chunked text")
+    
     async def generate_speech(
         self,
         text: str,
@@ -129,51 +186,198 @@ class AIService:
         Generate speech using Deepgram TTS
         """
         try:
-            # Map language codes to Deepgram voices
+            # Map language codes to Deepgram voices (using available Aura models)
             voice_mapping = {
-                "en": "aura-asteria-en",
-                "es": "aura-luna-es",
-                "fr": "aura-stella-fr",
-                "de": "aura-arcas-de",
-                "ja": "aura-asteria-en",  # Fallback to English voice
-                "zh": "aura-asteria-en",  # Fallback to English voice
-                "ko": "aura-asteria-en",  # Fallback to English voice
-                "pt": "aura-asteria-en",  # Fallback to English voice
-                "it": "aura-asteria-en",  # Fallback to English voice
-                "ru": "aura-asteria-en",  # Fallback to English voice
-                "ar": "aura-asteria-en",  # Fallback to English voice
-                "hi": "aura-asteria-en"   # Fallback to English voice
+                "en": "aura-asteria-en",      # English - Asteria (female, conversational)
+                "es": "aura-2-sirio-es",      # Spanish - Sirio (male, professional) - confirmed working
+                "fr": "aura-asteria-en",      # French - fallback to English (no French model available)
+                "de": "aura-asteria-en",      # German - fallback to English (no German model available)
+                "ja": "aura-asteria-en",      # Japanese - fallback to English (no Japanese model available)
+                "zh": "aura-asteria-en",      # Chinese - fallback to English (no Chinese model available)
+                "ko": "aura-asteria-en",      # Korean - fallback to English (no Korean model available)
+                "pt": "aura-asteria-en",      # Portuguese - fallback to English (no Portuguese model available)
+                "it": "aura-asteria-en",      # Italian - fallback to English (no Italian model available)
+                "ru": "aura-asteria-en",      # Russian - fallback to English (no Russian model available)
+                "ar": "aura-asteria-en",      # Arabic - fallback to English (no Arabic model available)
+                "hi": "aura-asteria-en"       # Hindi - fallback to English (no Hindi model available)
             }
 
             selected_voice = voice or voice_mapping.get(language, "aura-asteria-en")
 
-            # Create temporary file for the speech output
-            temp_file = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
-            temp_file.close()
-
-            # Generate speech and save to file
-            options = {
-                "text": text
-            }
-
-            response = self.deepgram.speak.v("1").save(
-                temp_file.name,
-                options,
-                model=selected_voice
+            # Generate speech using Deepgram TTS
+            response = self.deepgram.speak.v1.audio.generate(
+                text=text,
+                model=selected_voice,
+                encoding="mp3"
             )
 
-            # Read the generated file
-            with open(temp_file.name, "rb") as f:
-                audio_data = f.read()
+            # Collect all audio data from the iterator
+            audio_data = b""
+            for chunk in response:
+                audio_data += chunk
 
-            # Clean up temp file
-            os.remove(temp_file.name)
-
+            # Save to downloads directory for frontend access
+            import os
+            from datetime import datetime
+            
+            downloads_path = "downloads"
+            os.makedirs(downloads_path, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"ytdubber_{language}_{timestamp}.mp3"
+            file_path = os.path.join(downloads_path, filename)
+            
+            try:
+                with open(file_path, 'wb') as f:
+                    f.write(audio_data)
+                logger.info(f"🎵 Generated audio saved to downloads: {filename}")
+            except Exception as e:
+                logger.warning(f"Could not save to downloads: {e}")
+                
             return audio_data
 
         except Exception as e:
             logger.error(f"Error generating speech: {e}", exc_info=True)
             raise Exception(f"Failed to generate speech: {str(e)}")
+    
+    async def generate_speech_chunked(
+        self,
+        text: str,
+        language: str,
+        voice: str = None,
+        max_chunk_length: int = 1000
+    ) -> bytes:
+        """
+        Generate speech for long text by breaking it into chunks and combining audio
+        
+        Args:
+            text: Text to convert to speech
+            language: Target language code
+            voice: Voice to use (optional)
+            max_chunk_length: Maximum characters per chunk (default: 1500)
+        
+        Returns:
+            Combined audio data as bytes
+        """
+        try:
+            if len(text) <= max_chunk_length:
+                # Text is short enough, generate speech directly
+                return await self.generate_speech(text, language, voice)
+            
+            logger.info(f"Generating speech for long text ({len(text)} chars) in chunks of {max_chunk_length}")
+            
+            # Split text into smaller chunks more aggressively
+            chunks = []
+            current_chunk = ""
+            
+            # Split by sentences first
+            sentences = text.split('. ')
+            
+            for sentence in sentences:
+                # Add period back if it's not the last sentence
+                if not sentence.endswith('.') and sentence != sentences[-1]:
+                    sentence += '.'
+                
+                # If a single sentence is too long, split it by words
+                if len(sentence) > max_chunk_length:
+                    words = sentence.split(' ')
+                    for word in words:
+                        if len(current_chunk) + len(word) + 1 <= max_chunk_length:
+                            if current_chunk:
+                                current_chunk += " " + word
+                            else:
+                                current_chunk = word
+                        else:
+                            # Current chunk is full, save it and start a new one
+                            if current_chunk:
+                                chunks.append(current_chunk)
+                            current_chunk = word
+                else:
+                    # Check if adding this sentence would exceed the limit
+                    if len(current_chunk) + len(sentence) + 1 <= max_chunk_length:
+                        if current_chunk:
+                            current_chunk += " " + sentence
+                        else:
+                            current_chunk = sentence
+                    else:
+                        # Current chunk is full, save it and start a new one
+                        if current_chunk:
+                            chunks.append(current_chunk)
+                        current_chunk = sentence
+            
+            # Add the last chunk if it has content
+            if current_chunk:
+                chunks.append(current_chunk)
+            
+            logger.info(f"Split text into {len(chunks)} chunks for speech generation")
+            
+            # Generate speech for each chunk
+            audio_chunks = []
+            for i, chunk in enumerate(chunks):
+                logger.info(f"Generating speech for chunk {i+1}/{len(chunks)} ({len(chunk)} chars)")
+                chunk_audio = await self.generate_speech(chunk, language, voice)
+                audio_chunks.append(chunk_audio)
+            
+            # Combine audio chunks using FFmpeg
+            combined_audio = await self._combine_audio_chunks(audio_chunks)
+            logger.info(f"Speech generation complete: {len(combined_audio)} bytes")
+            
+            return combined_audio
+            
+        except Exception as e:
+            logger.error(f"Error generating chunked speech: {e}")
+            raise Exception(f"Failed to generate chunked speech: {str(e)}")
+    
+    async def _combine_audio_chunks(self, audio_chunks: List[bytes]) -> bytes:
+        """Combine multiple audio chunks into a single audio file"""
+        try:
+            import tempfile
+            import subprocess
+            from pathlib import Path
+            
+            # Create temporary directory for audio files
+            temp_dir = Path(tempfile.mkdtemp())
+            
+            # Save each chunk to a temporary file
+            chunk_files = []
+            for i, chunk_audio in enumerate(audio_chunks):
+                chunk_file = temp_dir / f"chunk_{i:03d}.mp3"
+                with open(chunk_file, 'wb') as f:
+                    f.write(chunk_audio)
+                chunk_files.append(str(chunk_file))
+            
+            # Create file list for FFmpeg
+            file_list = temp_dir / "file_list.txt"
+            with open(file_list, 'w') as f:
+                for chunk_file in chunk_files:
+                    f.write(f"file '{chunk_file}'\n")
+            
+            # Use FFmpeg to concatenate audio files
+            output_file = temp_dir / "combined.mp3"
+            cmd = [
+                "ffmpeg",
+                "-f", "concat",
+                "-safe", "0",
+                "-i", str(file_list),
+                "-acodec", "mp3",
+                "-y",  # Overwrite output
+                str(output_file)
+            ]
+            
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True, timeout=300)
+            
+            # Read the combined audio
+            with open(output_file, 'rb') as f:
+                combined_audio = f.read()
+            
+            # Clean up temporary files
+            import shutil
+            shutil.rmtree(temp_dir)
+            
+            return combined_audio
+            
+        except Exception as e:
+            logger.error(f"Error combining audio chunks: {e}")
+            raise Exception(f"Failed to combine audio chunks: {str(e)}")
     
     async def process_audio_file(
         self,
