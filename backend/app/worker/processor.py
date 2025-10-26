@@ -189,22 +189,40 @@ class JobProcessor:
             speech_audio = await self.ai_service.generate_speech(
                 translated_text, language_code
             )
-            
+
+            # TODO: Add audio mixing with background track if present
+            # If job.background_track_url exists:
+            #   1. Download background track
+            #   2. Save speech_audio to temp file
+            #   3. Use ai_service.mix_audio_tracks() to combine them
+            #   4. Upload mixed audio instead of speech_audio alone
+            # This would provide a complete dubbed experience with music/ambient audio
+
+            await self.job_service.update_language_task_status(
+                task_id, LanguageTaskStatus.PROCESSING, 90, "Uploading generated audio...", db=db
+            )
+
             # Save generated audio to storage
             audio_filename = f"dubbed_{language_code}_{uuid.uuid4().hex[:8]}.mp3"
             audio_path = self.storage_service.get_artifact_path(
                 job.user_id, job_id, language_code, "audio", audio_filename
             )
-            
-            # Upload to storage (simplified for MVP)
-            # In a real implementation, you'd upload the audio bytes to Supabase Storage
-            download_url = f"/downloads/{audio_path}"
-            
+
+            # Upload audio bytes to Supabase Storage
+            logger.info(f"Uploading generated audio to: {audio_path}")
+            public_url = await self.storage_service.upload_file(
+                file_path=audio_path,
+                file_data=speech_audio,
+                content_type="audio/mpeg"
+            )
+
+            logger.info(f"Generated audio uploaded successfully to: {public_url}")
+
             # Update task with results
             await self.job_service.update_language_task_status(
-                task_id, LanguageTaskStatus.COMPLETE, 100, 
-                "Language processing completed successfully", 
-                download_url=download_url, db=db
+                task_id, LanguageTaskStatus.COMPLETE, 100,
+                "Language processing completed successfully",
+                download_url=public_url, db=db
             )
             
             # Clean up temporary files
