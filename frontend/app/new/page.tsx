@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle, Scissors, FileAudio, Zap, Download, Star, X, Power } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle, Scissors, FileAudio, Zap, Download, Star, X, Power, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { FileUpload } from '@/components/FileUpload';
 import { LanguageChecklist } from '@/components/LanguageChecklist';
@@ -42,49 +42,12 @@ export default function NewJobPage() {
   const [bannerAnimationComplete, setBannerAnimationComplete] = useState(false);
   const [showPullTab, setShowPullTab] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-  const [isScrollingUp, setIsScrollingUp] = useState(false);
   
   // Refs for accessibility
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const openButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Handle scroll detection
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
-    let ticking = false;
-    
-    const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const currentScrollY = window.scrollY;
-          setScrollY(currentScrollY);
-          
-          // Detect scroll direction with threshold
-          const scrollThreshold = 5;
-          const scrollDifference = Math.abs(currentScrollY - lastScrollY);
-          
-          if (scrollDifference > scrollThreshold) {
-            if (currentScrollY > lastScrollY) {
-              // Scrolling down - hide button
-              setIsScrollingUp(false);
-            } else if (currentScrollY < lastScrollY) {
-              // Scrolling up - show button
-              setIsScrollingUp(true);
-            }
-            lastScrollY = currentScrollY;
-          }
-          
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Handle banner dismissal and pull tab visibility
   useEffect(() => {
@@ -374,6 +337,76 @@ export default function NewJobPage() {
               <span>View Jobs</span>
               <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
             </Link>
+            
+            {/* Guide Toggle Button */}
+            <AnimatePresence>
+              {showPullTab && (
+                <motion.button
+                  onClick={bannerDismissed ? handleRestoreBanner : handleDismissBanner}
+                  className={`group relative w-12 h-20 rounded-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center ${
+                    bannerDismissed 
+                      ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]' 
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  }`}
+                  whileHover={{ 
+                    scale: 1.05
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label={bannerDismissed ? "Restore guide banner" : "Dismiss guide banner"}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  {/* I/O Icon */}
+                  <motion.div
+                    className="w-6 h-6 flex items-center justify-center"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      rotate: bannerDismissed ? [0, 5, -5, 0] : [0, -5, 5, 0]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <Power className="w-5 h-5" />
+                  </motion.div>
+                  
+                  {/* Text Label */}
+                  <motion.div
+                    className="mt-1"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <span className="text-xs font-medium tracking-wider">
+                      {bannerDismissed ? 'GUIDE' : 'HIDE'}
+                    </span>
+                  </motion.div>
+                  
+                  {/* Subtle Pulse Effect */}
+                  <motion.div
+                    className="absolute inset-0 border border-white/30 rounded-lg"
+                    animate={{
+                      scale: [1, 1.02, 1],
+                      opacity: [0.3, 0.6, 0.3]
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                  
+                  {/* Hover Glow Effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  />
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
           
         </motion.div>
@@ -487,86 +520,6 @@ export default function NewJobPage() {
           )}
         </AnimatePresence>
 
-        {/* Compact I/O Toggle Panel - Sticky to viewport */}
-        <AnimatePresence>
-          {showPullTab && (
-            <motion.div
-              className="fixed right-0 top-4 z-50"
-              initial={{ x: "100%" }}
-              animate={{ 
-                x: isScrollingUp ? 0 : "100%"
-              }}
-              exit={{ x: "100%" }}
-              transition={{ 
-                duration: 0.4, 
-                ease: "easeInOut"
-              }}
-            >
-              <motion.button
-                onClick={bannerDismissed ? handleRestoreBanner : handleDismissBanner}
-                className={`group relative w-12 h-20 rounded-l-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center ${
-                  bannerDismissed 
-                    ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]' 
-                    : 'bg-green-600 text-white hover:bg-green-700'
-                }`}
-                whileHover={{ 
-                  scale: 1.05,
-                  x: -2
-                }}
-                whileTap={{ scale: 0.95 }}
-                aria-label={bannerDismissed ? "Restore guide banner" : "Dismiss guide banner"}
-              >
-                {/* I/O Icon */}
-                <motion.div
-                  className="w-6 h-6 flex items-center justify-center"
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    rotate: bannerDismissed ? [0, 5, -5, 0] : [0, -5, 5, 0]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <Power className="w-5 h-5" />
-                </motion.div>
-                
-                {/* Vertical Text */}
-                <motion.div
-                  className="absolute -left-8 top-1/2 -translate-y-1/2 transform -rotate-90 origin-center"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <span className="text-xs font-medium tracking-wider whitespace-nowrap">
-                    {bannerDismissed ? 'GUIDE' : 'HIDE'}
-                  </span>
-                </motion.div>
-                
-                
-                {/* Subtle Pulse Effect */}
-                <motion.div
-                  className="absolute inset-0 border border-white/30 rounded-l-lg"
-                  animate={{
-                    scale: [1, 1.02, 1],
-                    opacity: [0.3, 0.6, 0.3]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                
-                {/* Hover Glow Effect */}
-                <motion.div
-                  className="absolute inset-0 bg-white/10 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                />
-              </motion.button>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Step Content */}
         <motion.div 
@@ -1037,54 +990,106 @@ export default function NewJobPage() {
                 </div>
               )}
 
-              {/* Step 4: Submit Job */}
+              {/* Step 4: Job Summary & Launch */}
               {currentStep === 4 && (
                 <div className="space-y-8">
-                  {/* Job Summary */}
-                  <div className="bg-slate-50 rounded-lg p-6 border">
-                    <h3 className="text-lg font-semibold mb-4">Job Summary</h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Voice Track:</span>
-                        <span className="font-medium">{voiceTrack?.name}</span>
+                  {/* Enhanced Job Summary */}
+                  <motion.div
+                    className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-lg"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
+                    <div className="flex items-center space-x-3 mb-6">
+                      <div className="w-10 h-10 bg-gradient-to-r from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-6 h-6 text-white" />
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Duration:</span>
-                        <span className="font-medium">{voiceDuration ? formatDuration(voiceDuration) : 'Unknown'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Languages:</span>
-                        <span className="font-medium">{targetLanguages.length} selected</span>
-                      </div>
-                      {backgroundTrack && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Background Track:</span>
-                          <span className="font-medium">{backgroundTrack.name}</span>
+                      <h3 className="text-2xl font-bold text-foreground">Ready to Launch</h3>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600">
+                          <div className="flex items-center space-x-3">
+                            <Mic className="w-5 h-5 text-[#ff0000]" />
+                            <span className="font-medium text-foreground">Voice Track</span>
+                          </div>
+                          <span className="text-sm text-muted-foreground font-mono">{voiceTrack?.name}</span>
                         </div>
-                      )}
+                        
+                        <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600">
+                          <div className="flex items-center space-x-3">
+                            <Clock className="w-5 h-5 text-[#ff0000]" />
+                            <span className="font-medium text-foreground">Duration</span>
+                          </div>
+                          <span className="text-sm text-muted-foreground font-mono">
+                            {voiceDuration ? formatDuration(voiceDuration) : 'Unknown'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600">
+                          <div className="flex items-center space-x-3">
+                            <Globe className="w-5 h-5 text-[#ff0000]" />
+                            <span className="font-medium text-foreground">Languages</span>
+                          </div>
+                          <span className="text-sm text-muted-foreground font-medium">
+                            {targetLanguages.length} selected
+                          </span>
+                        </div>
+                        
+                        {backgroundTrack && (
+                          <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600">
+                            <div className="flex items-center space-x-3">
+                              <Music className="w-5 h-5 text-[#ff0000]" />
+                              <span className="font-medium text-foreground">Background</span>
+                            </div>
+                            <span className="text-sm text-muted-foreground font-mono">{backgroundTrack.name}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                    
+                    {/* Selected Languages Display */}
+                    <div className="mt-6 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600">
+                      <h4 className="font-medium text-foreground mb-3">Selected Languages:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {targetLanguages.map((lang) => {
+                          const language = LANGUAGES.find(l => l.code === lang);
+                          return (
+                            <span
+                              key={lang}
+                              className="inline-flex items-center space-x-2 px-3 py-1 bg-[#ff0000]/10 text-[#ff0000] rounded-full text-sm font-medium"
+                            >
+                              <span>{language?.flag}</span>
+                              <span>{language?.name}</span>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </motion.div>
 
-                  {/* Submit Button */}
-                  <div className="flex justify-center">
-                    <button
-                      onClick={handleSubmit}
-                      disabled={isSubmitting || !isFinalStepValid}
-                      className={`px-8 py-3 rounded-lg font-medium transition-colors ${
-                        isSubmitting || !isFinalStepValid
-                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          : 'bg-red-600 hover:bg-red-700 text-white'
-                      }`}
-                    >
-                      {isSubmitting ? 'Submitting...' : 'Submit Job'}
-                    </button>
-                  </div>
-
-                  {/* Status */}
+                  {/* Status Message */}
                   {isSubmitting && (
-                    <div className="text-center text-sm text-gray-600">
-                      Processing your dubbing job...
-                    </div>
+                    <motion.div
+                      className="text-center p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="flex items-center justify-center space-x-3">
+                        <motion.div
+                          className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        />
+                        <span className="text-blue-800 dark:text-blue-200 font-medium">
+                          Processing your dubbing job...
+                        </span>
+                      </div>
+                    </motion.div>
                   )}
                 </div>
               )}
