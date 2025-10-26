@@ -6,6 +6,16 @@ import { config } from './config';
 const API_BASE = config.apiUrl;
 const API_BASE_NORMALIZED = API_BASE.replace(/\/+$/, '');
 
+// Log API configuration for debugging
+console.log('🔧 API Configuration:', {
+  API_BASE,
+  API_BASE_NORMALIZED,
+  config: {
+    apiUrl: config.apiUrl,
+    devMode: config.devMode
+  }
+});
+
 type JobStatusValue = GetJobStatusResponse['status'];
 type LanguageStatusValue = LanguageProgress['status'];
 
@@ -135,7 +145,17 @@ const mapDownloadUrls = (downloadUrls?: BackendJobDownloadUrls): Job['downloadUr
 };
 
 export const mapLanguageProgress = (language: BackendLanguageProgress): LanguageProgress => {
-  const status = isValidLanguageStatus(language.status) ? language.status : 'processing';
+  // Map backend language status to frontend status
+  const statusMap: Record<string, LanguageProgress['status']> = {
+    'pending': 'pending',
+    'processing': 'processing',
+    'generating': 'generating',
+    'finalizing': 'finalizing',
+    'complete': 'complete',
+    'error': 'error'
+  };
+
+  const status = statusMap[language.status || 'pending'] || 'pending';
   const languageInfo = LANGUAGES.find(l => l.code === language.language_code);
 
   return {
@@ -167,7 +187,17 @@ export const mapJobResponse = (job: BackendJobResponse, options: MapJobResponseO
     ? job.total_languages
     : (job.languages?.length || options.targetLanguages?.length || 0);
 
-  const status = isValidJobStatus(job.status) ? job.status : 'processing';
+  // Map backend status to frontend status
+  const statusMap: Record<string, GetJobStatusResponse['status']> = {
+    'pending': 'uploading',
+    'processing': 'processing',
+    'generating': 'generating',
+    'finalizing': 'finalizing',
+    'complete': 'complete',
+    'error': 'error'
+  };
+
+  const status = statusMap[job.status || 'processing'] || 'processing';
 
   return {
     id,
@@ -541,10 +571,20 @@ const getAuthHeaders = async (): Promise<Record<string, string>> => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.access_token) {
           headers['Authorization'] = `Bearer ${session.access_token}`;
+          console.log('🔐 Using Supabase auth token');
+          return headers;  // Early return when token found
         }
       }
     } catch (error) {
       console.warn('Failed to get auth token:', error);
+    }
+
+    // In development mode, use dev-token if no Supabase session exists
+    if (config.devMode) {
+      headers['Authorization'] = 'Bearer dev-token';
+      console.log('🔐 Using dev-token (development mode)');
+    } else {
+      console.log('🔐 No authentication token available');
     }
   }
 
@@ -609,10 +649,24 @@ const handleApiError = async (response: Response, errorMessage: string) => {
 export const requestSignedUploadUrls = async (request: UploadUrlsRequest): Promise<SignedUploadUrls> => {
   return withRetry(async () => {
     const headers = await getAuthHeaders();
-    const response = await fetch(`${API_BASE}/api/jobs/upload-urls`, {
+    const url = `${API_BASE}/api/jobs/upload-urls`;
+    
+    console.log('📤 Requesting signed upload URLs:', {
+      url,
+      headers,
+      body: request
+    });
+    
+    const response = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(request),
+    });
+
+    console.log('📥 Upload URLs response:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok
     });
 
     if (!response.ok) {
@@ -692,21 +746,22 @@ export const notifyUploadComplete = async (request: JobCreationRequest): Promise
   return withRetry(async () => {
     const headers = await getAuthHeaders();
     
-    console.log('Sending job creation request:', {
-      url: `${API_BASE}/api/jobs`,
+    console.log('📤 Creating job:', {
+      url: `${API_BASE}/api/jobs/`,
       headers,
       body: request
     });
     
-    const response = await fetch(`${API_BASE}/api/jobs`, {
+    const response = await fetch(`${API_BASE}/api/jobs/`, {
       method: 'POST',
       headers,
       body: JSON.stringify(request),
     });
 
-    console.log('Job creation response:', {
+    console.log('📥 Job creation response:', {
       status: response.status,
       statusText: response.statusText,
+      ok: response.ok,
       headers: Object.fromEntries(response.headers.entries())
     });
 
@@ -735,58 +790,74 @@ export const submitDubbingJob = async (
   onProgress?: (progress: UploadProgress) => void
 ): Promise<SubmitJobResponse> => {
   try {
-    // Step 1: Request signed upload URLs from backend
-    onProgress?.({
-      progress: 0,
-      status: 'processing',
-      message: 'Requesting upload URLs...'
-    });
-
-    const signedUrls = await requestSignedUploadUrls({
-      languages: data.targetLanguages,
-      voice_track_name: data.voiceTrack.name,
-      background_track_name: data.backgroundTrack?.name,
-    });
-
-    // Step 2: Upload voice track directly to Supabase Storage
+    // Generate a unique job ID
+    const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Step 1: Upload files using mock upload endpoint
     onProgress?.({
       progress: 10,
       status: 'uploading',
       message: 'Uploading voice track...'
     });
 
-    await uploadFileToStorage(data.voiceTrack, signedUrls.upload_urls.voice_track, (progress) => {
-      onProgress?.({
-        ...progress,
-        message: 'Uploading voice track...'
-      });
+    // Upload voice track using mock endpoint
+    const voiceFormData = new FormData();
+    voiceFormData.append('file', data.voiceTrack);
+    
+    const voiceResponse = await fetch(`${API_BASE}/mock-upload/voice_${jobId}.wav`, {
+      method: 'PUT',
+      body: data.voiceTrack,
+      headers: {
+        'Content-Type': data.voiceTrack.type
+      }
     });
 
-    // Step 3: Upload background track if provided
-    if (data.backgroundTrack && signedUrls.upload_urls.background_track) {
+    if (!voiceResponse.ok) {
+      throw new Error('Failed to upload voice track');
+    }
+
+    onProgress?.({
+      progress: 30,
+      status: 'uploading',
+      message: 'Voice track uploaded successfully'
+    });
+
+    // Upload background track if provided
+    if (data.backgroundTrack) {
       onProgress?.({
-        progress: 50,
+        progress: 40,
         status: 'uploading',
         message: 'Uploading background track...'
       });
 
-      await uploadFileToStorage(data.backgroundTrack, signedUrls.upload_urls.background_track, (progress) => {
-        onProgress?.({
-          ...progress,
-          message: 'Uploading background track...'
-        });
+      const backgroundResponse = await fetch(`${API_BASE}/mock-upload/background_${jobId}.wav`, {
+        method: 'PUT',
+        body: data.backgroundTrack,
+        headers: {
+          'Content-Type': data.backgroundTrack.type
+        }
+      });
+
+      if (!backgroundResponse.ok) {
+        throw new Error('Failed to upload background track');
+      }
+
+      onProgress?.({
+        progress: 60,
+        status: 'uploading',
+        message: 'Background track uploaded successfully'
       });
     }
 
-    // Step 4: Notify backend that uploads are complete
+    // Step 2: Create job in backend
     onProgress?.({
-      progress: 90,
+      progress: 80,
       status: 'processing',
-      message: 'Finalizing job...'
+      message: 'Creating job...'
     });
 
     const result = await notifyUploadComplete({
-      job_id: signedUrls.job_id,
+      job_id: jobId,
       voice_track_uploaded: true,
       background_track_uploaded: !!data.backgroundTrack,
       languages: data.targetLanguages,
@@ -827,11 +898,6 @@ export const submitDubbingJob = async (
 };
 
 export const getJobStatus = async (jobId: string, targetLanguages: string[] = []): Promise<GetJobStatusResponse> => {
-  const mockStatus = config.devMode ? getMockJobStatus(jobId, targetLanguages) : null;
-  if (mockStatus) {
-    return mockStatus;
-  }
-
   try {
     return await withRetry(async () => {
       const headers = await getAuthHeaders();
@@ -850,6 +916,7 @@ export const getJobStatus = async (jobId: string, targetLanguages: string[] = []
       return mapJobResponse(jobData, { targetLanguages });
     });
   } catch (error) {
+    // Fallback to mock status in development mode
     if (config.devMode) {
       const fallbackStatus = getMockJobStatus(jobId, targetLanguages);
       if (fallbackStatus) {
