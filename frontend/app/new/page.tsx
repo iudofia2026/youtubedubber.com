@@ -303,6 +303,164 @@ export default function NewJobPage() {
           
         </motion.div>
 
+        {/* Prominent How It Works Banner - Moved to Top */}
+        <motion.div
+          className="relative mb-8 overflow-hidden"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 100 }}
+        >
+          {/* Animated Background */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-[#ff0000] via-[#ff3333] to-[#ff0000] opacity-90"
+            animate={{
+              backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
+          {/* Animated Pattern Overlay */}
+          <motion.div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+            animate={{
+              x: [0, 60, 0],
+              y: [0, 30, 0]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+          
+          {/* Main Content */}
+          <div className="relative px-8 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                {/* Animated Icon */}
+                <motion.div
+                  className="relative"
+                  animate={{
+                    rotate: [0, 10, -10, 0],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                    <Scissors className="w-6 h-6 text-white" />
+                  </div>
+                  
+                  {/* Pulsing Ring */}
+                  <motion.div
+                    className="absolute inset-0 border-2 border-white/30 rounded-full"
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.8, 0, 0.8]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeOut"
+                    }}
+                  />
+                </motion.div>
+                
+                {/* Text Content */}
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-1">
+                    New to AI Dubbing?
+                  </h3>
+                  <p className="text-white/90 text-sm">
+                    Learn how our 4-step process works in under 2 minutes
+                  </p>
+                </div>
+              </div>
+              
+              {/* CTA Button */}
+              <motion.button
+                ref={openButtonRef}
+                onClick={handleOpenModal}
+                className="group relative px-8 py-4 bg-white text-[#ff0000] font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/50"
+                whileHover={{
+                  scale: 1.05,
+                  y: -2,
+                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)"
+                }}
+                whileTap={{ scale: 0.95 }}
+                aria-label="Learn how the dubbing process works"
+                aria-expanded={showHowItWorks}
+                aria-haspopup="dialog"
+              >
+                <div className="flex items-center space-x-2">
+                  <span>Get Started Guide</span>
+                  <motion.div
+                    animate={{
+                      x: [0, 4, 0]
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <ArrowRight className="w-5 h-5" />
+                  </motion.div>
+                </div>
+                
+                {/* Shimmer Effect */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-xl"
+                  animate={{
+                    x: ["-100%", "100%"]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1
+                  }}
+                />
+              </motion.button>
+            </div>
+          </div>
+          
+          {/* Decorative Elements */}
+          <motion.div
+            className="absolute top-2 right-2 w-16 h-16 border border-white/20 rounded-full"
+            animate={{
+              rotate: 360,
+              scale: [1, 1.1, 1]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-2 left-2 w-8 h-8 border border-white/20 rounded-full"
+            animate={{
+              rotate: -360,
+              scale: [1, 1.2, 1]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        </motion.div>
 
         {/* Step Content */}
         <div className="max-w-6xl mx-auto">
@@ -1004,164 +1162,6 @@ export default function NewJobPage() {
             </div>
           </motion.div>
 
-          {/* Prominent How It Works Banner */}
-          <motion.div
-            className="relative mb-8 overflow-hidden"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3, type: "spring", stiffness: 100 }}
-          >
-            {/* Animated Background */}
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-[#ff0000] via-[#ff3333] to-[#ff0000] opacity-90"
-              animate={{
-                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-            
-            {/* Animated Pattern Overlay */}
-            <motion.div
-              className="absolute inset-0 opacity-20"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              }}
-              animate={{
-                x: [0, 60, 0],
-                y: [0, 30, 0]
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-            />
-            
-            {/* Main Content */}
-            <div className="relative px-8 py-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  {/* Animated Icon */}
-                  <motion.div
-                    className="relative"
-                    animate={{
-                      rotate: [0, 10, -10, 0],
-                      scale: [1, 1.1, 1]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                      <Scissors className="w-6 h-6 text-white" />
-                    </div>
-                    
-                    {/* Pulsing Ring */}
-                    <motion.div
-                      className="absolute inset-0 border-2 border-white/30 rounded-full"
-                      animate={{
-                        scale: [1, 1.5, 1],
-                        opacity: [0.8, 0, 0.8]
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeOut"
-                      }}
-                    />
-                  </motion.div>
-                  
-                  {/* Text Content */}
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-1">
-                      New to AI Dubbing?
-                    </h3>
-                    <p className="text-white/90 text-sm">
-                      Learn how our 4-step process works in under 2 minutes
-                    </p>
-                  </div>
-                </div>
-                
-                {/* CTA Button */}
-                <motion.button
-                  ref={openButtonRef}
-                  onClick={handleOpenModal}
-                  className="group relative px-8 py-4 bg-white text-[#ff0000] font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/50"
-                  whileHover={{
-                    scale: 1.05,
-                    y: -2,
-                    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)"
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  aria-label="Learn how the dubbing process works"
-                  aria-expanded={showHowItWorks}
-                  aria-haspopup="dialog"
-                >
-                  <div className="flex items-center space-x-2">
-                    <span>Get Started Guide</span>
-                    <motion.div
-                      animate={{
-                        x: [0, 4, 0]
-                      }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    >
-                      <ArrowRight className="w-5 h-5" />
-                    </motion.div>
-                  </div>
-                  
-                  {/* Shimmer Effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-xl"
-                    animate={{
-                      x: ["-100%", "100%"]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: 1
-                    }}
-                  />
-                </motion.button>
-              </div>
-            </div>
-            
-            {/* Decorative Elements */}
-            <motion.div
-              className="absolute top-2 right-2 w-16 h-16 border border-white/20 rounded-full"
-              animate={{
-                rotate: 360,
-                scale: [1, 1.1, 1]
-              }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-            />
-            <motion.div
-              className="absolute bottom-2 left-2 w-8 h-8 border border-white/20 rounded-full"
-              animate={{
-                rotate: -360,
-                scale: [1, 1.2, 1]
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-            />
-          </motion.div>
 
           {/* Navigation Buttons */}
           <motion.div
