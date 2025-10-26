@@ -40,8 +40,6 @@ export default function NewJobPage() {
   // State for banner dismissal
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [bannerAnimationComplete, setBannerAnimationComplete] = useState(false);
-  const [showPullTab, setShowPullTab] = useState(false);
-  const [hasUserInteracted, setHasUserInteracted] = useState(false);
   
   // Refs for accessibility
   const modalRef = useRef<HTMLDivElement>(null);
@@ -49,24 +47,12 @@ export default function NewJobPage() {
   const openButtonRef = useRef<HTMLButtonElement>(null);
 
 
-  // Handle banner dismissal and pull tab visibility
+  // Handle banner dismissal
   useEffect(() => {
-    if (bannerDismissed) {
-      // Show pull tab after a short delay
-      const pullTabTimer = setTimeout(() => {
-        setShowPullTab(true);
-        setHasUserInteracted(true);
-      }, 1000);
-      
-      return () => clearTimeout(pullTabTimer);
-    } else {
+    if (!bannerDismissed) {
       setBannerAnimationComplete(false);
-      // Keep pull tab visible if user has interacted with it
-      if (!hasUserInteracted) {
-        setShowPullTab(false);
-      }
     }
-  }, [bannerDismissed, hasUserInteracted]);
+  }, [bannerDismissed]);
 
   // Handle banner interactions
   const handleDismissBanner = useCallback(() => {
@@ -76,8 +62,6 @@ export default function NewJobPage() {
   const handleRestoreBanner = useCallback(() => {
     setBannerDismissed(false);
     setBannerAnimationComplete(false);
-    // Keep the restore button visible after restoring banner
-    // Don't hide the pull tab - let it stay for easy toggling
   }, []);
 
   // Handle file removal with proper state reset
@@ -337,6 +321,23 @@ export default function NewJobPage() {
               <span>View Jobs</span>
               <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
             </Link>
+            
+            {/* Simple Restore Banner Button */}
+            <AnimatePresence>
+              {bannerDismissed && (
+                <motion.button
+                  onClick={handleRestoreBanner}
+                  className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-[#ff0000] hover:bg-[#cc0000] rounded-lg transition-all duration-200 group"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  <span>Show Guide</span>
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">↑</span>
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
           
         </motion.div>
@@ -465,146 +466,6 @@ export default function NewJobPage() {
             }
           }}
         >
-          {/* Guide Toggle Button - Positioned far to the side */}
-          <div className="flex justify-end mb-6 -mr-16">
-            <div className="w-12 h-20">
-              <AnimatePresence>
-                {showPullTab && !bannerDismissed && (
-                  <motion.button
-                    onClick={handleDismissBanner}
-                    className="group relative w-12 h-20 rounded-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center bg-[#ff0000] text-white hover:bg-[#cc0000]"
-                    whileHover={{ 
-                      scale: 1.05
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    aria-label="Dismiss guide banner"
-                    initial={{ x: "100%" }}
-                    animate={{ x: 0 }}
-                    exit={{ x: "100%" }}
-                    transition={{ duration: 0.4, ease: "easeInOut" }}
-                  >
-                    {/* I/O Icon */}
-                    <motion.div
-                      className="w-6 h-6 flex items-center justify-center"
-                      animate={{
-                        scale: [1, 1.1, 1],
-                        rotate: [0, 5, -5, 0]
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    >
-                      <Power className="w-5 h-5" />
-                    </motion.div>
-                    
-                    {/* Text Label */}
-                    <motion.div
-                      className="mt-1"
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                    >
-                      <span className="text-xs font-medium tracking-wider">
-                        HIDE
-                      </span>
-                    </motion.div>
-                    
-                    {/* Subtle Pulse Effect */}
-                    <motion.div
-                      className="absolute inset-0 border border-white/30 rounded-lg"
-                      animate={{
-                        scale: [1, 1.02, 1],
-                        opacity: [0.3, 0.6, 0.3]
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    />
-                    
-                    {/* Hover Glow Effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    />
-                  </motion.button>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-          
-          {/* Restore Button - Only shows when banner is dismissed */}
-          <AnimatePresence>
-            {bannerDismissed && (
-              <motion.div
-                className="fixed right-4 top-1/2 -translate-y-1/2 z-50"
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-              >
-                <motion.button
-                  onClick={handleRestoreBanner}
-                  className="group relative w-12 h-20 rounded-l-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center bg-[#ff0000] text-white hover:bg-[#cc0000]"
-                  whileHover={{ 
-                    scale: 1.05,
-                    x: -2
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  aria-label="Restore guide banner"
-                >
-                  {/* I/O Icon */}
-                  <motion.div
-                    className="w-6 h-6 flex items-center justify-center"
-                    animate={{
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, -5, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <Power className="w-5 h-5" />
-                  </motion.div>
-                  
-                  {/* Vertical Text */}
-                  <motion.div
-                    className="absolute -left-8 top-1/2 -translate-y-1/2 transform -rotate-90 origin-center"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <span className="text-xs font-medium tracking-wider whitespace-nowrap">
-                      GUIDE
-                    </span>
-                  </motion.div>
-                  
-                  {/* Subtle Pulse Effect */}
-                  <motion.div
-                    className="absolute inset-0 border border-white/30 rounded-l-lg"
-                    animate={{
-                      scale: [1, 1.02, 1],
-                      opacity: [0.3, 0.6, 0.3]
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                  
-                  {/* Hover Glow Effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-white/10 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  />
-                </motion.button>
-              </motion.div>
-            )}
-          </AnimatePresence>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
