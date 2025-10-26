@@ -82,7 +82,7 @@ backend/
 │   ├── api/
 │   │   ├── __init__.py
 │   │   ├── jobs.py          # Job management endpoints
-│   │   └── upload.py        # Upload endpoints
+│   │   └── payments.py      # Payment endpoints
 │   ├── services/
 │   │   ├── __init__.py
 │   │   ├── ai_service.py    # AI service integration
