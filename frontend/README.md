@@ -125,7 +125,7 @@ frontend/
 │   ├── jobs/             # Job management components
 │   ├── FileUpload.tsx    # Drag & drop file upload
 │   ├── LanguageChecklist.tsx # Multi-select language picker
-│   ├── JobCreationWizard.tsx # 3-step upload wizard
+│   ├── JobCreationWizard.tsx # 4-step upload wizard
 │   ├── IndividualLanguageProgress.tsx # Per-language progress cards
 │   ├── Navigation.tsx    # Main navigation with YTdubber branding
 │   ├── YTdubberIcon.tsx  # Custom logo component
@@ -203,6 +203,7 @@ frontend/
 ### File Upload System
 - **Voice Track**: Required audio or video file (voice-only, no music/SFX)
 - **Background Track**: Optional audio or video file (music, SFX, ambient)
+- **Auto-Navigation**: Files automatically advance to next step after successful upload
 - **Validation**: 
   - File size limit: 100MB
   - Audio/Video format support: `audio/*`, `video/mp4`
@@ -220,7 +221,16 @@ frontend/
 ### Language Selection
 - **Supported Languages**: 12 languages (EN, ES, FR, DE, JA, ZH, KO, PT, IT, RU, AR, HI)
 - **UI**: Multi-select checklist with search, flags, and validation
+- **Auto-Navigation**: Automatically advances to next step when at least one language is selected
 - **Validation**: Minimum 1 language required
+
+### Auto-Navigation System
+- **Smart Step Progression**: Automatically advances through the 4-step job creation wizard
+- **Voice Track Upload**: Auto-advances to background track step after 1 second delay
+- **Background Track Upload**: Auto-advances to language selection step after 1 second delay
+- **Language Selection**: Auto-advances to launch step after 500ms delay when at least one language is selected
+- **Manual Override**: Users can still use Previous/Next buttons for manual control
+- **Enhanced UX**: Reduces friction while preserving user choice and control
 
 ### Job Processing (Mock)
 - **Statuses**: uploading → processing → generating → finalizing → complete
@@ -514,12 +524,15 @@ The API base URL is configured via `NEXT_PUBLIC_API_URL` environment variable.
 - **NEW**: SSR Hydration Fix - Resolved infinite loading issue with job filtering
 - **NEW**: Mobile Optimization - Enhanced touch interactions and mobile-specific UI improvements
 - **NEW**: Navigation Improvements - Added breadcrumbs, enhanced page headers, and improved navigation flow
+- **NEW**: Downloads Page Relocation - Moved downloads from main navigation to creative section at bottom of jobs page
 - **NEW**: Authentication System - Complete Supabase integration with login/register/profile management
 - **NEW**: Marketing Pages - Comprehensive Features, Pricing, and How it Works pages with professional UI/UX
 - **NEW**: Homepage How it Works Section - Added 4-step process explanation directly on homepage for new users
 - **NEW**: Navigation Optimization - Streamlined navigation by removing How it Works (moved to homepage)
 - **NEW**: Footer Updates - Updated footer links to point to actual pages instead of hash links
 - **NEW**: Banner Animation Enhancement - Smooth banner dismissal with content glide-up animation
+- **NEW**: Simple Restore Mechanism - Replaced complex guide button system with clean "Show Guide" button in bottom-right corner
+- **NEW**: Layout Stability - Fixed layout shift issues by positioning restore button as fixed overlay
 
 **Next Steps**: Continue with remaining high-impact, low-effort items from the expansion roadmap.
 
@@ -1156,7 +1169,11 @@ CREATE TABLE jobs (
 - ✅ **Documentation**: Updated frontend context with latest features
 - ✅ **Dev Mode Toggle**: Floating bottom-right toggle for quick dev/normal mode switching
 
-**Recent UI/UX Enhancements (isiah-frontend-oct15 branch)**:
+**Recent UI/UX Enhancements (Oct 26, 2025)**:
+- ✅ **Auto-Navigation System**: Implemented smart step progression for seamless job creation flow
+- ✅ **File Upload Auto-Advance**: Voice and background track uploads automatically advance to next step
+- ✅ **Language Selection Auto-Advance**: Language selection automatically advances to launch step
+- ✅ **Enhanced User Experience**: Reduces friction while maintaining manual control options
 - ✅ **Professional Icon System**: Replaced all emojis (🎬, ✅, ❌, ⚡, ⏳) with Lucide React icons for cleaner, more professional appearance
 - ✅ **Dual View System**: Added Grid/List view toggle for job management with URL persistence and smooth transitions
 - ✅ **Enhanced Progress Visualization**: Creative inline progress meters with shimmer effects, pulsing indicators, and language completion dots
@@ -1356,6 +1373,12 @@ CREATE TABLE jobs (
 - **Footer Navigation**: ✅ Comprehensive footer with legal links and social media
 
 ### Recent Visual Improvements
+- **Downloads Page Relocation**: Enhanced user experience by moving downloads access from main navigation to jobs page
+  - **Creative Downloads Section**: Beautiful gradient background with animated decorations at bottom of jobs page
+  - **Better Information Architecture**: Downloads now contextually placed where users need it most
+  - **Streamlined Navigation**: Cleaner main navigation focused on core functionality (Home, New Job, Jobs)
+  - **Interactive Design**: Hover effects, scale animations, and professional styling for downloads link
+
 - **YouTube Native Dubbing Comparison**: Added comprehensive comparison table featuring YouTube's native dubbing capabilities
   - **Voice Quality**: YT Dubber's AI-powered studio-grade quality vs YouTube's manual recording requirement
   - **Processing Speed**: 2-5 minutes automated processing vs YouTube's manual recording and editing process
