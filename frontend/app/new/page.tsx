@@ -67,10 +67,10 @@ export default function NewJobPage() {
           
           if (scrollDifference > scrollThreshold) {
             if (currentScrollY > lastScrollY) {
-              // Scrolling down
+              // Scrolling down - hide button
               setIsScrollingUp(false);
             } else if (currentScrollY < lastScrollY) {
-              // Scrolling up
+              // Scrolling up - show button
               setIsScrollingUp(true);
             }
             lastScrollY = currentScrollY;
@@ -491,7 +491,7 @@ export default function NewJobPage() {
         <AnimatePresence>
           {showPullTab && (
             <motion.div
-              className="fixed right-0 top-1/3 -translate-y-1/2 z-50"
+              className="fixed right-0 top-4 z-50"
               initial={{ x: "100%" }}
               animate={{ 
                 x: isScrollingUp ? "-100%" : 0,
@@ -546,19 +546,6 @@ export default function NewJobPage() {
                   </span>
                 </motion.div>
                 
-                {/* Status Indicator */}
-                <motion.div
-                  className="absolute top-2 right-2 w-2 h-2 rounded-full"
-                  animate={{
-                    backgroundColor: bannerDismissed ? '#ff0000' : '#10b981',
-                    scale: [1, 1.2, 1]
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
                 
                 {/* Subtle Pulse Effect */}
                 <motion.div
