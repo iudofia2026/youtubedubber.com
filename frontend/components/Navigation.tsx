@@ -112,13 +112,6 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
       current: pathname === '/new',
       requireAuth: true,
     },
-    {
-      name: 'Downloads',
-      href: '/downloads',
-      icon: Download,
-      current: pathname === '/downloads',
-      requireAuth: true,
-    },
   ], [pathname]);
 
   const jobsDropdownItems = React.useMemo(() => [

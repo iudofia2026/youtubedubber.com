@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, BarChart } from 'lucide-react';
+import { ArrowLeft, Plus, BarChart, Download, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -329,6 +329,40 @@ function JobsPageContent() {
           onStatusFilterChange={handleStatusFilterChange}
         />
         </main>
+        
+        {/* Creative Downloads Section */}
+        <div className="mt-16 mb-8">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 border border-blue-200/50 dark:border-blue-800/50">
+            {/* Background decoration */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-400/20 to-rose-400/20 rounded-full blur-2xl"></div>
+            
+            <div className="relative p-8 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Download className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Ready to Download?
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto">
+                Access all your completed dubbing projects and manage your downloads in one place.
+              </p>
+              
+              <Link 
+                href="/downloads"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
+                <Download className="w-5 h-5" />
+                Go to Downloads
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </ProtectedRoute>
   );
