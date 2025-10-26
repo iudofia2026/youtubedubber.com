@@ -519,6 +519,7 @@ The API base URL is configured via `NEXT_PUBLIC_API_URL` environment variable.
 - **NEW**: Homepage How it Works Section - Added 4-step process explanation directly on homepage for new users
 - **NEW**: Navigation Optimization - Streamlined navigation by removing How it Works (moved to homepage)
 - **NEW**: Footer Updates - Updated footer links to point to actual pages instead of hash links
+- **NEW**: Banner Animation Enhancement - Smooth banner dismissal with content glide-up animation
 
 **Next Steps**: Continue with remaining high-impact, low-effort items from the expansion roadmap.
 
@@ -1111,23 +1112,18 @@ CREATE TABLE jobs (
 - **Error Messages**: Mobile-friendly error display
 
 **Latest Updates**:
-- ✅ **Gamified Job Launch Interface**: Completely redesigned Step 4 with super clean, gamified UI that makes spending credits feel rewarding
-- ✅ **Ultra-Concise Text**: Reduced all text to maximum 10 words with professional icons only
-- ✅ **Reward-Focused Design**: "Unlock X new audiences" messaging that gamifies the credit spending experience
-- ✅ **Clean Launch Card**: Removed "You're Almost There!" section, replaced with streamlined launch interface
-- ✅ **Professional Icons**: Replaced all emojis with Lucide React icons for clean, professional appearance
-- ✅ **Simplified Step Titles**: Voice, Background, Languages, Launch (ultra-concise)
-- ✅ **Enhanced Launch Button**: Gamified submit button with "Launch Job" text and enhanced animations
-- ✅ **Quick Stats Grid**: Clean 3-column layout showing Voice, Languages, and Credits at a glance
-- ✅ **Top Banner Design**: Moved banner to the top of the page for immediate visibility and attention
-- ✅ **High Visibility Elements**: Large text, prominent CTA button, and animated patterns positioned at the top
-- ✅ **Advanced Animations**: Animated gradient background, pulsing rings, shimmer effects, and rotating decorative elements
-- ✅ **Professional Layout**: Full-width banner with proper spacing and visual hierarchy
-- ✅ **Enhanced User Experience**: Impossible to miss with clear value proposition and compelling call-to-action
-- ✅ **Streamlined Job Creation Flow**: Removed redundant "Get Started Now" section that was causing excessive scrolling
-- ✅ **Improved User Experience**: Users now start directly at voice track upload for faster onboarding
-- ✅ **Simplified Step Navigation**: Streamlined 4-step process with cleaner progression
-- ✅ **Maintained Accessibility**: "How It Works" content still available via modal for users who need guidance
+- ✅ **Minimalist Job Launch Interface**: Completely redesigned Step 4 with ultra-clean, minimalist rectangular button design
+- ✅ **Giant Submit Button**: 480x80px clean rectangular button with sharp edges and muted red color palette
+- ✅ **Sharp Geometric Design**: Clean rectangular design with sharp edges, no rounded corners for professional appearance
+- ✅ **Muted Color Palette**: Updated from bright red (#ff0000) to muted red (#dc2626) for better visual comfort
+- ✅ **Minimalist Timeline**: Removed duplicate timeline, keeping only the main progress bar at bottom for cleaner layout
+- ✅ **Clean Typography**: Large "LAUNCH" text with "START DUBBING" subtitle in clean, professional styling
+- ✅ **Subtle Animations**: Light sweep effects, gentle pulsing, and smooth hover transitions for enhanced UX
+- ✅ **Professional Icons**: Clean Zap and ArrowRight icons with subtle scaling animations
+- ✅ **Streamlined Layout**: Removed complex geometric shapes in favor of clean, minimalist design
+- ✅ **Enhanced UX**: Nonchalant, sleek interface that makes job submission feel satisfying and professional
+- ✅ **Mobile Optimized**: Touch-friendly design with proper haptic feedback and responsive sizing
+- ✅ **Progress Integration**: Seamless integration with existing step progression system
 - ✅ **Enhanced Job View Page**: Created comprehensive job details page with rich data and clean UX
 - ✅ **Interactive Job Cards**: Added 4 detailed overview cards (Audio Files, Languages, Settings, Activity)
 - ✅ **Audio Preview System**: Implemented audio player interface with play controls and progress bars
@@ -1408,6 +1404,12 @@ CREATE TABLE jobs (
   - **Advanced Animations**: Pulsing rings, rotating decorative elements, and shimmer effects
   - **Professional Layout**: Proper spacing, visual hierarchy, and responsive design
   - **High Contrast**: White text on red background with white button for maximum visibility
+  - **Smooth Dismissal Animation**: Enhanced banner dismissal with smooth height collapse and content glide-up
+    - **Height Animation**: Banner smoothly collapses from full height to 0 using maxHeight transition
+    - **Content Glide**: Step content smoothly glides up by 20px when banner is dismissed
+    - **Synchronized Timing**: Both animations use 0.6s duration with easeInOut easing for natural motion
+    - **Layout Animation**: Uses Framer Motion's layout prop for automatic smooth transitions
+    - **No Snapping**: Eliminates jarring content jumps when banner is dismissed
 
 - **Smart First-Time User Detection**: Implemented intelligent user flow based on job history
   - **First-Time Users**: See complete "How It Works" guide (Step 0) with 4-step process explanation
