@@ -37,10 +37,37 @@ export default function NewJobPage() {
   // State for showing How It Works modal
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   
+  // State for banner dismissal
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [showPullTab, setShowPullTab] = useState(false);
+  
   // Refs for accessibility
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const openButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Handle banner dismissal and pull tab visibility
+  useEffect(() => {
+    if (bannerDismissed) {
+      // Show pull tab after a short delay
+      const timer = setTimeout(() => {
+        setShowPullTab(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowPullTab(false);
+    }
+  }, [bannerDismissed]);
+
+  // Handle banner interactions
+  const handleDismissBanner = useCallback(() => {
+    setBannerDismissed(true);
+  }, []);
+
+  const handleRestoreBanner = useCallback(() => {
+    setBannerDismissed(false);
+    setShowPullTab(false);
+  }, []);
 
   // Handle file removal with proper state reset
   const handleVoiceTrackChange = useCallback((file: File | null) => {
@@ -58,10 +85,10 @@ export default function NewJobPage() {
   }, []);
 
   const steps = [
-    { id: 1, title: 'Voice Track', description: 'Upload your voice-only audio or video file', icon: Mic },
-    { id: 2, title: 'Background Track', description: 'Add background music (optional)', icon: Music },
-    { id: 3, title: 'Target Languages', description: 'Select languages for dubbing', icon: Globe },
-    { id: 4, title: 'Review & Submit', description: 'Review your job and submit for processing', icon: Upload },
+    { id: 1, title: 'Voice', description: 'Upload audio', icon: Mic },
+    { id: 2, title: 'Background', description: 'Add music', icon: Music },
+    { id: 3, title: 'Languages', description: 'Select targets', icon: Globe },
+    { id: 4, title: 'Launch', description: 'Start dubbing', icon: Upload },
   ];
 
   // How it works steps content
@@ -304,37 +331,33 @@ export default function NewJobPage() {
         </motion.div>
 
         {/* Prominent How It Works Banner - Moved to Top */}
-        <motion.div
-          className="relative mb-8 overflow-hidden"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 100 }}
-        >
-          {/* Animated Background */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-[#ff0000] via-[#ff3333] to-[#ff0000] opacity-90"
-            animate={{
-              backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
+        <AnimatePresence>
+          {!bannerDismissed && (
+            <motion.div
+              className="relative mb-8 overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ 
+                opacity: 0, 
+                x: "100%",
+                transition: { duration: 0.5, ease: "easeInOut" }
+              }}
+              transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 100 }}
+            >
+          {/* Static Background - More Performance */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#ff0000] via-[#ff3333] to-[#ff0000] opacity-90" />
           
-          {/* Animated Pattern Overlay */}
+          {/* Subtle Pattern Overlay - Reduced Animation */}
           <motion.div
-            className="absolute inset-0 opacity-20"
+            className="absolute inset-0 opacity-10"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
             }}
             animate={{
-              x: [0, 60, 0],
-              y: [0, 30, 0]
+              x: [0, 30, 0]
             }}
             transition={{
-              duration: 8,
+              duration: 12,
               repeat: Infinity,
               ease: "linear"
             }}
@@ -344,36 +367,21 @@ export default function NewJobPage() {
           <div className="relative px-8 py-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                {/* Animated Icon */}
+                {/* Minimal Animated Icon - Reduced Animation */}
                 <motion.div
                   className="relative"
                   animate={{
-                    rotate: [0, 10, -10, 0],
-                    scale: [1, 1.1, 1]
+                    scale: [1, 1.02, 1]
                   }}
                   transition={{
-                    duration: 2,
+                    duration: 3,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
                 >
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                    <Scissors className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                    <Scissors className="w-5 h-5 text-white" />
                   </div>
-                  
-                  {/* Pulsing Ring */}
-                  <motion.div
-                    className="absolute inset-0 border-2 border-white/30 rounded-full"
-                    animate={{
-                      scale: [1, 1.5, 1],
-                      opacity: [0.8, 0, 0.8]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeOut"
-                    }}
-                  />
                 </motion.div>
                 
                 {/* Text Content */}
@@ -387,80 +395,69 @@ export default function NewJobPage() {
                 </div>
               </div>
               
-              {/* CTA Button */}
-              <motion.button
-                ref={openButtonRef}
-                onClick={handleOpenModal}
-                className="group relative px-8 py-4 bg-white text-[#ff0000] font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/50"
-                whileHover={{
-                  scale: 1.05,
-                  y: -2,
-                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)"
-                }}
-                whileTap={{ scale: 0.95 }}
-                aria-label="Learn how the dubbing process works"
-                aria-expanded={showHowItWorks}
-                aria-haspopup="dialog"
-              >
-                <div className="flex items-center space-x-2">
-                  <span>Get Started Guide</span>
-                  <motion.div
-                    animate={{
-                      x: [0, 4, 0]
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <ArrowRight className="w-5 h-5" />
-                  </motion.div>
-                </div>
+              {/* Action Buttons */}
+              <div className="flex items-center space-x-3">
+                {/* CTA Button - Lightweight */}
+                <motion.button
+                  ref={openButtonRef}
+                  onClick={handleOpenModal}
+                  className="group relative px-6 py-3 bg-white text-[#ff0000] font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-white/50"
+                  whileHover={{
+                    scale: 1.01
+                  }}
+                  whileTap={{ scale: 0.99 }}
+                  aria-label="Learn how the dubbing process works"
+                  aria-expanded={showHowItWorks}
+                  aria-haspopup="dialog"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span>Get Started Guide</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </motion.button>
                 
-                {/* Shimmer Effect */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-xl"
-                  animate={{
-                    x: ["-100%", "100%"]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1
-                  }}
-                />
-              </motion.button>
+                {/* Dismiss Button - Lightweight */}
+                <motion.button
+                  onClick={handleDismissBanner}
+                  className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label="Dismiss banner"
+                >
+                  <X className="w-5 h-5" />
+                </motion.button>
+              </div>
             </div>
           </div>
-          
-          {/* Decorative Elements */}
-          <motion.div
-            className="absolute top-2 right-2 w-16 h-16 border border-white/20 rounded-full"
-            animate={{
-              rotate: 360,
-              scale: [1, 1.1, 1]
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          />
-          <motion.div
-            className="absolute bottom-2 left-2 w-8 h-8 border border-white/20 rounded-full"
-            animate={{
-              rotate: -360,
-              scale: [1, 1.2, 1]
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          />
-        </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Pull-back Tab */}
+        <AnimatePresence>
+          {showPullTab && (
+            <motion.div
+              className="fixed right-0 top-1/2 -translate-y-1/2 z-50"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              <motion.button
+                onClick={handleRestoreBanner}
+                className="bg-[#ff0000] text-white px-4 py-3 rounded-l-lg shadow-lg hover:bg-[#cc0000] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                aria-label="Restore banner"
+              >
+                <div className="flex items-center space-x-2">
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="text-sm font-medium">Restore Guide</span>
+                </div>
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Step Content */}
         <div className="max-w-6xl mx-auto">
@@ -518,7 +515,7 @@ export default function NewJobPage() {
                         transition={{ duration: 0.6, delay: 0.6 }}
                       >
                         <h2 className="text-2xl font-bold text-foreground">
-                          Upload Voice Track
+                          Voice Track
                         </h2>
                         
                         {/* Animated Sound Waves */}
@@ -568,7 +565,7 @@ export default function NewJobPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.8 }}
                       >
-                        Upload your voice-only audio or video file first
+                        Upload voice-only audio
                       </motion.p>
                       
                     </div>
@@ -642,7 +639,7 @@ export default function NewJobPage() {
                         transition={{ duration: 0.6, delay: 0.6 }}
                       >
                         <h2 className="text-2xl font-bold text-foreground">
-                          Background Track
+                          Background
                         </h2>
                         
                         {/* Animated Music Notes */}
@@ -694,7 +691,7 @@ export default function NewJobPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.8 }}
                       >
-                        Add background music or ambient audio (optional)
+                        Add background music (optional)
                       </motion.p>
                       
                     </div>
@@ -797,7 +794,7 @@ export default function NewJobPage() {
                         transition={{ duration: 0.6, delay: 0.6 }}
                       >
                         <h2 className="text-2xl font-bold text-foreground">
-                          Target Languages
+                          Languages
                         </h2>
                         
                         {/* Animated Language Flags */}
@@ -896,7 +893,7 @@ export default function NewJobPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.8 }}
                       >
-                        Select languages for multilingual dubbing
+                        Select target languages
                       </motion.p>
                       
                     </div>
@@ -919,182 +916,239 @@ export default function NewJobPage() {
                 </div>
               )}
 
-              {/* Step 4: Review & Submit */}
+              {/* Step 4: Launch Job */}
               {currentStep === 4 && (
                 <div className="space-y-8">
-                  {/* Welcome Header */}
+                  {/* Gamified Launch Interface */}
                   <motion.div
                     className="text-center max-w-4xl mx-auto"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
                   >
-                    <motion.div
-                      className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full mb-6 shadow-lg"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                      whileHover={{ scale: 1.05 }}
-                    >
+                    {/* Success indicator */}
+                    {isFinalStepValid && (
                       <motion.div
-                        animate={{ 
-                          scale: [1, 1.1, 1],
-                          rotate: [0, 5, -5, 0]
-                        }}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
                         transition={{ 
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut"
+                          delay: 0.5,
+                          type: "spring",
+                          stiffness: 200,
+                          damping: 15
                         }}
                       >
-                        <Upload className="w-10 h-10 text-white" />
+                        <CheckCircle className="w-4 h-4 text-white" />
                       </motion.div>
-                    </motion.div>
-                    
-                    <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight">
-                      You&apos;re Almost There! 🎉
-                    </h2>
-                    <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                      Your multilingual dubbing job is ready to process. Review the details below and submit when you&apos;re ready.
-                    </p>
-                  </motion.div>
+                    )}
 
-                  {/* Job Summary Card */}
-                  <motion.div
-                    className="max-w-4xl mx-auto"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                  >
-                    <div className="bg-gradient-to-br from-card to-muted/30 border border-border rounded-2xl p-6 sm:p-8 shadow-lg">
-                      <h3 className="text-xl font-bold text-foreground mb-6 text-center">Job Summary</h3>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* File Details */}
-                        <div className="space-y-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-[#ff0000]/10 rounded-lg flex items-center justify-center">
-                              <Mic className="w-5 h-5 text-[#ff0000]" />
-                            </div>
-                            <div>
-                              <p className="font-medium text-foreground">Voice Track</p>
-                              <p className="text-sm text-muted-foreground">{voiceTrack?.name}</p>
+                    {/* Main Launch Card */}
+                    <motion.div
+                      className="relative bg-gradient-to-br from-[#ff0000]/5 via-[#ff0000]/10 to-[#ff0000]/5 border border-[#ff0000]/20 rounded-3xl p-8 shadow-2xl overflow-hidden"
+                      initial={{ scale: 0.95, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ 
+                        duration: 0.8, 
+                        delay: 0.2,
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 15
+                      }}
+                      whileHover={{ 
+                        scale: 1.02,
+                        transition: { duration: 0.3 }
+                      }}
+                    >
+                      {/* Animated background */}
+                      <motion.div
+                        className="absolute inset-0 opacity-20"
+                        animate={{
+                          backgroundPosition: ["0% 0%", "100% 100%"],
+                        }}
+                        transition={{
+                          duration: 10,
+                          repeat: Infinity,
+                          repeatType: "reverse",
+                          ease: "linear"
+                        }}
+                        style={{
+                          backgroundImage: "radial-gradient(circle at 20% 50%, #ff0000 0%, transparent 50%), radial-gradient(circle at 80% 20%, #ff0000 0%, transparent 50%)",
+                          backgroundSize: "200% 200%"
+                        }}
+                      />
+
+                      <div className="relative z-10">
+                        {/* Icon and Title */}
+                        <motion.div
+                          className="flex flex-col items-center mb-8"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.6, delay: 0.3 }}
+                        >
+                          <motion.div
+                            className={`w-20 h-20 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-2xl flex items-center justify-center shadow-lg mb-6 ${
+                              isFinalStepValid ? 'ring-4 ring-green-400/50 ring-offset-4 ring-offset-background' : ''
+                            }`}
+                            animate={{ 
+                              scale: [1, 1.05, 1],
+                              rotate: [0, 2, -2, 0]
+                            }}
+                            transition={{ 
+                              duration: 4,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                            whileHover={{ 
+                              scale: 1.1,
+                              rotate: 5,
+                              transition: { duration: 0.3 }
+                            }}
+                          >
+                            <motion.div
+                              animate={{ 
+                                scale: [1, 1.1, 1],
+                              }}
+                              transition={{ 
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            >
+                              <Upload className="w-10 h-10 text-white" />
+                            </motion.div>
+                          </motion.div>
+
+                          <motion.h2 
+                            className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.4 }}
+                          >
+                            Launch Job
+                          </motion.h2>
+                        </motion.div>
+
+                        {/* Quick Stats Grid */}
+                        <motion.div
+                          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.6, delay: 0.5 }}
+                        >
+                          {/* Voice Track */}
+                          <motion.div 
+                            className="flex items-center space-x-4 p-4 rounded-xl bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-white/20"
+                            whileHover={{ 
+                              scale: 1.05,
+                              backgroundColor: "rgba(255, 255, 255, 0.7)",
+                              transition: { duration: 0.2 }
+                            }}
+                          >
+                            <motion.div 
+                              className="w-12 h-12 bg-[#ff0000]/20 rounded-xl flex items-center justify-center"
+                              whileHover={{ rotate: 10 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <Mic className="w-6 h-6 text-[#ff0000]" />
+                            </motion.div>
+                            <div className="text-left">
+                              <p className="font-semibold text-foreground text-sm">Voice</p>
+                              <p className="text-xs text-muted-foreground truncate max-w-[120px]">{voiceTrack?.name}</p>
                               {voiceDuration && (
-                                <p className="text-xs text-[#ff0000] font-medium">
-                                  Duration: {formatDuration(voiceDuration)}
-                                </p>
+                                <p className="text-xs text-[#ff0000] font-medium">{formatDuration(voiceDuration)}</p>
                               )}
                             </div>
-                          </div>
+                          </motion.div>
 
-                          {backgroundTrack && (
-                            <div className="flex items-center space-x-3">
-                              <div className="w-10 h-10 bg-[#ff0000]/10 rounded-lg flex items-center justify-center">
-                                <Music className="w-5 h-5 text-[#ff0000]" />
-                              </div>
-                              <div>
-                                <p className="font-medium text-foreground">Background Track</p>
-                                <p className="text-sm text-muted-foreground">{backgroundTrack.name}</p>
-                                {backgroundDuration && (
-                                  <p className="text-xs text-[#ff0000] font-medium">
-                                    Duration: {formatDuration(backgroundDuration)}
-                                  </p>
-                                )}
-                              </div>
+                          {/* Languages */}
+                          <motion.div 
+                            className="flex items-center space-x-4 p-4 rounded-xl bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-white/20"
+                            whileHover={{ 
+                              scale: 1.05,
+                              backgroundColor: "rgba(255, 255, 255, 0.7)",
+                              transition: { duration: 0.2 }
+                            }}
+                          >
+                            <motion.div 
+                              className="w-12 h-12 bg-[#ff0000]/20 rounded-xl flex items-center justify-center"
+                              whileHover={{ rotate: 10 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <Globe className="w-6 h-6 text-[#ff0000]" />
+                            </motion.div>
+                            <div className="text-left">
+                              <p className="font-semibold text-foreground text-sm">Languages</p>
+                              <p className="text-xs text-muted-foreground">{targetLanguages.length} selected</p>
                             </div>
-                          )}
-                        </div>
+                          </motion.div>
 
-                        {/* Language Details */}
-                        <div className="space-y-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-[#ff0000]/10 rounded-lg flex items-center justify-center">
-                              <Globe className="w-5 h-5 text-[#ff0000]" />
+                          {/* Credits */}
+                          <motion.div 
+                            className="flex items-center space-x-4 p-4 rounded-xl bg-gradient-to-r from-[#ff0000]/20 to-[#ff0000]/10 border border-[#ff0000]/30"
+                            whileHover={{ 
+                              scale: 1.05,
+                              backgroundColor: "rgba(255, 0, 0, 0.15)",
+                              transition: { duration: 0.2 }
+                            }}
+                          >
+                            <motion.div 
+                              className="w-12 h-12 bg-[#ff0000]/30 rounded-xl flex items-center justify-center"
+                              animate={{ 
+                                scale: [1, 1.1, 1],
+                              }}
+                              transition={{ 
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            >
+                              <Zap className="w-6 h-6 text-[#ff0000]" />
+                            </motion.div>
+                            <div className="text-left">
+                              <p className="font-semibold text-foreground text-sm">Credits</p>
+                              <p className="text-lg font-bold text-[#ff0000]">{targetLanguages.length * 2}</p>
                             </div>
-                            <div>
-                              <p className="font-medium text-foreground">Target Languages</p>
-                              <p className="text-sm text-muted-foreground">{targetLanguages.length} language{targetLanguages.length !== 1 ? 's' : ''} selected</p>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {targetLanguages.map((lang, index) => (
-                                  <span key={index} className="text-xs bg-[#ff0000]/10 text-[#ff0000] px-2 py-1 rounded-full">
-                                    {lang}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
+                          </motion.div>
+                        </motion.div>
 
-                  {/* Pricing Card */}
-                  <motion.div
-                    className="max-w-2xl mx-auto"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.8 }}
-                  >
-                    <div className="bg-gradient-to-r from-[#ff0000]/5 to-[#ff0000]/10 border border-[#ff0000]/20 rounded-2xl p-6 text-center">
-                      <div className="flex items-center justify-center space-x-2 mb-4">
-                        <Zap className="w-6 h-6 text-[#ff0000]" />
-                        <h3 className="text-xl font-bold text-foreground">Processing Cost</h3>
+                        {/* Reward Message */}
+                        <motion.div
+                          className="text-center mb-8"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.6, delay: 0.6 }}
+                        >
+                          <motion.div
+                            className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30"
+                            animate={{ 
+                              scale: [1, 1.02, 1],
+                            }}
+                            transition={{ 
+                              duration: 3,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          >
+                            <motion.div
+                              animate={{ 
+                                rotate: [0, 10, -10, 0],
+                              }}
+                              transition={{ 
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            >
+                              <Star className="w-5 h-5 text-green-500" />
+                            </motion.div>
+                            <span className="text-green-700 dark:text-green-400 font-semibold">
+                              Unlock {targetLanguages.length} new audiences
+                            </span>
+                          </motion.div>
+                        </motion.div>
                       </div>
-                      
-                      <div className="space-y-3">
-                        <div className="text-3xl font-bold text-[#ff0000]">
-                          {targetLanguages.length * 2} Credits
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {targetLanguages.length} language{targetLanguages.length !== 1 ? 's' : ''} × 2 credits each
-                        </p>
-                        
-                        <div className="flex items-center justify-center space-x-4 text-sm">
-                          <div className="flex items-center space-x-1">
-                            <CheckCircle className="w-4 h-4 text-green-500" />
-                            <span className="text-muted-foreground">High-quality AI voices</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <CheckCircle className="w-4 h-4 text-green-500" />
-                            <span className="text-muted-foreground">Fast processing</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  {/* Benefits & Trust Signals */}
-                  <motion.div
-                    className="max-w-4xl mx-auto"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 1.0 }}
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="text-center p-4">
-                        <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
-                        </div>
-                        <h4 className="font-semibold text-foreground mb-2">Professional Quality</h4>
-                        <p className="text-sm text-muted-foreground">AI-powered voices that sound natural and engaging</p>
-                      </div>
-                      
-                      <div className="text-center p-4">
-                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <h4 className="font-semibold text-foreground mb-2">Fast Processing</h4>
-                        <p className="text-sm text-muted-foreground">Your dubs will be ready in 2-5 minutes per language</p>
-                      </div>
-                      
-                      <div className="text-center p-4">
-                        <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <Download className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                        </div>
-                        <h4 className="font-semibold text-foreground mb-2">Multiple Formats</h4>
-                        <p className="text-sm text-muted-foreground">Download voice-only, full-mix, and subtitle files</p>
-                      </div>
-                    </div>
+                    </motion.div>
                   </motion.div>
                 </div>
               )}
@@ -1221,39 +1275,163 @@ export default function NewJobPage() {
                 <ArrowRight className="w-4 h-4" />
               </motion.button>
             ) : (
-              <motion.button
-                onClick={handleSubmit}
-                disabled={isSubmitting || !isFinalStepValid}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  if (!isSubmitting && isFinalStepValid) {
-                    handleSubmit();
-                    // Haptic feedback
-                    if (navigator.vibrate) {
-                      navigator.vibrate(50);
-                    }
-                  }
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 15
                 }}
-                className={`inline-flex items-center justify-center space-x-2 px-8 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation min-h-[44px] ${
-                  isSubmitting || !isFinalStepValid
-                    ? 'bg-muted text-muted-foreground cursor-not-allowed'
-                    : 'bg-[#ff0000] text-white hover:bg-[#cc0000]'
-                }`}
-                whileHover={!isSubmitting && isFinalStepValid ? { scale: 1.05 } : {}}
-                whileTap={!isSubmitting && isFinalStepValid ? { scale: 0.95 } : {}}
               >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    <span>Submitting...</span>
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-4 h-4" />
-                    <span>Submit Job</span>
-                  </>
+                {/* Gamified Launch Button */}
+                <motion.button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || !isFinalStepValid}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    if (!isSubmitting && isFinalStepValid) {
+                      handleSubmit();
+                      // Haptic feedback
+                      if (navigator.vibrate) {
+                        navigator.vibrate(50);
+                      }
+                    }
+                  }}
+                  className={`relative inline-flex items-center justify-center space-x-4 px-12 py-5 rounded-2xl font-bold transition-all duration-300 touch-manipulation min-h-[56px] overflow-hidden ${
+                    isSubmitting || !isFinalStepValid
+                      ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                      : 'bg-gradient-to-r from-[#ff0000] to-[#cc0000] text-white hover:from-[#ff1a1a] hover:to-[#e60000] shadow-2xl hover:shadow-3xl'
+                  }`}
+                  whileHover={!isSubmitting && isFinalStepValid ? { 
+                    scale: 1.08,
+                    y: -4,
+                    transition: { duration: 0.3 }
+                  } : {}}
+                  whileTap={!isSubmitting && isFinalStepValid ? { 
+                    scale: 0.95,
+                    transition: { duration: 0.1 }
+                  } : {}}
+                >
+                  {/* Animated background effect */}
+                  {!isSubmitting && isFinalStepValid && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-white/30 to-transparent"
+                      initial={{ x: "-100%" }}
+                      animate={{ x: "100%" }}
+                      transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                    />
+                  )}
+                  
+                  {/* Button content */}
+                  <div className="relative z-10 flex items-center space-x-4">
+                    {isSubmitting ? (
+                      <>
+                        <motion.div 
+                          className="w-6 h-6 border-3 border-current border-t-transparent rounded-full"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        />
+                        <span className="text-lg">Launching...</span>
+                      </>
+                    ) : (
+                      <>
+                        <motion.div
+                          animate={{ 
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 10, -10, 0]
+                          }}
+                          transition={{ 
+                            duration: 2.5,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <Zap className="w-6 h-6" />
+                        </motion.div>
+                        <span className="text-xl">Launch Job</span>
+                        <motion.div
+                          animate={{ 
+                            x: [0, 5, 0],
+                            scale: [1, 1.1, 1]
+                          }}
+                          transition={{ 
+                            duration: 1.8,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <ArrowRight className="w-6 h-6" />
+                        </motion.div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Success particles effect */}
+                  {!isSubmitting && isFinalStepValid && (
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                    >
+                      {[...Array(8)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          className="absolute w-1.5 h-1.5 bg-white/80 rounded-full"
+                          style={{
+                            left: `${15 + i * 10}%`,
+                            top: "50%",
+                          }}
+                          animate={{
+                            y: [-15, -40],
+                            opacity: [0, 1, 0],
+                            scale: [0, 1.2, 0],
+                          }}
+                          transition={{
+                            duration: 2,
+                            delay: i * 0.1,
+                            repeat: Infinity,
+                            ease: "easeOut"
+                          }}
+                        />
+                      ))}
+                    </motion.div>
+                  )}
+                </motion.button>
+                
+                {/* Progress indicator */}
+                {isSubmitting && (
+                  <motion.div
+                    className="mt-3 text-center"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <p className="text-sm text-muted-foreground">
+                      Launching job...
+                    </p>
+                    <motion.div
+                      className="w-full h-1 bg-muted rounded-full mt-2 overflow-hidden"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-[#ff0000] to-[#cc0000] rounded-full"
+                        initial={{ width: "0%" }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 3, ease: "easeInOut" }}
+                      />
+                    </motion.div>
+                  </motion.div>
                 )}
-              </motion.button>
+              </motion.div>
             )}
           </motion.div>
 
