@@ -338,16 +338,17 @@ export default function NewJobPage() {
               <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
             </Link>
             
-            {/* Guide Toggle Button */}
-            <AnimatePresence>
-              {showPullTab && (
-                <motion.button
-                  onClick={bannerDismissed ? handleRestoreBanner : handleDismissBanner}
-                  className={`group relative w-12 h-20 rounded-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center ${
-                    bannerDismissed 
-                      ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]' 
-                      : 'bg-green-600 text-white hover:bg-green-700'
-                  }`}
+            {/* Guide Toggle Button - Fixed width to prevent layout shift */}
+            <div className="w-12 h-20">
+              <AnimatePresence>
+                {showPullTab && (
+                  <motion.button
+                    onClick={bannerDismissed ? handleRestoreBanner : handleDismissBanner}
+                    className={`group relative w-12 h-20 rounded-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center ${
+                      bannerDismissed 
+                        ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]' 
+                        : 'bg-green-600 text-white hover:bg-green-700'
+                    }`}
                   whileHover={{ 
                     scale: 1.05
                   }}
@@ -400,13 +401,14 @@ export default function NewJobPage() {
                     }}
                   />
                   
-                  {/* Hover Glow Effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  />
-                </motion.button>
-              )}
-            </AnimatePresence>
+                    {/* Hover Glow Effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
           
         </motion.div>
@@ -1436,7 +1438,7 @@ export default function NewJobPage() {
         <AnimatePresence>
           {showHowItWorks && (
             <motion.div
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -1446,15 +1448,27 @@ export default function NewJobPage() {
               aria-labelledby="modal-title"
               aria-describedby="modal-description"
             >
+              {/* Enhanced backdrop with animated gradients */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#ff0000]/10 via-transparent to-[#ff0000]/5 animate-pulse-slow" />
+              <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-[#ff0000]/5 to-transparent animate-float-slow" />
+              
               <motion.div
                 ref={modalRef}
-                className="relative w-full max-w-6xl max-h-[90vh] bg-background rounded-2xl shadow-2xl overflow-hidden"
-                initial={{ scale: 0.9, opacity: 0, y: 50 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 50 }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative w-full max-w-7xl max-h-[95vh] bg-background/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/10"
+                initial={{ scale: 0.85, opacity: 0, y: 60, rotateX: 15 }}
+                animate={{ scale: 1, opacity: 1, y: 0, rotateX: 0 }}
+                exit={{ scale: 0.85, opacity: 0, y: 60, rotateX: 15 }}
+                transition={{ 
+                  type: "spring", 
+                  damping: 20, 
+                  stiffness: 200,
+                  mass: 0.8
+                }}
                 onClick={(e) => e.stopPropagation()}
                 tabIndex={-1}
+                style={{
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
+                }}
               >
                 {/* Modal Header */}
                 <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border p-6">
