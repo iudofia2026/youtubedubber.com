@@ -190,6 +190,20 @@
     animation: drift-slow 15s ease-in-out infinite;
   }
   
+  /* Shimmer effect for interactive elements */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  .animate-shimmer {
+    animation: shimmer 2s ease-in-out infinite;
+  }
+  
   /* YouTube font for brand text */
   .youtube-font {
     font-family: var(--font-roboto), sans-serif;

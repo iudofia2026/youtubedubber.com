@@ -1470,50 +1470,90 @@ export default function NewJobPage() {
                   boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
                 }}
               >
-                {/* Modal Header */}
-                <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border p-6">
-                  <div className="flex items-center justify-between">
+                {/* Enhanced Modal Header */}
+                <div className="sticky top-0 z-10 bg-gradient-to-r from-background/98 via-background/95 to-background/98 backdrop-blur-xl border-b border-white/10 p-6">
+                  {/* Shimmer effect overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                  
+                  <div className="relative flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <motion.div
-                        className="w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center shadow-lg"
+                        className="relative w-14 h-14 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-2xl flex items-center justify-center shadow-2xl group"
                         animate={{ 
                           scale: [1, 1.05, 1],
-                          rotate: [0, 5, -5, 0]
+                          rotate: [0, 2, -2, 0]
                         }}
                         transition={{ 
-                          duration: 2,
+                          duration: 3,
                           repeat: Infinity,
                           ease: "easeInOut"
                         }}
+                        whileHover={{ 
+                          scale: 1.1,
+                          rotate: [0, 5, -5, 0],
+                          transition: { duration: 0.6 }
+                        }}
                       >
-                        <Scissors className="w-6 h-6 text-white" />
+                        {/* Glow effect */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-2xl blur-sm opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
+                        <Scissors className="w-7 h-7 text-white relative z-10" />
+                        
+                        {/* Shimmer overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 group-hover:animate-shimmer transition-opacity duration-300" />
                       </motion.div>
+                      
                       <div>
-                        <h2 id="modal-title" className="text-2xl font-bold text-foreground">
+                        <motion.h2 
+                          id="modal-title" 
+                          className="text-3xl font-bold text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                        >
                           How It Works
-                        </h2>
-                        <p id="modal-description" className="text-muted-foreground">
+                        </motion.h2>
+                        <motion.p 
+                          id="modal-description" 
+                          className="text-muted-foreground text-lg"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3 }}
+                        >
                           Learn how our AI-powered platform transforms your content
-                        </p>
+                        </motion.p>
                       </div>
                     </div>
                     
                     <motion.button
                       ref={closeButtonRef}
                       onClick={handleCloseModal}
-                      className="w-10 h-10 rounded-full bg-muted hover:bg-destructive/10 flex items-center justify-center transition-colors duration-200 group focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2"
-                      whileHover={{ scale: 1.1 }}
+                      className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-muted/50 to-muted/30 hover:from-destructive/20 hover:to-destructive/10 flex items-center justify-center transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2 backdrop-blur-sm border border-white/10"
+                      whileHover={{ 
+                        scale: 1.1,
+                        rotate: 90,
+                        transition: { duration: 0.3 }
+                      }}
                       whileTap={{ scale: 0.9 }}
                       aria-label="Close How It Works modal"
                     >
-                      <X className="w-5 h-5 group-hover:text-destructive transition-colors duration-200" />
+                      <X className="w-6 h-6 group-hover:text-destructive transition-colors duration-300" />
+                      
+                      {/* Hover glow effect */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-destructive/20 to-destructive/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </motion.button>
                   </div>
                 </div>
 
-                {/* Modal Content */}
-                <div className="overflow-y-auto max-h-[calc(90vh-120px)] p-6">
-                  <div className="space-y-12">
+                {/* Enhanced Modal Content with Parallax */}
+                <div className="overflow-y-auto max-h-[calc(95vh-140px)] p-8 relative">
+                  {/* Parallax background elements */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gradient-to-br from-[#ff0000]/5 to-transparent rounded-full blur-xl animate-float-slow" />
+                    <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-gradient-to-br from-[#ff0000]/3 to-transparent rounded-full blur-lg animate-pulse-slow" />
+                    <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-gradient-to-br from-transparent to-[#ff0000]/4 rounded-full blur-md animate-float-slow" />
+                  </div>
+                  
+                  <div className="relative space-y-16">
                     {howItWorksSteps.map((step, index) => {
                       const Icon = step.icon;
                       const isEven = index % 2 === 0;
@@ -1521,122 +1561,350 @@ export default function NewJobPage() {
                       return (
                         <motion.div
                           key={step.number}
-                          className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-8`}
-                          initial={{ opacity: 0, y: 30 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.8, delay: index * 0.1 }}
+                          className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 group`}
+                          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{ 
+                            duration: 0.8, 
+                            delay: index * 0.15,
+                            type: "spring",
+                            stiffness: 100
+                          }}
+                          whileHover={{ 
+                            scale: 1.02,
+                            transition: { duration: 0.3 }
+                          }}
                         >
-                          {/* Content */}
-                          <div className="flex-1">
+                          {/* Enhanced Content */}
+                          <motion.div 
+                            className="flex-1 relative group"
+                            whileHover={{ x: isEven ? 10 : -10 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            {/* Shimmer effect on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-shimmer rounded-2xl transition-opacity duration-500" />
+                            
                             <motion.div
-                              className="flex items-center space-x-4 mb-6"
-                              initial={{ opacity: 0, x: -20 }}
+                              className="flex items-center space-x-6 mb-8 relative z-10"
+                              initial={{ opacity: 0, x: isEven ? -30 : 30 }}
                               animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.6, delay: index * 0.1 + 0.2 }}
+                              transition={{ duration: 0.8, delay: index * 0.15 + 0.3 }}
                             >
-                              <div className={`w-16 h-16 bg-gradient-to-r ${step.color} flex items-center justify-center rounded-lg shadow-lg`}>
-                                <Icon className="w-8 h-8 text-white" />
-                              </div>
+                              <motion.div 
+                                className={`relative w-20 h-20 bg-gradient-to-br ${step.color} flex items-center justify-center rounded-2xl shadow-2xl group/icon`}
+                                whileHover={{ 
+                                  scale: 1.1,
+                                  rotate: [0, 5, -5, 0],
+                                  transition: { duration: 0.6 }
+                                }}
+                                animate={{
+                                  boxShadow: [
+                                    "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
+                                    "0 20px 40px -5px rgba(0, 0, 0, 0.15)",
+                                    "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
+                                  ]
+                                }}
+                                transition={{
+                                  boxShadow: {
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeInOut"
+                                  }
+                                }}
+                              >
+                                {/* Glow effect */}
+                                <div className={`absolute inset-0 bg-gradient-to-br ${step.color} rounded-2xl blur-md opacity-50 group-hover/icon:opacity-75 transition-opacity duration-300`} />
+                                
+                                <Icon className="w-10 h-10 text-white relative z-10" />
+                                
+                                {/* Shimmer overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-2xl opacity-0 group-hover/icon:opacity-100 group-hover/icon:animate-shimmer transition-opacity duration-300" />
+                                
+                                {/* Step number badge */}
+                                <div className="absolute -top-2 -right-2 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+                                  <span className="text-xs font-bold text-[#ff0000]">{step.number}</span>
+                                </div>
+                              </motion.div>
+                              
                               <div>
-                                <div className="text-sm font-medium text-[#ff0000] mb-1">Step {step.number}</div>
-                                <h3 className="text-2xl font-bold text-foreground">{step.title}</h3>
+                                <motion.div 
+                                  className="text-sm font-semibold text-[#ff0000] mb-2 tracking-wide uppercase"
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: index * 0.15 + 0.4 }}
+                                >
+                                  Step {step.number}
+                                </motion.div>
+                                <motion.h3 
+                                  className="text-3xl font-bold text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text"
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: index * 0.15 + 0.5 }}
+                                >
+                                  {step.title}
+                                </motion.h3>
                               </div>
                             </motion.div>
                             
                             <motion.p
-                              className="text-lg text-muted-foreground mb-8 font-light leading-relaxed"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.6, delay: index * 0.1 + 0.3 }}
+                              className="text-xl text-muted-foreground mb-10 font-light leading-relaxed relative"
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.8, delay: index * 0.15 + 0.6 }}
                             >
                               {step.description}
                             </motion.p>
                             
-                            <div className="space-y-6">
-                              <div>
-                                <h4 className="text-lg font-semibold text-foreground mb-4">What you&apos;ll do:</h4>
-                                <ul className="space-y-3">
+                            <div className="space-y-8">
+                              <motion.div
+                                className="relative"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: index * 0.15 + 0.7 }}
+                              >
+                                <h4 className="text-xl font-bold text-foreground mb-6 flex items-center space-x-3">
+                                  <div className="w-2 h-2 bg-[#ff0000] rounded-full animate-pulse" />
+                                  <span>What you&apos;ll do:</span>
+                                </h4>
+                                <ul className="space-y-4">
                                   {step.details.map((detail, detailIndex) => (
                                     <motion.li
                                       key={detailIndex}
-                                      className="flex items-start space-x-3"
-                                      initial={{ opacity: 0, x: -20 }}
+                                      className="flex items-start space-x-4 group/item"
+                                      initial={{ opacity: 0, x: -30 }}
                                       animate={{ opacity: 1, x: 0 }}
-                                      transition={{ duration: 0.6, delay: index * 0.1 + 0.4 + detailIndex * 0.1 }}
+                                      transition={{ 
+                                        duration: 0.6, 
+                                        delay: index * 0.15 + 0.8 + detailIndex * 0.1 
+                                      }}
+                                      whileHover={{ x: 5 }}
                                     >
-                                      <CheckCircle className="w-5 h-5 text-[#ff0000] flex-shrink-0 mt-0.5" />
-                                      <span className="text-muted-foreground">{detail}</span>
+                                      <motion.div
+                                        className="w-6 h-6 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 shadow-lg group-hover/item:scale-110 transition-transform duration-200"
+                                        whileHover={{ rotate: 360 }}
+                                        transition={{ duration: 0.5 }}
+                                      >
+                                        <CheckCircle className="w-4 h-4 text-white" />
+                                      </motion.div>
+                                      <span className="text-muted-foreground text-lg leading-relaxed group-hover/item:text-foreground transition-colors duration-200">
+                                        {detail}
+                                      </span>
                                     </motion.li>
                                   ))}
                                 </ul>
-                              </div>
+                              </motion.div>
                               
-                              <div>
-                                <h4 className="text-lg font-semibold text-foreground mb-4">Pro tips:</h4>
-                                <ul className="space-y-2">
+                              <motion.div
+                                className="relative bg-gradient-to-r from-yellow-500/5 to-orange-500/5 border border-yellow-500/20 rounded-2xl p-6"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: index * 0.15 + 0.9 }}
+                              >
+                                <h4 className="text-xl font-bold text-foreground mb-6 flex items-center space-x-3">
+                                  <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+                                  <span>Pro tips:</span>
+                                </h4>
+                                <ul className="space-y-3">
                                   {step.tips.map((tip, tipIndex) => (
                                     <motion.li
                                       key={tipIndex}
-                                      className="flex items-start space-x-3"
-                                      initial={{ opacity: 0, x: -20 }}
+                                      className="flex items-start space-x-4 group/tip"
+                                      initial={{ opacity: 0, x: -30 }}
                                       animate={{ opacity: 1, x: 0 }}
-                                      transition={{ duration: 0.6, delay: index * 0.1 + 0.5 + tipIndex * 0.1 }}
+                                      transition={{ 
+                                        duration: 0.6, 
+                                        delay: index * 0.15 + 1.0 + tipIndex * 0.1 
+                                      }}
+                                      whileHover={{ x: 5 }}
                                     >
-                                      <Star className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-1" />
-                                      <span className="text-sm text-muted-foreground">{tip}</span>
+                                      <motion.div
+                                        className="w-5 h-5 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-md group-hover/tip:scale-110 transition-transform duration-200"
+                                        whileHover={{ rotate: 360 }}
+                                        transition={{ duration: 0.5 }}
+                                      >
+                                        <Star className="w-3 h-3 text-white" />
+                                      </motion.div>
+                                      <span className="text-muted-foreground leading-relaxed group-hover/tip:text-foreground transition-colors duration-200">
+                                        {tip}
+                                      </span>
                                     </motion.li>
                                   ))}
                                 </ul>
-                              </div>
+                              </motion.div>
                             </div>
                           </div>
                           
-                          {/* Visual */}
-                          <div className="flex-1 flex justify-center">
+                          {/* Enhanced Visual with 3D Effects */}
+                          <motion.div 
+                            className="flex-1 flex justify-center relative"
+                            initial={{ opacity: 0, scale: 0.8, rotateY: isEven ? 15 : -15 }}
+                            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                            transition={{ duration: 1, delay: index * 0.15 + 0.4 }}
+                          >
                             <motion.div
-                              className={`w-80 h-80 bg-gradient-to-br ${step.color} rounded-2xl flex items-center justify-center relative overflow-hidden shadow-2xl`}
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ duration: 0.8, delay: index * 0.1 + 0.3 }}
-                              whileHover={{ scale: 1.05 }}
+                              className={`relative w-96 h-96 bg-gradient-to-br ${step.color} rounded-3xl flex items-center justify-center overflow-hidden shadow-2xl group/visual`}
+                              whileHover={{ 
+                                scale: 1.08,
+                                rotateY: isEven ? -5 : 5,
+                                rotateX: 5,
+                                transition: { duration: 0.4 }
+                              }}
+                              style={{
+                                transformStyle: "preserve-3d",
+                                perspective: "1000px"
+                              }}
                             >
-                              <Icon className="w-32 h-32 text-white/80" />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                              <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
-                                <span className="text-white font-bold text-sm">{step.number}</span>
+                              {/* Animated background pattern */}
+                              <div className="absolute inset-0 opacity-20">
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 animate-pulse-slow" />
+                                <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-white/5 to-transparent animate-float-slow" />
+                              </div>
+                              
+                              {/* Main icon with enhanced effects */}
+                              <motion.div
+                                className="relative z-10"
+                                whileHover={{ 
+                                  scale: 1.1,
+                                  rotate: [0, 5, -5, 0],
+                                  transition: { duration: 0.6 }
+                                }}
+                              >
+                                <Icon className="w-40 h-40 text-white/90 drop-shadow-2xl" />
+                                
+                                {/* Glow effect behind icon */}
+                                <div className="absolute inset-0 bg-white/20 rounded-full blur-2xl scale-150 opacity-50 group-hover/visual:opacity-75 transition-opacity duration-300" />
+                              </motion.div>
+                              
+                              {/* Enhanced overlay gradients */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent" />
+                              
+                              {/* Floating step number badge */}
+                              <motion.div 
+                                className="absolute top-6 right-6 bg-white/25 backdrop-blur-md rounded-2xl px-4 py-2 shadow-xl border border-white/20"
+                                animate={{
+                                  y: [0, -5, 0],
+                                  scale: [1, 1.05, 1]
+                                }}
+                                transition={{
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                                whileHover={{ 
+                                  scale: 1.1,
+                                  y: -10,
+                                  transition: { duration: 0.3 }
+                                }}
+                              >
+                                <span className="text-white font-bold text-lg">{step.number}</span>
+                              </motion.div>
+                              
+                              {/* Shimmer effect */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover/visual:opacity-100 group-hover/visual:animate-shimmer transition-opacity duration-500" />
+                              
+                              {/* Floating particles */}
+                              <div className="absolute inset-0 pointer-events-none">
+                                {[...Array(6)].map((_, i) => (
+                                  <motion.div
+                                    key={i}
+                                    className="absolute w-2 h-2 bg-white/30 rounded-full"
+                                    style={{
+                                      left: `${20 + i * 15}%`,
+                                      top: `${30 + (i % 3) * 20}%`
+                                    }}
+                                    animate={{
+                                      y: [0, -20, 0],
+                                      opacity: [0.3, 0.8, 0.3],
+                                      scale: [0.5, 1, 0.5]
+                                    }}
+                                    transition={{
+                                      duration: 3 + i * 0.5,
+                                      repeat: Infinity,
+                                      delay: i * 0.3,
+                                      ease: "easeInOut"
+                                    }}
+                                  />
+                                ))}
                               </div>
                             </motion.div>
-                          </div>
+                          </motion.div>
                         </motion.div>
                       );
                     })}
                   </div>
 
-                  {/* CTA Section */}
+                  {/* Enhanced CTA Section */}
                   <motion.div
-                    className="max-w-4xl mx-auto text-center mt-12"
-                    initial={{ opacity: 0, y: 30 }}
+                    className="max-w-5xl mx-auto text-center mt-16 relative"
+                    initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.8 }}
+                    transition={{ duration: 1, delay: 1.2 }}
                   >
-                    <div className="bg-gradient-to-r from-[#ff0000]/10 to-[#ff0000]/5 border border-[#ff0000]/20 p-8 rounded-lg">
-                      <h3 className="text-2xl font-bold text-foreground mb-4 tracking-tight">
-                        Ready to Get Started?
-                      </h3>
+                    {/* Background effects */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/5 via-[#ff0000]/10 to-[#ff0000]/5 rounded-3xl blur-xl" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[#ff0000]/5 to-transparent rounded-3xl animate-pulse-slow" />
+                    
+                    <div className="relative bg-gradient-to-r from-[#ff0000]/10 via-[#ff0000]/5 to-[#ff0000]/10 border border-[#ff0000]/20 p-12 rounded-3xl backdrop-blur-sm overflow-hidden">
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
                       
-                      <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto font-light leading-relaxed">
-                        Now that you know how it works, let&apos;s create your first multilingual dub!
-                      </p>
-                      
-                      <motion.button
-                        onClick={handleCloseModal}
-                        className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                      <motion.h3 
+                        className="text-4xl font-bold text-foreground mb-6 tracking-tight relative z-10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.4 }}
                       >
-                        <Upload className="w-5 h-5" />
-                        <span>Get Started</span>
-                      </motion.button>
+                        Ready to Get Started?
+                      </motion.h3>
+                      
+                      <motion.p 
+                        className="text-xl text-muted-foreground mb-10 max-w-3xl mx-auto font-light leading-relaxed relative z-10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.5 }}
+                      >
+                        Now that you know how it works, let&apos;s create your first multilingual dub!
+                      </motion.p>
+                      
+                      <motion.div
+                        className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.6 }}
+                      >
+                        <motion.button
+                          onClick={handleCloseModal}
+                          className="group relative inline-flex items-center space-x-4 bg-gradient-to-r from-[#ff0000] to-[#cc0000] text-white px-10 py-5 text-xl font-semibold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[#ff0000]/50 focus:ring-offset-2 overflow-hidden"
+                          whileHover={{ 
+                            scale: 1.05,
+                            boxShadow: "0 25px 50px -12px rgba(255, 0, 0, 0.4)"
+                          }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {/* Button glow effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-[#ff0000] to-[#cc0000] blur-sm opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
+                          
+                          {/* Shimmer effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-shimmer transition-opacity duration-500" />
+                          
+                          <Upload className="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform duration-300" />
+                          <span className="relative z-10">Get Started</span>
+                          
+                          {/* Ripple effect on click */}
+                          <div className="absolute inset-0 bg-white/20 rounded-2xl scale-0 group-active:scale-100 transition-transform duration-200" />
+                        </motion.button>
+                        
+                        <motion.button
+                          onClick={handleCloseModal}
+                          className="group relative inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium rounded-xl hover:bg-[#ff0000] hover:text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2 backdrop-blur-sm"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <span>Learn More</span>
+                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
+                        </motion.button>
+                      </motion.div>
                     </div>
                   </motion.div>
                 </div>
