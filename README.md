@@ -41,6 +41,8 @@ npm run dev
 
 **Local Development**: ✅ **READY TO RUN!** Environment fully configured with development mode enabled.
 
+**Development Note**: The frontend currently uses mock data for payments and job processing to enable local development without requiring production API keys. The backend has full functionality implemented and ready for integration.
+
 ### What Works Now
 - ✅ **Frontend**: Complete UI with authentication, job management, file upload, mobile optimization
   - All pages functional (home, upload, jobs, downloads, profile, auth, billing)
@@ -58,11 +60,11 @@ npm run dev
   - Credit management and transaction tracking
   - Dynamic pricing based on language complexity
 
-- ✅ **Payment System**: Full Stripe integration with credit-based pricing
+- ✅ **Payment System**: Stripe integration with credit-based pricing (Backend complete, Frontend uses mock data)
   - 3 pricing tiers: Creator Pack (50 credits - $29), Professional Pack (250 credits - $99), Enterprise Pack (1000 credits - $299)
   - Dynamic pricing based on language complexity and duration
   - Real-time credit balance tracking and transaction history
-  - Secure payment processing with Stripe
+  - Secure payment processing with Stripe (backend ready, frontend uses mock data for development)
   - Complete billing dashboard and transaction management
 
 - ✅ **AI Processing Pipeline**: Core pipeline implemented and functional
@@ -71,11 +73,14 @@ npm run dev
   - ✅ Text-to-Speech (Deepgram Aura) - integrated and functional
   - ✅ File upload/download to Supabase Storage - fully implemented
   - ✅ Audio processing and artifact generation - fully implemented
+  - ⚠️ Background track mixing - implemented but not yet integrated into worker pipeline
 
 - ✅ **Development Tools**: Environment ready with bypass modes for quick testing
 
 ### What Needs Work
 - ⚠️ **Frontend API Integration**: DEV_MODE needs to be disabled for production (currently enabled for local testing)
+- ⚠️ **Payment System Integration**: Frontend currently uses mock data; needs real API integration with backend
+- ⚠️ **Background Track Mixing**: Audio mixing functionality implemented but not yet integrated into worker pipeline
 - ⚠️ **Production Deployment**: Environment variables configured locally, needs production setup
   - API credentials (Supabase, Deepgram, OpenAI, Stripe) - configured in local .env files
   - Database migrations need to be run on production database

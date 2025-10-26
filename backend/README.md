@@ -751,7 +751,8 @@ The backend is now **production-ready** and **fully tested** for frontend integr
 - ✅ **BK-026 – Payment system integration**
   COMPLETED: Full Stripe integration with credit-based pricing, transaction management, and dynamic cost calculation. Includes payment APIs, credit tracking, and billing dashboard.
 - **BK-024 – Media processing pipeline**  
-  Alignment + mixing via librosa/ffmpeg, caption and manifest generation, upload outputs back to Supabase Storage. Includes golden-sample tests.  
+  Alignment + mixing via librosa/ffmpeg, caption and manifest generation, upload outputs back to Supabase Storage. Includes golden-sample tests.
+  - ⚠️ Background track mixing implemented but not yet integrated into worker pipeline  
 - **BK-025 – Artifact download endpoint**  
   GET /jobs/{id}/download returning single-use signed URLs for generated assets with expiry enforcement.
 
@@ -827,7 +828,7 @@ The system uses a credit-based pricing model with dynamic cost calculation:
 2. ✅ **Worker Pipeline**: FIXED - `app/worker/processor.py` now downloads from Supabase, calls Deepgram STT/TTS and OpenAI translation, and uploads generated audio.
 3. ⚠️ **API Contract Drift**: Job status/list responses may need alignment with frontend expectations - requires integration testing.
 4. ⚠️ **Authentication**: Supabase JWT validation implemented but untested in production; development uses `Bearer dev-token`.
-5. ⚠️ **Audio Mixing**: Background track mixing not yet implemented - only voice dubbing is functional.
+5. ⚠️ **Audio Mixing**: Background track mixing implemented but not yet integrated into worker pipeline - only voice dubbing is functional.
 
 ### **Mitigation / Next Steps**
 1. ✅ COMPLETED: Persist upload metadata (Supabase paths, durations) during job creation.
