@@ -40,6 +40,7 @@ export default function NewJobPage() {
   // State for banner dismissal
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [bannerAnimationComplete, setBannerAnimationComplete] = useState(false);
+  const [autoNavigateEnabled, setAutoNavigateEnabled] = useState(true);
   
   // Refs for accessibility
   const modalRef = useRef<HTMLDivElement>(null);
@@ -314,30 +315,34 @@ export default function NewJobPage() {
               <span>Back to Home</span>
             </Link>
             
-            <Link
-              href="/jobs"
-              className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group"
-            >
-              <span>View Jobs</span>
-              <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
-            </Link>
-            
-            {/* Simple Restore Banner Button */}
-            <AnimatePresence>
-              {bannerDismissed && (
-                <motion.button
-                  onClick={handleRestoreBanner}
-                  className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-[#ff0000] hover:bg-[#cc0000] rounded-lg transition-all duration-200 group"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
+            <div className="flex items-center space-x-4">
+              {/* Auto-navigation toggle */}
+              <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Auto-advance:
+                </label>
+                <button
+                  onClick={() => setAutoNavigateEnabled(!autoNavigateEnabled)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2 ${
+                    autoNavigateEnabled ? 'bg-[#ff0000]' : 'bg-muted'
+                  }`}
                 >
-                  <span>Show Guide</span>
-                  <span className="group-hover:translate-x-1 transition-transform duration-200">↑</span>
-                </motion.button>
-              )}
-            </AnimatePresence>
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      autoNavigateEnabled ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+              
+              <Link
+                href="/jobs"
+                className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group"
+              >
+                <span>View Jobs</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+              </Link>
+            </div>
           </div>
           
         </motion.div>
@@ -590,10 +595,12 @@ export default function NewJobPage() {
                       maxSize={100}
                       onFileSelect={handleVoiceTrackChange}
                       onDurationChange={setVoiceDuration}
+                      onAutoNavigate={nextStep}
                       error={errors.voiceTrack}
                       value={voiceTrack}
                       duration={voiceDuration}
                       durationFormatted={voiceDuration ? formatDuration(voiceDuration) : undefined}
+                      autoNavigate={autoNavigateEnabled}
                     />
                   </motion.div>
 
@@ -715,9 +722,11 @@ export default function NewJobPage() {
                       maxSize={100}
                       onFileSelect={handleBackgroundTrackChange}
                       onDurationChange={setBackgroundDuration}
+                      onAutoNavigate={nextStep}
                       value={backgroundTrack}
                       duration={backgroundDuration}
                       durationFormatted={backgroundDuration ? formatDuration(backgroundDuration) : undefined}
+                      autoNavigate={true}
                     />
                   </motion.div>
 
@@ -916,6 +925,8 @@ export default function NewJobPage() {
                       onChange={setTargetLanguages}
                       languages={LANGUAGES}
                       error={errors.targetLanguages}
+                      onAutoNavigate={nextStep}
+                      autoNavigate={true}
                     />
                   </motion.div>
                 </div>
@@ -1838,6 +1849,29 @@ export default function NewJobPage() {
                   </motion.div>
                 </div>
               </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Simple Restore Banner Button - Fixed at bottom right */}
+        <AnimatePresence>
+          {bannerDismissed && (
+            <motion.div
+              className="fixed bottom-6 right-6 z-50"
+              initial={{ opacity: 0, y: 20, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.8 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              <motion.button
+                onClick={handleRestoreBanner}
+                className="group relative inline-flex items-center space-x-2 px-4 py-3 text-sm font-medium text-white bg-[#ff0000] hover:bg-[#cc0000] rounded-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span>Show Guide</span>
+                <span className="group-hover:translate-y-1 transition-transform duration-200">↑</span>
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>

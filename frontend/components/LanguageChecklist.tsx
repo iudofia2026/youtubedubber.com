@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Search, X, Globe, Star, Zap, Sparkles } from 'lucide-react';
 import { LanguageChecklistProps, Language } from '@/types';
 
-export function LanguageChecklist({ value, onChange, languages, error }: LanguageChecklistProps) {
+export function LanguageChecklist({ value, onChange, languages, error, onAutoNavigate, autoNavigate = false }: LanguageChecklistProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'popular' | 'european' | 'asian' | 'other'>('all');
 
@@ -33,7 +33,16 @@ export function LanguageChecklist({ value, onChange, languages, error }: Languag
     if (value.includes(languageCode)) {
       onChange(value.filter(code => code !== languageCode));
     } else {
-      onChange([...value, languageCode]);
+      const newLanguages = [...value, languageCode];
+      onChange(newLanguages);
+      
+      // Auto-navigate to next step if enabled and at least one language is selected
+      if (autoNavigate && onAutoNavigate && newLanguages.length > 0) {
+        // Add a small delay to show the selection before navigating
+        setTimeout(() => {
+          onAutoNavigate();
+        }, 500);
+      }
     }
   };
 

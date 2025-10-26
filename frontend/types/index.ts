@@ -10,12 +10,14 @@ export interface FileUploadProps {
   onUploadProgress?: (progress: UploadProgress) => void;
   onUploadComplete?: (file: File) => void;
   onUploadError?: (error: string) => void;
+  onAutoNavigate?: () => void;
   error?: string;
   value?: File | null;
   duration?: number | null;
   durationFormatted?: string;
   isUploading?: boolean;
   uploadProgress?: UploadProgress;
+  autoNavigate?: boolean;
 }
 
 export interface UploadProgress {
@@ -46,6 +48,8 @@ export interface LanguageChecklistProps {
   onChange: (languages: string[]) => void;
   languages: Language[];
   error?: string;
+  onAutoNavigate?: () => void;
+  autoNavigate?: boolean;
 }
 
 export interface ProgressBarProps {
