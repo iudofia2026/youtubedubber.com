@@ -335,12 +335,14 @@ export default function NewJobPage() {
           {!bannerDismissed && (
             <motion.div
               className="relative mb-8 overflow-hidden"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.95, maxHeight: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, scale: 1, maxHeight: 200, marginBottom: 32 }}
               exit={{ 
                 opacity: 0, 
-                x: "100%",
-                transition: { duration: 0.5, ease: "easeInOut" }
+                maxHeight: 0,
+                marginBottom: 0,
+                scale: 0.95,
+                transition: { duration: 0.6, ease: "easeInOut" }
               }}
               transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 100 }}
             >
@@ -460,7 +462,15 @@ export default function NewJobPage() {
         </AnimatePresence>
 
         {/* Step Content */}
-        <div className="max-w-6xl mx-auto">
+        <motion.div 
+          className="max-w-6xl mx-auto"
+          layout
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+          animate={{
+            y: bannerDismissed ? -20 : 0,
+            transition: { duration: 0.6, ease: "easeInOut" }
+          }}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -1141,6 +1151,7 @@ export default function NewJobPage() {
               )}
             </motion.div>
           </AnimatePresence>
+        </motion.div>
 
           {/* Progress Steps */}
           <motion.div
@@ -1292,7 +1303,6 @@ export default function NewJobPage() {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
         </main>
 
         {/* How It Works Modal */}
