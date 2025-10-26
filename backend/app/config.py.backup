@@ -49,7 +49,6 @@ class Settings(BaseSettings):
     # Payment Configuration
     stripe_secret_key: Optional[str] = None
     stripe_webhook_secret: Optional[str] = None
-    stripe_publishable_key: Optional[str] = None
     
     # Performance Configuration
     max_workers: int = 2
@@ -94,19 +93,10 @@ def validate_settings():
         'deepgram_api_key', 'openai_api_key', 'secret_key'
     ]
     
-    # Payment settings are required for production
-    payment_settings = ['stripe_secret_key']
-    
     missing_settings = []
     for setting in required_settings:
         if not getattr(settings, setting, None):
             missing_settings.append(setting)
-    
-    # Check payment settings only if not in debug mode
-    if not settings.debug:
-        for setting in payment_settings:
-            if not getattr(settings, setting, None):
-                missing_settings.append(setting)
     
     if missing_settings:
         raise ValueError(f"Missing required settings: {', '.join(missing_settings)}")

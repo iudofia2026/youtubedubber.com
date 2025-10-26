@@ -39,6 +39,7 @@ class DubbingJob(Base):
     voice_track_duration = Column(Integer)  # Duration in seconds
     background_track_duration = Column(Integer)  # Duration in seconds
     target_languages = Column(JSON)  # List of language codes
+    credit_cost = Column(Integer, default=0)  # Credits consumed for this job
     
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -92,7 +93,7 @@ class JobEvent(Base):
     job_id = Column(String, ForeignKey("dubbing_jobs.id"), nullable=False, index=True)
     event_type = Column(String, nullable=False, index=True)  # created, started, progress, completed, failed
     message = Column(Text)
-    event_metadata = Column(JSON)  # Additional event data
+    event_transaction_metadata = Column(JSON)  # Additional event data
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
@@ -118,3 +119,34 @@ class Artifact(Base):
     # Relationships
     job = relationship("DubbingJob")
     language_task = relationship("LanguageTask")
+
+
+class UserCredits(Base):
+    """User credit balance tracking"""
+    __tablename__ = "user_credits"
+    
+    user_id = Column(String, ForeignKey("users.id"), primary_key=True, index=True)
+    balance = Column(Integer, default=0, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    user = relationship("User")
+
+
+class CreditTransaction(Base):
+    """Credit transaction history"""
+    __tablename__ = "credit_transactions"
+    
+    id = Column(String, primary_key=True, index=True)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    amount = Column(Integer, nullable=False)  # Credits added/subtracted (positive/negative)
+    transaction_type = Column(String, nullable=False, index=True)  # 'purchase', 'job_consumption', 'refund', 'bonus'
+    stripe_payment_intent_id = Column(String, index=True)  # Stripe payment intent ID for purchases
+    description = Column(Text)  # Human-readable description
+    transaction_metadata = Column(JSON)  # Additional transaction data
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    user = relationship("User")

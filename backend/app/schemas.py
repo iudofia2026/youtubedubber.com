@@ -203,3 +203,54 @@ LANGUAGE_MAPPING = {
 def get_language_info(language_code: str) -> Dict[str, str]:
     """Get language information for frontend compatibility"""
     return LANGUAGE_MAPPING.get(language_code, {"name": language_code.upper(), "flag": "🌐"})
+
+
+# Payment schemas
+class CreditBalance(BaseModel):
+    """User credit balance response"""
+    balance: int = Field(..., description="Current credit balance")
+    user_id: str = Field(..., description="User ID")
+
+
+class CreditTransactionResponse(BaseModel):
+    """Credit transaction response"""
+    id: str = Field(..., description="Transaction ID")
+    amount: int = Field(..., description="Credit amount (positive/negative)")
+    transaction_type: str = Field(..., description="Type of transaction")
+    description: str = Field(..., description="Transaction description")
+    created_at: datetime = Field(..., description="Transaction timestamp")
+    stripe_payment_intent_id: Optional[str] = Field(None, description="Stripe payment intent ID")
+
+
+class PaymentIntentRequest(BaseModel):
+    """Request to create a payment intent"""
+    plan: str = Field(..., description="Pricing plan (starter, creator, professional)")
+    user_id: str = Field(..., description="User ID")
+
+
+class PaymentIntentResponse(BaseModel):
+    """Payment intent response"""
+    client_secret: str = Field(..., description="Stripe client secret")
+    payment_intent_id: str = Field(..., description="Stripe payment intent ID")
+    amount: int = Field(..., description="Amount in cents")
+
+
+class PaymentConfirmationRequest(BaseModel):
+    """Request to confirm a payment"""
+    payment_intent_id: str = Field(..., description="Stripe payment intent ID")
+    user_id: str = Field(..., description="User ID")
+
+
+class PaymentConfirmationResponse(BaseModel):
+    """Payment confirmation response"""
+    success: bool = Field(..., description="Payment success status")
+    credits_added: int = Field(..., description="Credits added to account")
+    new_balance: int = Field(..., description="New credit balance")
+
+
+class JobCostCalculation(BaseModel):
+    """Job cost calculation response"""
+    estimated_cost: int = Field(..., description="Estimated credits required")
+    languages: List[str] = Field(..., description="Target languages")
+    duration: int = Field(..., description="Voice track duration in seconds")
+    breakdown: Dict[str, Any] = Field(..., description="Cost breakdown details")
