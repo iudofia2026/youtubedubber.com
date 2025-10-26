@@ -422,7 +422,7 @@ Private project - All rights reserved
 
 ---
 
-**Last Updated**: October 25, 2024
-**Current Branch**: isiah-frontend-oct15
+**Last Updated**: October 26, 2025
+**Current Branch**: isle-2
 **Status**: Local development ready, AI pipeline in progress
 **Repository**: https://github.com/iudofia2026/youtubedubber.com

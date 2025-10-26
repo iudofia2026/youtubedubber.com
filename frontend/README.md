@@ -2,7 +2,7 @@
 
 A Next.js application for AI-powered multilingual video dubbing, enabling YouTubers to create multiple language versions of their content.
 
-## ⚡ Latest Update (Oct 25, 2024)
+## ⚡ Latest Update (Oct 26, 2025)
 
 **Environment Now Configured!** The `.env.local` file is pre-configured for local development. Simply run `npm install && npm run dev` to start the application. No manual environment setup required!
 
@@ -1458,7 +1458,7 @@ CREATE TABLE jobs (
 
 - **Conditional Step Navigation**: Smart step management based on user type
   - **First-Time Users**: Full 4-step process (How It Works → Voice → Background → Languages)
-  - **Returning Users**: 3-step process (Voice → Background → Languages)
+  - **Returning Users**: 3-step process (Voice → Background → Languages) - Note: Step 0 (How It Works) is skipped for returning users
   - **Step Filtering**: Progress bar only shows relevant steps for each user type
   - **Navigation Logic**: Prevents returning users from going back to Step 0
 
