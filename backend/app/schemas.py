@@ -42,6 +42,10 @@ class JobCreationRequest(BaseModel):
     voice_track_uploaded: bool = Field(..., description="Whether voice track has been uploaded")
     background_track_uploaded: bool = Field(..., description="Whether background track has been uploaded")
     languages: List[str] = Field(..., description="List of target language codes")
+    voice_track_url: Optional[str] = Field(None, description="Voice track file path in storage")
+    background_track_url: Optional[str] = Field(None, description="Background track file path in storage")
+    voice_track_duration: Optional[int] = Field(None, description="Voice track duration in seconds")
+    background_track_duration: Optional[int] = Field(None, description="Background track duration in seconds")
 
 
 # Response schemas (matching frontend types)

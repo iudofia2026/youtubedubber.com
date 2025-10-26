@@ -42,15 +42,19 @@ class JobService:
                 return await self.get_job_status(job_data.job_id, user_id, db)
             
             logger.info(f"Creating main job record for {job_data.job_id}")
-            
-            # Create the main job record
+
+            # Create the main job record with upload metadata
             job = DubbingJob(
                 id=job_data.job_id,
                 user_id=user_id,
                 status=JobStatus.PROCESSING,
                 progress=0,
                 message="Job created, starting processing...",
-                target_languages=job_data.languages
+                target_languages=job_data.languages,
+                voice_track_url=job_data.voice_track_url,
+                background_track_url=job_data.background_track_url,
+                voice_track_duration=job_data.voice_track_duration,
+                background_track_duration=job_data.background_track_duration
             )
             
             db.add(job)
