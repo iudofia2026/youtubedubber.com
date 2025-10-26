@@ -1732,7 +1732,7 @@ export default function NewJobPage() {
                                 </ul>
                               </motion.div>
                             </div>
-                          </div>
+                          </motion.div>
                           
                           {/* Enhanced Visual with 3D Effects */}
                           <motion.div 
