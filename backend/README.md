@@ -2,7 +2,7 @@
 
 A FastAPI-based backend service for the YouTube Multilingual Dubber application, providing AI-powered video dubbing capabilities.
 
-## ⚡ Latest Update (Oct 25, 2024)
+## ⚡ Latest Update (Oct 26, 2025)
 
 **Environment Now Configured!** The `.env` file is pre-configured for local development with SQLite and dev mode. The backend now starts without errors and bypasses strict API key validation in development. Simply activate the venv and run `uvicorn app.main:app --reload --port 8000`!
 
