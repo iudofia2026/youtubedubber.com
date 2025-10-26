@@ -40,7 +40,6 @@ export default function NewJobPage() {
   // State for banner dismissal
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [bannerAnimationComplete, setBannerAnimationComplete] = useState(false);
-  const [autoNavigateEnabled, setAutoNavigateEnabled] = useState(true);
   
   // Refs for accessibility
   const modalRef = useRef<HTMLDivElement>(null);
@@ -315,34 +314,13 @@ export default function NewJobPage() {
               <span>Back to Home</span>
             </Link>
             
-            <div className="flex items-center space-x-4">
-              {/* Auto-navigation toggle */}
-              <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Auto-advance:
-                </label>
-                <button
-                  onClick={() => setAutoNavigateEnabled(!autoNavigateEnabled)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2 ${
-                    autoNavigateEnabled ? 'bg-[#ff0000]' : 'bg-muted'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      autoNavigateEnabled ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-              
-              <Link
-                href="/jobs"
-                className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group"
-              >
-                <span>View Jobs</span>
-                <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
-              </Link>
-            </div>
+            <Link
+              href="/jobs"
+              className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group"
+            >
+              <span>View Jobs</span>
+              <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+            </Link>
           </div>
           
         </motion.div>
@@ -600,7 +578,7 @@ export default function NewJobPage() {
                       value={voiceTrack}
                       duration={voiceDuration}
                       durationFormatted={voiceDuration ? formatDuration(voiceDuration) : undefined}
-                      autoNavigate={autoNavigateEnabled}
+                      autoNavigate={true}
                     />
                   </motion.div>
 
