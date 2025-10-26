@@ -9,7 +9,6 @@ import { FileUpload } from '@/components/FileUpload';
 import { LanguageChecklist } from '@/components/LanguageChecklist';
 import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
-import GamifiedLaunchScreen from '@/components/GamifiedLaunchScreen';
 import { LANGUAGES } from '@/types';
 import { submitDubbingJob } from '@/lib/api';
 import { areDurationsEqual, formatDurationDifference, formatDuration } from '@/lib/audio-utils';
@@ -24,7 +23,6 @@ export default function NewJobPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [voiceDuration, setVoiceDuration] = useState<number | null>(null);
   const [backgroundDuration, setBackgroundDuration] = useState<number | null>(null);
-  const [userCredits, setUserCredits] = useState(150); // Mock user credits
   const [errors, setErrors] = useState<{
     voiceTrack?: string;
     targetLanguages?: string;
@@ -44,11 +42,49 @@ export default function NewJobPage() {
   const [bannerAnimationComplete, setBannerAnimationComplete] = useState(false);
   const [showPullTab, setShowPullTab] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [isScrollingUp, setIsScrollingUp] = useState(false);
   
   // Refs for accessibility
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const openButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Handle scroll detection
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          setScrollY(currentScrollY);
+          
+          // Detect scroll direction with threshold
+          const scrollThreshold = 5;
+          const scrollDifference = Math.abs(currentScrollY - lastScrollY);
+          
+          if (scrollDifference > scrollThreshold) {
+            if (currentScrollY > lastScrollY) {
+              // Scrolling down
+              setIsScrollingUp(false);
+            } else if (currentScrollY < lastScrollY) {
+              // Scrolling up
+              setIsScrollingUp(true);
+            }
+            lastScrollY = currentScrollY;
+          }
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Handle banner dismissal and pull tab visibility
   useEffect(() => {
@@ -451,15 +487,22 @@ export default function NewJobPage() {
           )}
         </AnimatePresence>
 
-        {/* Compact I/O Toggle Panel */}
+        {/* Compact I/O Toggle Panel - Sticky to viewport */}
         <AnimatePresence>
           {showPullTab && (
             <motion.div
               className="fixed right-0 top-1/3 -translate-y-1/2 z-50"
               initial={{ x: "100%" }}
-              animate={{ x: 0 }}
+              animate={{ 
+                x: isScrollingUp ? "-100%" : 0,
+                opacity: isScrollingUp ? 0 : 1
+              }}
               exit={{ x: "100%" }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              transition={{ 
+                duration: 0.4, 
+                ease: "easeInOut",
+                opacity: { duration: 0.3 }
+              }}
             >
               <motion.button
                 onClick={bannerDismissed ? handleRestoreBanner : handleDismissBanner}
@@ -1009,15 +1052,56 @@ export default function NewJobPage() {
                 </div>
               )}
 
-              {/* Step 4: Gamified Launch Screen */}
+              {/* Step 4: Submit Job */}
               {currentStep === 4 && (
-                <GamifiedLaunchScreen
-                  onLaunch={handleSubmit}
-                  isLaunching={isSubmitting}
-                  userCredits={userCredits}
-                  jobDuration={voiceDuration || 0}
-                  targetLanguages={targetLanguages}
-                />
+                <div className="space-y-8">
+                  {/* Job Summary */}
+                  <div className="bg-slate-50 rounded-lg p-6 border">
+                    <h3 className="text-lg font-semibold mb-4">Job Summary</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Voice Track:</span>
+                        <span className="font-medium">{voiceTrack?.name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Duration:</span>
+                        <span className="font-medium">{voiceDuration ? formatDuration(voiceDuration) : 'Unknown'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Languages:</span>
+                        <span className="font-medium">{targetLanguages.length} selected</span>
+                      </div>
+                      {backgroundTrack && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Background Track:</span>
+                          <span className="font-medium">{backgroundTrack.name}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="flex justify-center">
+                    <button
+                      onClick={handleSubmit}
+                      disabled={isSubmitting || !isFinalStepValid}
+                      className={`px-8 py-3 rounded-lg font-medium transition-colors ${
+                        isSubmitting || !isFinalStepValid
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-red-600 hover:bg-red-700 text-white'
+                      }`}
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Submit Job'}
+                    </button>
+                  </div>
+
+                  {/* Status */}
+                  {isSubmitting && (
+                    <div className="text-center text-sm text-gray-600">
+                      Processing your dubbing job...
+                    </div>
+                  )}
+                </div>
               )}
             </motion.div>
           </AnimatePresence>
