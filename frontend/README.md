@@ -753,7 +753,7 @@ Based on the backend architecture and business requirements, the frontend needs 
   - Billing dashboard with transaction history and credit balance
   - Dynamic pricing calculation based on language complexity
   - Payment components (PaymentForm, CreditBalance, BillingHistory, PricingCard)
-  - Three pricing tiers: Creator Pack (50 credits - $29), Professional Pack (250 credits - $99), Enterprise Pack (1000 credits - $299)
+  - Three pricing tiers: Starter Pack (20 credits - FREE), Creator Pack (50 credits - $29), Professional Pack (250 credits - $99)
   - Real-time credit tracking and transaction management
   - Secure payment processing with error handling
 

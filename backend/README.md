@@ -781,9 +781,9 @@ The system uses a credit-based pricing model with dynamic cost calculation:
 - **Duration Bonuses**: Additional credits for longer content
 
 ### **Pricing Plans**
+- **Starter Pack**: 20 credits for FREE
 - **Creator Pack**: 50 credits for $29
 - **Professional Pack**: 250 credits for $99
-- **Enterprise Pack**: 1000 credits for $299
 
 ### **Payment APIs**
 - `POST /api/payments/create-payment-intent` - Create Stripe payment intent
@@ -794,8 +794,8 @@ The system uses a credit-based pricing model with dynamic cost calculation:
 - `GET /api/payments/can-afford-job` - Check if user can afford job
 
 ### **Database Models**
-- `UserCredits` - User credit balance tracking
-- `CreditTransaction` - Transaction history and audit trail
+- `UserCredits` - User credit balance tracking with user relationship
+- `CreditTransaction` - Transaction history and audit trail with metadata support
 - `DubbingJob.credit_cost` - Credits consumed per job
 
 ## 🎯 **Success Criteria Overview**

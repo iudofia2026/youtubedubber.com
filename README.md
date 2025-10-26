@@ -61,7 +61,7 @@ npm run dev
   - Dynamic pricing based on language complexity
 
 - ✅ **Payment System**: Stripe integration with credit-based pricing (Backend complete, Frontend uses mock data)
-  - 3 pricing tiers: Creator Pack (50 credits - $29), Professional Pack (250 credits - $99), Enterprise Pack (1000 credits - $299)
+  - 3 pricing tiers: Starter Pack (20 credits - FREE), Creator Pack (50 credits - $29), Professional Pack (250 credits - $99)
   - Dynamic pricing based on language complexity and duration
   - Real-time credit balance tracking and transaction history
   - Secure payment processing with Stripe (backend ready, frontend uses mock data for development)
@@ -126,7 +126,7 @@ npm run dev
 3. **Job Management**: Create, track, and manage dubbing jobs with real-time progress
 4. **Download System**: Download dubbed audio, full video, and captions
 5. **Payment System**: Credit-based pricing with Stripe integration
-   - 3 pricing tiers: Creator Pack (50 credits - $29), Professional Pack (250 credits - $99), Enterprise Pack (1000 credits - $299)
+   - 3 pricing tiers: Starter Pack (20 credits - FREE), Creator Pack (50 credits - $29), Professional Pack (250 credits - $99)
    - Dynamic pricing based on language complexity and duration
    - Real-time credit balance tracking and transaction history
    - Secure payment processing with Stripe
@@ -198,7 +198,7 @@ youtubedubber.com/
 
 ### ✅ Payment System Implementation (Oct 26, 2024)
 - Complete Stripe integration with credit-based pricing model
-- 3 pricing tiers: Creator Pack (50 credits - $29), Professional Pack (250 credits - $99), Enterprise Pack (1000 credits - $299)
+- 3 pricing tiers: Starter Pack (20 credits - FREE), Creator Pack (50 credits - $29), Professional Pack (250 credits - $99)
 - Dynamic pricing based on language complexity and duration
 - Real-time credit balance tracking and transaction history
 - Complete billing dashboard with payment forms and transaction management

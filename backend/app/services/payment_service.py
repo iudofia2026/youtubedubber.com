@@ -20,6 +20,11 @@ stripe.api_key = settings.stripe_secret_key
 
 # Pricing plans configuration
 PRICING_PLANS = {
+    "starter": {
+        "credits": 20,
+        "price_cents": 0,  # FREE
+        "name": "Starter Pack"
+    },
     "creator": {
         "credits": 50,
         "price_cents": 2900,  # $29
@@ -29,11 +34,6 @@ PRICING_PLANS = {
         "credits": 250,
         "price_cents": 9900,  # $99
         "name": "Professional Pack"
-    },
-    "enterprise": {
-        "credits": 1000,
-        "price_cents": 29900,  # $299
-        "name": "Enterprise Pack"
     }
 }
 

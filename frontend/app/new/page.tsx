@@ -919,95 +919,118 @@ export default function NewJobPage() {
               {/* Step 4: Launch Job */}
               {currentStep === 4 && (
                 <div className="space-y-8">
-                  {/* Gamified Launch Interface */}
-                  <motion.div
-                    className="text-center max-w-4xl mx-auto"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                  >
-                    {/* Success indicator */}
-                    {isFinalStepValid && (
-                      <motion.div
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ 
-                          delay: 0.5,
-                          type: "spring",
-                          stiffness: 200,
-                          damping: 15
-                        }}
-                      >
-                        <CheckCircle className="w-4 h-4 text-white" />
-                      </motion.div>
-                    )}
 
-                    {/* Main Launch Card */}
-                    <motion.div
-                      className="relative bg-gradient-to-br from-[#ff0000]/5 via-[#ff0000]/10 to-[#ff0000]/5 border border-[#ff0000]/20 rounded-3xl p-8 shadow-2xl overflow-hidden"
-                      initial={{ scale: 0.95, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ 
-                        duration: 0.8, 
-                        delay: 0.2,
-                        type: "spring",
-                        stiffness: 100,
-                        damping: 15
+                  {/* Giant Minimalist Submit Button */}
+                  <motion.div
+                    className="flex justify-center"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ 
+                      duration: 0.6, 
+                      delay: 0.6,
+                      type: "spring",
+                      stiffness: 120,
+                      damping: 20
+                    }}
+                  >
+                    <motion.button
+                      onClick={handleSubmit}
+                      disabled={isSubmitting || !isFinalStepValid}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        if (!isSubmitting && isFinalStepValid) {
+                          handleSubmit();
+                          if (navigator.vibrate) {
+                            navigator.vibrate(50);
+                          }
+                        }
                       }}
-                      whileHover={{ 
+                      className={`relative group overflow-hidden transition-all duration-300 touch-manipulation ${
+                        isSubmitting || !isFinalStepValid
+                          ? 'opacity-50 cursor-not-allowed'
+                          : 'hover:scale-105 active:scale-95'
+                      }`}
+                      style={{
+                        width: '480px',
+                        height: '80px'
+                      }}
+                      whileHover={!isSubmitting && isFinalStepValid ? { 
                         scale: 1.02,
-                        transition: { duration: 0.3 }
-                      }}
+                        y: -2,
+                        transition: { duration: 0.2 }
+                      } : {}}
+                      whileTap={!isSubmitting && isFinalStepValid ? { 
+                        scale: 0.98,
+                        transition: { duration: 0.1 }
+                      } : {}}
                     >
-                      {/* Animated background */}
+                      {/* Clean Background */}
                       <motion.div
-                        className="absolute inset-0 opacity-20"
+                        className="absolute inset-0 bg-[#dc2626]"
                         animate={{
-                          backgroundPosition: ["0% 0%", "100% 100%"],
+                          backgroundColor: [
+                            '#dc2626',
+                            '#ef4444',
+                            '#dc2626'
+                          ]
                         }}
                         transition={{
-                          duration: 10,
+                          duration: 4,
                           repeat: Infinity,
-                          repeatType: "reverse",
-                          ease: "linear"
-                        }}
-                        style={{
-                          backgroundImage: "radial-gradient(circle at 20% 50%, #ff0000 0%, transparent 50%), radial-gradient(circle at 80% 20%, #ff0000 0%, transparent 50%)",
-                          backgroundSize: "200% 200%"
+                          ease: "easeInOut"
                         }}
                       />
 
-                      <div className="relative z-10">
-                        {/* Icon and Title */}
+                      {/* Sharp Border */}
+                      <motion.div
+                        className="absolute inset-0 border-2 border-white/60"
+                        animate={{
+                          borderColor: [
+                            'rgba(255, 255, 255, 0.6)',
+                            'rgba(255, 255, 255, 0.9)',
+                            'rgba(255, 255, 255, 0.6)'
+                          ]
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+
+                      {/* Subtle Light Sweep */}
+                      {!isSubmitting && isFinalStepValid && (
                         <motion.div
-                          className="flex flex-col items-center mb-8"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: 0.3 }}
-                        >
-                          <motion.div
-                            className={`w-20 h-20 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-2xl flex items-center justify-center shadow-lg mb-6 ${
-                              isFinalStepValid ? 'ring-4 ring-green-400/50 ring-offset-4 ring-offset-background' : ''
-                            }`}
-                            animate={{ 
-                              scale: [1, 1.05, 1],
-                              rotate: [0, 2, -2, 0]
-                            }}
-                            transition={{ 
-                              duration: 4,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                            whileHover={{ 
-                              scale: 1.1,
-                              rotate: 5,
-                              transition: { duration: 0.3 }
-                            }}
-                          >
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                          initial={{ x: "-100%" }}
+                          animate={{ x: "100%" }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: "linear",
+                            delay: 1
+                          }}
+                        />
+                      )}
+
+                      {/* Button Content */}
+                      <div className="relative z-10 flex items-center justify-center h-full px-8">
+                        {isSubmitting ? (
+                          <div className="flex items-center space-x-6">
+                            <motion.div 
+                              className="w-8 h-8 border-2 border-white border-t-transparent"
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            />
+                            <span className="text-2xl font-bold text-white tracking-wide">PROCESSING...</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-6">
+                            {/* Clean Icon */}
                             <motion.div
+                              className="w-10 h-10 bg-white/20 flex items-center justify-center"
                               animate={{ 
-                                scale: [1, 1.1, 1],
+                                scale: [1, 1.05, 1]
                               }}
                               transition={{ 
                                 duration: 2,
@@ -1015,141 +1038,105 @@ export default function NewJobPage() {
                                 ease: "easeInOut"
                               }}
                             >
-                              <Upload className="w-10 h-10 text-white" />
+                              <Zap className="w-5 h-5 text-white" />
                             </motion.div>
-                          </motion.div>
-
-                          <motion.h2 
-                            className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: 0.4 }}
-                          >
-                            Launch Job
-                          </motion.h2>
-                        </motion.div>
-
-                        {/* Quick Stats Grid */}
-                        <motion.div
-                          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: 0.5 }}
-                        >
-                          {/* Voice Track */}
-                          <motion.div 
-                            className="flex items-center space-x-4 p-4 rounded-xl bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-white/20"
-                            whileHover={{ 
-                              scale: 1.05,
-                              backgroundColor: "rgba(255, 255, 255, 0.7)",
-                              transition: { duration: 0.2 }
-                            }}
-                          >
-                            <motion.div 
-                              className="w-12 h-12 bg-[#ff0000]/20 rounded-xl flex items-center justify-center"
-                              whileHover={{ rotate: 10 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <Mic className="w-6 h-6 text-[#ff0000]" />
-                            </motion.div>
-                            <div className="text-left">
-                              <p className="font-semibold text-foreground text-sm">Voice</p>
-                              <p className="text-xs text-muted-foreground truncate max-w-[120px]">{voiceTrack?.name}</p>
-                              {voiceDuration && (
-                                <p className="text-xs text-[#ff0000] font-medium">{formatDuration(voiceDuration)}</p>
-                              )}
+                            
+                            <div className="text-center">
+                              <motion.div
+                                className="text-3xl font-black text-white tracking-wider"
+                                animate={{
+                                  textShadow: [
+                                    '0 0 0px rgba(255,255,255,0)',
+                                    '0 0 15px rgba(255,255,255,0.3)',
+                                    '0 0 0px rgba(255,255,255,0)'
+                                  ]
+                                }}
+                                transition={{
+                                  duration: 2.5,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              >
+                                LAUNCH
+                              </motion.div>
+                              <motion.div
+                                className="text-sm font-medium text-white/90 tracking-wide mt-1"
+                                animate={{
+                                  opacity: [0.8, 1, 0.8]
+                                }}
+                                transition={{
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              >
+                                START DUBBING
+                              </motion.div>
                             </div>
-                          </motion.div>
 
-                          {/* Languages */}
-                          <motion.div 
-                            className="flex items-center space-x-4 p-4 rounded-xl bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-white/20"
-                            whileHover={{ 
-                              scale: 1.05,
-                              backgroundColor: "rgba(255, 255, 255, 0.7)",
-                              transition: { duration: 0.2 }
-                            }}
-                          >
-                            <motion.div 
-                              className="w-12 h-12 bg-[#ff0000]/20 rounded-xl flex items-center justify-center"
-                              whileHover={{ rotate: 10 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <Globe className="w-6 h-6 text-[#ff0000]" />
-                            </motion.div>
-                            <div className="text-left">
-                              <p className="font-semibold text-foreground text-sm">Languages</p>
-                              <p className="text-xs text-muted-foreground">{targetLanguages.length} selected</p>
-                            </div>
-                          </motion.div>
-
-                          {/* Credits */}
-                          <motion.div 
-                            className="flex items-center space-x-4 p-4 rounded-xl bg-gradient-to-r from-[#ff0000]/20 to-[#ff0000]/10 border border-[#ff0000]/30"
-                            whileHover={{ 
-                              scale: 1.05,
-                              backgroundColor: "rgba(255, 0, 0, 0.15)",
-                              transition: { duration: 0.2 }
-                            }}
-                          >
-                            <motion.div 
-                              className="w-12 h-12 bg-[#ff0000]/30 rounded-xl flex items-center justify-center"
-                              animate={{ 
-                                scale: [1, 1.1, 1],
-                              }}
-                              transition={{ 
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                            >
-                              <Zap className="w-6 h-6 text-[#ff0000]" />
-                            </motion.div>
-                            <div className="text-left">
-                              <p className="font-semibold text-foreground text-sm">Credits</p>
-                              <p className="text-lg font-bold text-[#ff0000]">{targetLanguages.length * 2}</p>
-                            </div>
-                          </motion.div>
-                        </motion.div>
-
-                        {/* Reward Message */}
-                        <motion.div
-                          className="text-center mb-8"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: 0.6 }}
-                        >
-                          <motion.div
-                            className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30"
-                            animate={{ 
-                              scale: [1, 1.02, 1],
-                            }}
-                            transition={{ 
-                              duration: 3,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                          >
+                            {/* Clean Arrow */}
                             <motion.div
+                              className="w-10 h-10 bg-white/20 flex items-center justify-center"
                               animate={{ 
-                                rotate: [0, 10, -10, 0],
+                                scale: [1, 1.05, 1],
+                                x: [0, 2, 0]
                               }}
                               transition={{ 
                                 duration: 2,
                                 repeat: Infinity,
-                                ease: "easeInOut"
+                                ease: "easeInOut",
+                                delay: 0.5
                               }}
                             >
-                              <Star className="w-5 h-5 text-green-500" />
+                              <ArrowRight className="w-5 h-5 text-white" />
                             </motion.div>
-                            <span className="text-green-700 dark:text-green-400 font-semibold">
-                              Unlock {targetLanguages.length} new audiences
-                            </span>
-                          </motion.div>
-                        </motion.div>
+                          </div>
+                        )}
                       </div>
-                    </motion.div>
+
+                      {/* Minimal Pulse Effect */}
+                      {!isSubmitting && isFinalStepValid && (
+                        <motion.div
+                          className="absolute inset-0 border border-white/30"
+                          animate={{
+                            scale: [1, 1.01, 1],
+                            opacity: [0.3, 0.6, 0.3]
+                          }}
+                          transition={{
+                            duration: 4,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      )}
+                    </motion.button>
                   </motion.div>
+
+                  {/* Minimal Status Indicator */}
+                  {isSubmitting && (
+                    <motion.div
+                      className="text-center"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Initializing dubbing process...
+                      </p>
+                      <motion.div
+                        className="w-64 h-1 bg-muted rounded-full mx-auto overflow-hidden"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <motion.div
+                          className="h-full bg-gradient-to-r from-[#dc2626] to-[#b91c1c] rounded-full"
+                          initial={{ width: "0%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ duration: 3, ease: "easeInOut" }}
+                        />
+                      </motion.div>
+                    </motion.div>
+                  )}
                 </div>
               )}
             </motion.div>
@@ -1249,7 +1236,7 @@ export default function NewJobPage() {
               <span>Previous</span>
             </motion.button>
 
-            {currentStep < 4 ? (
+            {currentStep < 4 && (
               <motion.button
                 onClick={nextStep}
                 disabled={!isStepValid}
@@ -1274,164 +1261,6 @@ export default function NewJobPage() {
                 <span>Next</span>
                 <ArrowRight className="w-4 h-4" />
               </motion.button>
-            ) : (
-              <motion.div
-                className="relative"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ 
-                  duration: 0.6, 
-                  delay: 0.8,
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 15
-                }}
-              >
-                {/* Gamified Launch Button */}
-                <motion.button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || !isFinalStepValid}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    if (!isSubmitting && isFinalStepValid) {
-                      handleSubmit();
-                      // Haptic feedback
-                      if (navigator.vibrate) {
-                        navigator.vibrate(50);
-                      }
-                    }
-                  }}
-                  className={`relative inline-flex items-center justify-center space-x-4 px-12 py-5 rounded-2xl font-bold transition-all duration-300 touch-manipulation min-h-[56px] overflow-hidden ${
-                    isSubmitting || !isFinalStepValid
-                      ? 'bg-muted text-muted-foreground cursor-not-allowed'
-                      : 'bg-gradient-to-r from-[#ff0000] to-[#cc0000] text-white hover:from-[#ff1a1a] hover:to-[#e60000] shadow-2xl hover:shadow-3xl'
-                  }`}
-                  whileHover={!isSubmitting && isFinalStepValid ? { 
-                    scale: 1.08,
-                    y: -4,
-                    transition: { duration: 0.3 }
-                  } : {}}
-                  whileTap={!isSubmitting && isFinalStepValid ? { 
-                    scale: 0.95,
-                    transition: { duration: 0.1 }
-                  } : {}}
-                >
-                  {/* Animated background effect */}
-                  {!isSubmitting && isFinalStepValid && (
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-white/30 to-transparent"
-                      initial={{ x: "-100%" }}
-                      animate={{ x: "100%" }}
-                      transition={{
-                        duration: 2.5,
-                        repeat: Infinity,
-                        ease: "linear"
-                      }}
-                    />
-                  )}
-                  
-                  {/* Button content */}
-                  <div className="relative z-10 flex items-center space-x-4">
-                    {isSubmitting ? (
-                      <>
-                        <motion.div 
-                          className="w-6 h-6 border-3 border-current border-t-transparent rounded-full"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        />
-                        <span className="text-lg">Launching...</span>
-                      </>
-                    ) : (
-                      <>
-                        <motion.div
-                          animate={{ 
-                            scale: [1, 1.2, 1],
-                            rotate: [0, 10, -10, 0]
-                          }}
-                          transition={{ 
-                            duration: 2.5,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                        >
-                          <Zap className="w-6 h-6" />
-                        </motion.div>
-                        <span className="text-xl">Launch Job</span>
-                        <motion.div
-                          animate={{ 
-                            x: [0, 5, 0],
-                            scale: [1, 1.1, 1]
-                          }}
-                          transition={{ 
-                            duration: 1.8,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                        >
-                          <ArrowRight className="w-6 h-6" />
-                        </motion.div>
-                      </>
-                    )}
-                  </div>
-                  
-                  {/* Success particles effect */}
-                  {!isSubmitting && isFinalStepValid && (
-                    <motion.div
-                      className="absolute inset-0 pointer-events-none"
-                      initial={{ opacity: 0 }}
-                      whileHover={{ opacity: 1 }}
-                    >
-                      {[...Array(8)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          className="absolute w-1.5 h-1.5 bg-white/80 rounded-full"
-                          style={{
-                            left: `${15 + i * 10}%`,
-                            top: "50%",
-                          }}
-                          animate={{
-                            y: [-15, -40],
-                            opacity: [0, 1, 0],
-                            scale: [0, 1.2, 0],
-                          }}
-                          transition={{
-                            duration: 2,
-                            delay: i * 0.1,
-                            repeat: Infinity,
-                            ease: "easeOut"
-                          }}
-                        />
-                      ))}
-                    </motion.div>
-                  )}
-                </motion.button>
-                
-                {/* Progress indicator */}
-                {isSubmitting && (
-                  <motion.div
-                    className="mt-3 text-center"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                  >
-                    <p className="text-sm text-muted-foreground">
-                      Launching job...
-                    </p>
-                    <motion.div
-                      className="w-full h-1 bg-muted rounded-full mt-2 overflow-hidden"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      <motion.div
-                        className="h-full bg-gradient-to-r from-[#ff0000] to-[#cc0000] rounded-full"
-                        initial={{ width: "0%" }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 3, ease: "easeInOut" }}
-                      />
-                    </motion.div>
-                  </motion.div>
-                )}
-              </motion.div>
             )}
           </motion.div>
 
