@@ -31,7 +31,7 @@ A FastAPI-based backend service for the YouTube Multilingual Dubber application,
 - **Frontend Integration**: ⚠️ **BLOCKED** – Job status/listing responses use placeholder data and mismatch the frontend’s expectations
 - **Documentation**: Core setup documented; status sections now reflect outstanding work
 - **Environment**: Local development scripts run, but production credentials/config still required
-- **User Experience**: ✅ **IMPROVED** – Removed redundant onboarding content for faster user flow
+- **User Experience**: ✅ **ENHANCED** – Streamlined job creation flow with creative floating button design and smooth animations
 
 ## 🚧 Integration Status
 
