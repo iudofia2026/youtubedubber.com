@@ -3,12 +3,13 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle, Scissors, FileAudio, Zap, Download, Star, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle, Scissors, FileAudio, Zap, Download, Star, X, Power } from 'lucide-react';
 import Link from 'next/link';
 import { FileUpload } from '@/components/FileUpload';
 import { LanguageChecklist } from '@/components/LanguageChecklist';
 import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
+import GamifiedLaunchScreen from '@/components/GamifiedLaunchScreen';
 import { LANGUAGES } from '@/types';
 import { submitDubbingJob } from '@/lib/api';
 import { areDurationsEqual, formatDurationDifference, formatDuration } from '@/lib/audio-utils';
@@ -23,6 +24,7 @@ export default function NewJobPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [voiceDuration, setVoiceDuration] = useState<number | null>(null);
   const [backgroundDuration, setBackgroundDuration] = useState<number | null>(null);
+  const [userCredits, setUserCredits] = useState(150); // Mock user credits
   const [errors, setErrors] = useState<{
     voiceTrack?: string;
     targetLanguages?: string;
@@ -39,6 +41,7 @@ export default function NewJobPage() {
   
   // State for banner dismissal
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [bannerAnimationComplete, setBannerAnimationComplete] = useState(false);
   const [showPullTab, setShowPullTab] = useState(false);
   
   // Refs for accessibility
@@ -50,11 +53,13 @@ export default function NewJobPage() {
   useEffect(() => {
     if (bannerDismissed) {
       // Show pull tab after a short delay
-      const timer = setTimeout(() => {
+      const pullTabTimer = setTimeout(() => {
         setShowPullTab(true);
       }, 1000);
-      return () => clearTimeout(timer);
+      
+      return () => clearTimeout(pullTabTimer);
     } else {
+      setBannerAnimationComplete(false);
       setShowPullTab(false);
     }
   }, [bannerDismissed]);
@@ -66,6 +71,7 @@ export default function NewJobPage() {
 
   const handleRestoreBanner = useCallback(() => {
     setBannerDismissed(false);
+    setBannerAnimationComplete(false);
     setShowPullTab(false);
   }, []);
 
@@ -342,7 +348,11 @@ export default function NewJobPage() {
                 maxHeight: 0,
                 marginBottom: 0,
                 scale: 0.95,
-                transition: { duration: 0.6, ease: "easeInOut" }
+                transition: { 
+                  duration: 0.6, 
+                  ease: "easeInOut",
+                  onComplete: () => setBannerAnimationComplete(true)
+                }
               }}
               transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 100 }}
             >
@@ -435,11 +445,11 @@ export default function NewJobPage() {
           )}
         </AnimatePresence>
 
-        {/* Pull-back Tab */}
+        {/* Compact I/O Restore Panel */}
         <AnimatePresence>
           {showPullTab && (
             <motion.div
-              className="fixed right-0 top-1/2 -translate-y-1/2 z-50"
+              className="fixed right-0 top-1/3 -translate-y-1/2 z-50"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -447,15 +457,60 @@ export default function NewJobPage() {
             >
               <motion.button
                 onClick={handleRestoreBanner}
-                className="bg-[#ff0000] text-white px-4 py-3 rounded-l-lg shadow-lg hover:bg-[#cc0000] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                aria-label="Restore banner"
+                className="group relative bg-[#ff0000] text-white w-12 h-20 rounded-l-lg shadow-lg hover:bg-[#cc0000] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50 flex flex-col items-center justify-center"
+                whileHover={{ 
+                  scale: 1.05,
+                  x: -2
+                }}
+                whileTap={{ scale: 0.95 }}
+                aria-label="Restore guide banner"
               >
-                <div className="flex items-center space-x-2">
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="text-sm font-medium">Restore Guide</span>
-                </div>
+                {/* I/O Icon */}
+                <motion.div
+                  className="w-6 h-6 flex items-center justify-center"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, -5, 0]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Power className="w-5 h-5" />
+                </motion.div>
+                
+                {/* Vertical Text */}
+                <motion.div
+                  className="absolute -left-8 top-1/2 -translate-y-1/2 transform -rotate-90 origin-center"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <span className="text-xs font-medium tracking-wider whitespace-nowrap">
+                    GUIDE
+                  </span>
+                </motion.div>
+                
+                {/* Subtle Pulse Effect */}
+                <motion.div
+                  className="absolute inset-0 border border-white/30 rounded-l-lg"
+                  animate={{
+                    scale: [1, 1.02, 1],
+                    opacity: [0.3, 0.6, 0.3]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                
+                {/* Hover Glow Effect */}
+                <motion.div
+                  className="absolute inset-0 bg-white/10 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                />
               </motion.button>
             </motion.div>
           )}
@@ -467,8 +522,12 @@ export default function NewJobPage() {
           layout
           transition={{ duration: 0.6, ease: "easeInOut" }}
           animate={{
-            y: bannerDismissed ? -20 : 0,
-            transition: { duration: 0.6, ease: "easeInOut" }
+            y: bannerAnimationComplete ? -20 : 0,
+            transition: { 
+              duration: 0.6, 
+              ease: "easeInOut",
+              delay: bannerAnimationComplete ? 0.1 : 0 // Small delay to ensure banner is completely gone
+            }
           }}
         >
           <AnimatePresence mode="wait">
@@ -926,228 +985,15 @@ export default function NewJobPage() {
                 </div>
               )}
 
-              {/* Step 4: Launch Job */}
+              {/* Step 4: Gamified Launch Screen */}
               {currentStep === 4 && (
-                <div className="space-y-8">
-
-                  {/* Giant Minimalist Submit Button */}
-                  <motion.div
-                    className="flex justify-center"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ 
-                      duration: 0.6, 
-                      delay: 0.6,
-                      type: "spring",
-                      stiffness: 120,
-                      damping: 20
-                    }}
-                  >
-                    <motion.button
-                      onClick={handleSubmit}
-                      disabled={isSubmitting || !isFinalStepValid}
-                      onTouchEnd={(e) => {
-                        e.preventDefault();
-                        if (!isSubmitting && isFinalStepValid) {
-                          handleSubmit();
-                          if (navigator.vibrate) {
-                            navigator.vibrate(50);
-                          }
-                        }
-                      }}
-                      className={`relative group overflow-hidden transition-all duration-300 touch-manipulation ${
-                        isSubmitting || !isFinalStepValid
-                          ? 'opacity-50 cursor-not-allowed'
-                          : 'hover:scale-105 active:scale-95'
-                      }`}
-                      style={{
-                        width: '480px',
-                        height: '80px'
-                      }}
-                      whileHover={!isSubmitting && isFinalStepValid ? { 
-                        scale: 1.02,
-                        y: -2,
-                        transition: { duration: 0.2 }
-                      } : {}}
-                      whileTap={!isSubmitting && isFinalStepValid ? { 
-                        scale: 0.98,
-                        transition: { duration: 0.1 }
-                      } : {}}
-                    >
-                      {/* Clean Background */}
-                      <motion.div
-                        className="absolute inset-0 bg-[#dc2626]"
-                        animate={{
-                          backgroundColor: [
-                            '#dc2626',
-                            '#ef4444',
-                            '#dc2626'
-                          ]
-                        }}
-                        transition={{
-                          duration: 4,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-
-                      {/* Sharp Border */}
-                      <motion.div
-                        className="absolute inset-0 border-2 border-white/60"
-                        animate={{
-                          borderColor: [
-                            'rgba(255, 255, 255, 0.6)',
-                            'rgba(255, 255, 255, 0.9)',
-                            'rgba(255, 255, 255, 0.6)'
-                          ]
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-
-                      {/* Subtle Light Sweep */}
-                      {!isSubmitting && isFinalStepValid && (
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                          initial={{ x: "-100%" }}
-                          animate={{ x: "100%" }}
-                          transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            ease: "linear",
-                            delay: 1
-                          }}
-                        />
-                      )}
-
-                      {/* Button Content */}
-                      <div className="relative z-10 flex items-center justify-center h-full px-8">
-                        {isSubmitting ? (
-                          <div className="flex items-center space-x-6">
-                            <motion.div 
-                              className="w-8 h-8 border-2 border-white border-t-transparent"
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            />
-                            <span className="text-2xl font-bold text-white tracking-wide">PROCESSING...</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center space-x-6">
-                            {/* Clean Icon */}
-                            <motion.div
-                              className="w-10 h-10 bg-white/20 flex items-center justify-center"
-                              animate={{ 
-                                scale: [1, 1.05, 1]
-                              }}
-                              transition={{ 
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                            >
-                              <Zap className="w-5 h-5 text-white" />
-                            </motion.div>
-                            
-                            <div className="text-center">
-                              <motion.div
-                                className="text-3xl font-black text-white tracking-wider"
-                                animate={{
-                                  textShadow: [
-                                    '0 0 0px rgba(255,255,255,0)',
-                                    '0 0 15px rgba(255,255,255,0.3)',
-                                    '0 0 0px rgba(255,255,255,0)'
-                                  ]
-                                }}
-                                transition={{
-                                  duration: 2.5,
-                                  repeat: Infinity,
-                                  ease: "easeInOut"
-                                }}
-                              >
-                                LAUNCH
-                              </motion.div>
-                              <motion.div
-                                className="text-sm font-medium text-white/90 tracking-wide mt-1"
-                                animate={{
-                                  opacity: [0.8, 1, 0.8]
-                                }}
-                                transition={{
-                                  duration: 2,
-                                  repeat: Infinity,
-                                  ease: "easeInOut"
-                                }}
-                              >
-                                START DUBBING
-                              </motion.div>
-                            </div>
-
-                            {/* Clean Arrow */}
-                            <motion.div
-                              className="w-10 h-10 bg-white/20 flex items-center justify-center"
-                              animate={{ 
-                                scale: [1, 1.05, 1],
-                                x: [0, 2, 0]
-                              }}
-                              transition={{ 
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                                delay: 0.5
-                              }}
-                            >
-                              <ArrowRight className="w-5 h-5 text-white" />
-                            </motion.div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Minimal Pulse Effect */}
-                      {!isSubmitting && isFinalStepValid && (
-                        <motion.div
-                          className="absolute inset-0 border border-white/30"
-                          animate={{
-                            scale: [1, 1.01, 1],
-                            opacity: [0.3, 0.6, 0.3]
-                          }}
-                          transition={{
-                            duration: 4,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                        />
-                      )}
-                    </motion.button>
-                  </motion.div>
-
-                  {/* Minimal Status Indicator */}
-                  {isSubmitting && (
-                    <motion.div
-                      className="text-center"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
-                    >
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Initializing dubbing process...
-                      </p>
-                      <motion.div
-                        className="w-64 h-1 bg-muted rounded-full mx-auto overflow-hidden"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                      >
-                        <motion.div
-                          className="h-full bg-gradient-to-r from-[#dc2626] to-[#b91c1c] rounded-full"
-                          initial={{ width: "0%" }}
-                          animate={{ width: "100%" }}
-                          transition={{ duration: 3, ease: "easeInOut" }}
-                        />
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </div>
+                <GamifiedLaunchScreen
+                  onLaunch={handleSubmit}
+                  isLaunching={isSubmitting}
+                  userCredits={userCredits}
+                  jobDuration={voiceDuration || 0}
+                  targetLanguages={targetLanguages}
+                />
               )}
             </motion.div>
           </AnimatePresence>
