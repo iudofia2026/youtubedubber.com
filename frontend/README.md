@@ -2,6 +2,10 @@
 
 A Next.js application for AI-powered multilingual video dubbing, enabling YouTubers to create multiple language versions of their content.
 
+## ⚡ Latest Update (Oct 25, 2024)
+
+**Environment Now Configured!** The `.env.local` file is pre-configured for local development. Simply run `npm install && npm run dev` to start the application. No manual environment setup required!
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -27,24 +31,17 @@ A Next.js application for AI-powered multilingual video dubbing, enabling YouTub
    pnpm install
    ```
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.local.example .env.local
-   ```
-   
-   Edit `.env.local` with your configuration:
+3. **Environment variables** (Already configured!)
+
+   The `.env.local` file is already set up for local development with these defaults:
    ```env
-   # Development Mode (enables testing without backend)
    NEXT_PUBLIC_DEV_MODE=true
-   
-   # Backend API Configuration
    NEXT_PUBLIC_API_URL=http://localhost:8000
    NEXT_PUBLIC_APP_URL=http://localhost:3000
-   
-   # Supabase Configuration (optional in dev mode)
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
    ```
+
+   No changes needed for local development! For production or custom setup, see `.env.local.example`.
 
 4. **Start the development server**
    ```bash

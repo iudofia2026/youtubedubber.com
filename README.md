@@ -1,148 +1,332 @@
 # YT Dubber - AI-Powered Video Dubbing Platform
 
-A modern, full-stack application for AI-powered video dubbing with real-time processing, multi-language support, and seamless user experience.
+A modern, full-stack application for AI-powered video dubbing with real-time processing, multi-language support (20+ languages), and seamless user experience. Upload videos, select target languages, and receive professionally dubbed content with automated speech-to-text, translation, and text-to-speech processing.
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Local Development)
 
 ### Prerequisites
 - Python 3.11+
 - Node.js 18+
 - Git
 
-### Development Setup
+### Setup & Run (5 Minutes)
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/iudofia2026/youtubedubber.com.git
-   cd youtubedubber.com
-   ```
+```bash
+# 1. Clone repository
+git clone https://github.com/iudofia2026/youtubedubber.com.git
+cd youtubedubber.com
 
-2. **Backend Setup**
-   ```bash
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   cp .env.example .env
-   # Edit .env with your API keys
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-   ```
+# 2. Setup Backend
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+# .env file already configured for local dev - no changes needed!
+uvicorn app.main:app --reload --port 8000
 
-3. **Frontend Setup**
-   ```bash
-   cd frontend
-   npm install
-   cp .env.local.example .env.local
-   # Edit .env.local with your configuration
-   npm run dev
-   ```
+# 3. In new terminal, setup Frontend
+cd frontend
+npm install
+# .env.local file already configured for local dev!
+npm run dev
+```
 
-4. **Access Applications**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Docs: http://localhost:8000/docs
+### Access Applications
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
 
-## 📚 Documentation
-
-- **[Frontend Documentation](./frontend/README.md)** - Complete frontend guide with features, setup, and development
-- **[Backend Documentation](./backend/README.md)** - Complete backend guide with API, deployment, and architecture
-
-## 🛠 Tech Stack
-
-- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS v4, Framer Motion, Supabase Auth
-- **Backend**: FastAPI, SQLAlchemy, Supabase, Deepgram, OpenAI, FFmpeg, Librosa
-- **Database**: PostgreSQL via Supabase
-- **Storage**: Supabase Storage
-- **Authentication**: Supabase Auth with JWT tokens
-- **AI Services**: Deepgram (STT/TTS), OpenAI (Translation)
-- **Audio Processing**: FFmpeg, Librosa, NumPy, SciPy
 
 ## 🎯 Current Status
 
-- ✅ **Frontend**: Complete UI implementation with authentication, job management, file upload, and mobile optimization. All major features implemented with mock data integration.
-- ⚠️ **Backend**: Core FastAPI endpoints and models complete, but job processing pipeline still uses placeholder logic. Supabase integration ready but needs real API key configuration.
-- 🔄 **Integration**: Ready for end-to-end testing. Development mode works with `dev-token` bypass; production requires Supabase configuration.
-- 🎯 **Next**: Replace mock API calls with real backend integration, implement actual job processing pipeline, and configure production Supabase credentials.
-- ✅ **MP4 Support**: Full MP4 video format support implemented with automatic audio extraction using FFmpeg.
-- ✅ **Authentication**: Complete Supabase Auth integration with login/register/profile management.
-- ✅ **Mobile Optimization**: Comprehensive mobile experience with touch optimization, swipe gestures, and haptic feedback.
+**Local Development**: ✅ **READY TO RUN!** Environment fully configured with development mode enabled.
 
-## 🆕 Recent Updates (isiah-frontend-oct15 branch)
+### What Works Now
+- ✅ **Frontend**: Complete UI with authentication, job management, file upload, mobile optimization
+  - All pages functional (home, upload, jobs, downloads, profile, auth)
+  - Mock API integration for testing UI flows
+  - Responsive design for desktop, tablet, and mobile
 
-### ✅ COMPLETED Mobile Navigation & UX Enhancements
-- **Mobile Navigation**: Enhanced mobile navigation with swipe gestures, touch optimization, and haptic feedback
-- **Touch Interactions**: Implemented 44px minimum touch targets and improved touch event handling throughout
-- **Swipe Gestures**: Added left-swipe actions for job cards and list items (View, Download, Delete)
-- **Mobile Back Button**: Added contextual back navigation for job pages and upload flow
-- **Haptic Feedback**: Integrated vibration feedback for key mobile interactions
-- **Mobile Viewport**: Added proper viewport meta tag configuration to prevent zoom issues
+- ✅ **Backend**: Core API with database, authentication, file upload
+  - FastAPI server with auto-generated docs
+  - SQLAlchemy database models and migrations
+  - Supabase Auth JWT validation middleware
+  - File upload endpoint with signed URLs
+  - Job status tracking and management
 
-### ✅ COMPLETED UI/UX Enhancements
-- **Emoji Removal**: Replaced all emojis with professional Lucide React icons for cleaner, more professional appearance
-- **List View Option**: Added toggle between grid and list views for job management with URL persistence
-- **Enhanced Progress Meters**: Creative inline progress indicators with shimmer effects and language completion dots
-- **Visual Improvements**: Gradient backgrounds, animated status indicators, and improved typography throughout
+- ✅ **Development Tools**: Environment ready with bypass modes for quick testing
 
-### ✅ COMPLETED Job Management Improvements
-- **Individual Job Pages**: Completely redesigned for conciseness and visual appeal with dashboard-style layout
-- **Progress Visualization**: Enhanced progress tracking with animated rings, pulsing indicators, and language-specific completion status
-- **Responsive Design**: Optimized layouts for both desktop and mobile viewing
-- **Status Indicators**: Professional icon-based status system replacing emoji-based indicators
-- **Mobile Job Cards**: Enhanced job cards with swipe actions and mobile-optimized touch interactions
+### What Needs Work
+- ⚠️ **Frontend API Integration**: Currently uses mock data - needs real HTTP calls to backend
+- ⚠️ **Backend AI Processing**: Endpoint scaffolds exist but return placeholder data
+  - Speech-to-Text (Deepgram) not wired
+  - Translation (OpenAI) not connected
+  - Text-to-Speech (Deepgram) returns stubs
+  - Audio mixing incomplete
 
-### ✅ COMPLETED Mobile Upload Experience
-- **Touch-Optimized File Upload**: Enhanced file upload with mobile-specific drag-and-drop and touch interactions
-- **Mobile Audio Player**: Improved audio preview controls with larger touch targets and mobile-optimized layout
-- **Mobile Form Validation**: Enhanced form validation with touch-friendly error messages and mobile keyboard optimization
-- **Mobile Progress Indicators**: Optimized progress displays for mobile screens with better touch interaction
+- ⚠️ **Production Deployment**: Needs real API credentials (Supabase, Deepgram, OpenAI)
 
-### ✅ COMPLETED Mobile Authentication
-- **Mobile Form Optimization**: Enhanced authentication forms with mobile-specific input styling and touch targets
-- **Mobile Keyboard Handling**: Optimized form inputs for mobile keyboard behavior and viewport management
-- **Touch-Friendly Validation**: Improved error message display and form interaction for mobile devices
+## 🛠 Tech Stack
 
-### ✅ COMPLETED Technical Improvements
-- **Component Architecture**: New JobListItem component for horizontal list display
-- **Animation System**: Enhanced Framer Motion animations with status-specific visual effects
-- **URL State Management**: Improved URL parameter handling for view mode persistence
-- **Performance**: Optimized rendering and animation performance
-- **Mobile Utilities**: Added mobile-specific utility functions for device detection and haptic feedback
+### Frontend
+- **Framework**: Next.js 15 (App Router) with React 19
+- **Language**: TypeScript 5.9
+- **Styling**: Tailwind CSS v4 + PostCSS
+- **UI Components**: shadcn/ui (Radix UI) + Lucide React icons
+- **Animations**: Framer Motion
+- **Auth**: Supabase Auth with JWT
+- **Deployment**: Vercel-ready
 
-## 🚧 CURRENT SPRINT (October 15, 2025)
+### Backend
+- **Framework**: FastAPI (Python 3.11+)
+- **Database**: PostgreSQL 15+ (SQLite for local dev)
+- **ORM**: SQLAlchemy with Alembic migrations
+- **Auth**: Supabase Auth + JWT verification
+- **Storage**: Supabase Storage
+- **AI Services**:
+  - Deepgram (Speech-to-Text, Text-to-Speech)
+  - OpenAI (Translation)
+- **Audio**: FFmpeg, Librosa, NumPy, SciPy
+- **Deployment**: Docker + Railway/Render
 
-### ✅ COMPLETED (Latest)
-1. **Mobile Navigation & UX** - Comprehensive mobile experience enhancement with touch optimization, swipe gestures, and haptic feedback
-2. **Mobile Job Management** - Enhanced job cards and list items with mobile-optimized touch interactions
-3. **Mobile Upload Experience** - Touch-optimized file upload and audio player controls
-4. **Mobile Authentication** - Mobile-optimized forms with enhanced touch interactions
+### Infrastructure
+- **Database**: PostgreSQL via Supabase
+- **Storage**: Supabase Storage (file uploads)
+- **Authentication**: Supabase Auth
+- **Monitoring**: Structured logging, optional Sentry
+- **Rate Limiting**: SlowAPI with Redis support
 
-### ✅ COMPLETED (Latest)
-1. **Download System UI** - Comprehensive download system for completed jobs with progress tracking
-2. **Mobile Navigation & UX** - Enhanced mobile experience with touch optimization and swipe gestures
-3. **Authentication System** - Complete Supabase integration with login/register/profile management
-4. **Job Management** - Complete job history, filtering, and status tracking system
+## 📚 Core Features
 
-### Next High-Priority Items
-1. **Real API Integration** - Replace mock functions with real HTTP requests (3-4 hours, Very High Impact)
-2. **Backend Job Processing** - Implement actual AI processing pipeline (8-10 hours, Very High Impact)
-3. **Production Configuration** - Set up Supabase credentials and test end-to-end flow (2-3 hours, High Impact)
+### User Features
+1. **Multi-Format Upload**: Audio (MP3, WAV, M4A) and Video (MP4 with auto audio extraction)
+2. **Multi-Language Support**: 20+ target languages with visual flags
+3. **Job Management**: Create, track, and manage dubbing jobs with real-time progress
+4. **Download System**: Download dubbed audio, full video, and captions
+5. **Authentication**: Sign up, login, password reset, profile management
+6. **Mobile Optimized**: Touch targets, swipe gestures, haptic feedback
+7. **Progress Tracking**: Per-language status with visual indicators
 
-**Note**: All completed changes are available in the `isiah-frontend-oct15` branch. Current sprint items are being worked on by assigned agents.
+### Technical Features
+1. **Development Mode**: Bypass authentication for rapid testing
+2. **Error Recovery**: Retry mechanisms and error boundaries
+3. **Rate Limiting**: Per-user and per-endpoint protection
+4. **Security**: JWT auth, CORS, security headers, input validation
+5. **Background Processing**: Async job processor with concurrency control
+6. **API Documentation**: Auto-generated Swagger/ReDoc docs
 
-## 📁 Project Structure
+## 🔧 Project Structure
 
 ```
 youtubedubber.com/
-├── backend/                 # FastAPI backend
-├── frontend/               # Next.js frontend
-└── README.md              # This file
+├── frontend/                   # Next.js frontend application
+│   ├── app/                   # Next.js 15 App Router pages
+│   ├── components/            # React components (UI, forms, layouts)
+│   ├── lib/                   # Utilities, API client, auth context
+│   ├── types/                 # TypeScript type definitions
+│   ├── .env.local.example     # Environment template (copy to .env.local)
+│   ├── package.json           # Dependencies
+│   └── README.md             # Frontend documentation
+│
+├── backend/                    # FastAPI backend application
+│   ├── app/
+│   │   ├── api/              # API endpoints (jobs, upload)
+│   │   ├── middleware/       # Rate limiting, security, logging
+│   │   ├── services/         # Business logic (AI, storage, jobs)
+│   │   ├── worker/           # Background job processor
+│   │   ├── utils/            # Utilities and helpers
+│   │   ├── models.py         # Database models
+│   │   ├── schemas.py        # Pydantic validation schemas
+│   │   ├── config.py         # Configuration management
+│   │   ├── auth.py           # JWT authentication
+│   │   ├── database.py       # Database connection
+│   │   └── main.py           # FastAPI application
+│   ├── migrations/            # Alembic database migrations
+│   ├── tests/                # Unit and integration tests
+│   ├── .env.example          # Environment template (copy to .env)
+│   ├── requirements.txt      # Python dependencies
+│   ├── Dockerfile            # Container image
+│   └── README.md            # Backend documentation
+│
+└── README.md                 # This file
 ```
 
-## 🔧 Development
+## 🆕 Recent Updates
 
-Both frontend and backend support hot reload during development. See individual documentation for detailed setup and configuration instructions.
+### ✅ Development Environment Setup (Oct 25, 2024)
+- Fixed missing frontend `.env.local` file for immediate local development
+- Modified backend config validation to support dev mode without strict API key requirements
+- Both services now start without errors in development mode
+- Updated all documentation for clarity and consolidated to 3 main README files
+
+### ✅ Mobile Navigation & UX Enhancements
+- Enhanced mobile navigation with swipe gestures and touch optimization
+- 44px minimum touch targets throughout app
+- Left-swipe actions for job cards (View, Download, Delete)
+- Contextual back navigation for mobile
+- Haptic feedback for touch interactions
+- Proper viewport meta tags to prevent zoom issues
+
+### ✅ UI/UX Enhancements
+- Replaced emojis with professional Lucide React icons
+- Added grid/list view toggle for job management with URL persistence
+- Enhanced progress meters with shimmer effects and completion dots
+- Gradient backgrounds and animated status indicators
+- Improved typography and visual hierarchy
+
+### ✅ Authentication & Job Management
+- Complete Supabase Auth integration (login, signup, password reset, profile)
+- Individual job pages with dashboard-style layouts
+- Enhanced progress visualization with animated rings and language-specific status
+- Download system for completed jobs with progress tracking
+- Mobile-optimized forms and touch interactions
+
+## 🎯 Next Steps
+
+### Immediate Priorities (Ship MVP)
+1. **Frontend API Integration** (3-4 hours, Very High Impact)
+   - Replace mock functions in `frontend/lib/api.ts` with real HTTP requests
+   - Add error handling and loading states
+   - Test all API endpoints end-to-end
+
+2. **Backend AI Pipeline** (8-10 hours, Very High Impact)
+   - Wire Deepgram for speech-to-text transcription
+   - Connect OpenAI for translation
+   - Implement text-to-speech generation
+   - Complete audio mixing and artifact persistence
+
+3. **Production Configuration** (2-3 hours, High Impact)
+   - Set up Supabase production project
+   - Get Deepgram and OpenAI API keys
+   - Configure environment variables
+   - Deploy to Vercel (frontend) + Railway (backend)
+
+### Secondary Priorities
+- Security audit and penetration testing
+- Performance optimization (bundle size, API response times)
+- Monitoring and alerting setup (Sentry, analytics)
+- Comprehensive test suite
+- User documentation and help center
+
+## 🚢 Deployment Guide
+
+### Deployment Overview
+
+Three deployment options based on time and functionality needs:
+
+**Option A: Demo Deploy (2 hours)**
+- Frontend only with mock data
+- Deploy to Vercel
+- Beautiful UI showcase, no backend functionality
+
+**Option B: Partial MVP (3 hours)**
+- Both services deployed
+- File upload works
+- Jobs created but return placeholder results
+
+**Option C: Working MVP (8-10 hours)** *(Recommended)*
+- Full AI pipeline implemented
+- Real dubbing functionality
+- Production-ready
+
+### Deployment Steps
+
+**Frontend (Vercel):**
+```bash
+cd frontend
+npm install -g vercel
+vercel login
+vercel --prod
+```
+
+Set environment variables in Vercel dashboard:
+```
+NEXT_PUBLIC_API_URL=https://your-backend.railway.app
+NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+NEXT_PUBLIC_DEV_MODE=false
+```
+
+**Backend (Railway):**
+```bash
+npm install -g @railway/cli
+railway login
+cd backend
+railway init
+railway up
+```
+
+Set environment variables in Railway dashboard:
+```
+DATABASE_URL=<provided by Railway>
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_KEY=your_service_key
+DEEPGRAM_API_KEY=your_key
+OPENAI_API_KEY=your_key
+SECRET_KEY=<random string>
+CORS_ORIGINS=https://your-domain.vercel.app
+DEBUG=false
+```
+
+### Production Cost Estimate
+- Vercel: Free (Hobby tier)
+- Railway: $5/month (backend hosting)
+- Supabase: Free tier (500MB DB + 1GB storage)
+- Deepgram: Pay-as-you-go (~$0.0125/min)
+- OpenAI: Pay-as-you-go (~$0.03/1K tokens)
+- **Total**: ~$6/month + usage-based AI costs
+
+## 🐛 Troubleshooting
+
+### Frontend Won't Start
+```bash
+cd frontend
+rm -rf .next node_modules
+npm install
+npm run dev
+```
+
+### Backend Errors
+```bash
+cd backend
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+### Environment Variables Not Loading
+- Check file names: `.env.local` (frontend), `.env` (backend)
+- Restart dev servers after changes
+- Verify no typos in variable names
+- See `.env.local.example` and `.env.example` for templates
+
+### Database Issues
+```bash
+cd backend
+rm test.db  # Delete SQLite DB
+# Restart server - DB will auto-recreate
+```
+
+## 📖 Documentation
+
+- **[Frontend README](./frontend/README.md)** - Complete frontend guide (components, features, development)
+- **[Backend README](./backend/README.md)** - Complete backend guide (API, architecture, deployment)
+
+## 🤝 Contributing
+
+This is a private development project. For questions or issues:
+1. Check existing documentation in the three README files
+2. Review `frontend/README.md` and `backend/README.md` for detailed technical docs
+3. Test your environment by running both services locally
+
+## 📄 License
+
+Private project - All rights reserved
 
 ---
 
-**Last Updated**: Oct 15, 2025  
-**Status**: In Progress
+**Last Updated**: October 25, 2024
+**Current Branch**: isiah-frontend-oct15
+**Status**: Local development ready, AI pipeline in progress
+**Repository**: https://github.com/iudofia2026/youtubedubber.com

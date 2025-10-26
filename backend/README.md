@@ -2,6 +2,15 @@
 
 A FastAPI-based backend service for the YouTube Multilingual Dubber application, providing AI-powered video dubbing capabilities.
 
+## ⚡ Latest Update (Oct 25, 2024)
+
+**Environment Now Configured!** The `.env` file is pre-configured for local development with SQLite and dev mode. The backend now starts without errors and bypasses strict API key validation in development. Simply activate the venv and run `uvicorn app.main:app --reload --port 8000`!
+
+**Changes Made:**
+- Modified `app/config.py` to make AI service API keys optional in development mode
+- Validation skipped when `DEBUG=true` to allow local testing without real credentials
+- Backend ready for immediate local development and testing
+
 ## 🚀 Features
 
 - **FastAPI Framework**: Modern, fast web framework for building APIs
@@ -33,21 +42,27 @@ The backend is **not yet ready** for full frontend integration. Endpoint contrac
 
 ### Quick Start (Current Development Flow):
 ```bash
-# Terminal 1: Start Backend
+# Terminal 1: Start Backend (Environment already configured!)
 cd backend
-source venv/bin/activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
+# .env file already set up for local dev - no changes needed!
 uvicorn app.main:app --reload --port 8000
 
-# Terminal 2: Start Frontend  
+# Terminal 2: Start Frontend
 cd frontend
+# .env.local already configured!
 npm run dev
 
-# Backend will be available at http://localhost:8000
-# Frontend will be available at http://localhost:3000
-# API documentation at http://localhost:8000/docs
+# Access Points:
+# - Backend API: http://localhost:8000
+# - Frontend: http://localhost:3000
+# - API Documentation: http://localhost:8000/docs
+# - API ReDoc: http://localhost:8000/redoc
 ```
 
-> **Note:** Until Supabase credentials are configured, authenticate requests with `Authorization: Bearer dev-token` so the backend uses the development bypass.
+> **Note:** The `.env` file is pre-configured with SQLite and dev mode. Backend will start immediately without requiring real API keys. For production, you'll need to configure real credentials (Supabase, Deepgram, OpenAI).
+>
+> **Authentication:** Development mode uses `Authorization: Bearer dev-token` for testing. Real Supabase JWT validation will work once production credentials are configured.
 
 ## 📁 Project Structure
 

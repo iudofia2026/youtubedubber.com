@@ -14,9 +14,9 @@ class Settings(BaseSettings):
     supabase_url: str
     supabase_service_key: str
     
-    # AI Services
-    deepgram_api_key: str
-    openai_api_key: str
+    # AI Services (optional in dev mode)
+    deepgram_api_key: Optional[str] = None
+    openai_api_key: Optional[str] = None
     
     # Application Configuration
     app_name: str = "YT Dubber API"
@@ -99,5 +99,8 @@ def validate_settings():
     
     return True
 
-# Validate settings on import
-validate_settings()
+# Validate settings on import (skip in debug mode for development)
+if not os.getenv('DEBUG', 'false').lower() == 'true':
+    validate_settings()
+else:
+    print("[DEV MODE] Skipping strict config validation - some features may not work")
