@@ -717,7 +717,7 @@ function DownloadCard({
   item: DownloadHistoryItem;
   onDownload: () => void;
   onDelete: () => void;
-  getFileTypeIcon: (fileType: DownloadFileType) => JSX.Element;
+  getFileTypeIcon: (fileType: DownloadFileType) => React.ReactElement;
   getFileTypeLabel: (fileType: DownloadFileType) => string;
   formatFileSize: (bytes?: number) => string;
   formatDate: (dateString: string) => string;
@@ -817,7 +817,7 @@ function DownloadListItem({
   item: DownloadHistoryItem;
   onDownload: () => void;
   onDelete: () => void;
-  getFileTypeIcon: (fileType: DownloadFileType) => JSX.Element;
+  getFileTypeIcon: (fileType: DownloadFileType) => React.ReactElement;
   getFileTypeLabel: (fileType: DownloadFileType) => string;
   formatFileSize: (bytes?: number) => string;
   formatDate: (dateString: string) => string;

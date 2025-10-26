@@ -3,34 +3,32 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Check, X, Star, Zap, Crown, DollarSign, Clock, Users, BarChart3, Shield, Headphones, Globe, Mic } from 'lucide-react';
+import { ArrowRight, Check, X, Star, Zap, Crown, DollarSign, Clock, Users, BarChart3, Shield, Headphones, Globe, Mic, CreditCard } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
+import { PricingCard, CreditBalance } from '@/components/payment';
 
 export default function PricingPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [userCredits, setUserCredits] = useState(0); // This would come from user context/API
 
   const pricingPlans = [
     {
       name: 'Starter Pack',
       description: 'Perfect for trying out the service',
-      price: { monthly: 0, yearly: 0 },
-      originalPrice: null,
-      credits: '2 free jobs',
+      price: 0, // Free
+      credits: 20, // 2 free jobs worth of credits
       icon: Zap,
       color: 'from-blue-500 to-cyan-500',
       popular: false,
+      recommended: false,
       features: [
-        '2 free dubbing jobs',
+        '20 free credits (2 jobs)',
         'Up to 5 minutes per job',
         '2 languages included',
         'Basic voice quality',
         'Email support',
         '48-hour file retention'
-      ],
-      limitations: [
-        'Limited to 2 jobs total',
-        'No background track support',
-        'Basic processing speed'
       ],
       cta: 'Get Started Free',
       ctaLink: '/auth/signup'
@@ -38,12 +36,12 @@ export default function PricingPage() {
     {
       name: 'Creator Pack',
       description: 'Great value for regular creators',
-      price: { monthly: 29, yearly: 290 },
-      originalPrice: { monthly: 29, yearly: 348 },
-      credits: '50 credits',
+      price: 2900, // $29.00 in cents
+      credits: 50,
       icon: Star,
       color: 'from-purple-500 to-pink-500',
       popular: true,
+      recommended: false,
       features: [
         '50 dubbing credits',
         'Up to 30 minutes per job',
@@ -56,19 +54,18 @@ export default function PricingPage() {
         'Batch processing',
         'Custom voice settings'
       ],
-      limitations: [],
       cta: 'Buy Creator Pack',
-      ctaLink: '/auth/signup?plan=creator'
+      ctaLink: null // Will use payment form
     },
     {
       name: 'Professional Pack',
       description: 'Best value for heavy users',
-      price: { monthly: 99, yearly: 990 },
-      originalPrice: { monthly: 99, yearly: 1188 },
-      credits: '250 credits',
+      price: 9900, // $99.00 in cents
+      credits: 250,
       icon: Crown,
       color: 'from-yellow-500 to-orange-500',
       popular: false,
+      recommended: true,
       features: [
         '250 dubbing credits',
         'Up to 2 hours per job',
@@ -83,11 +80,35 @@ export default function PricingPage() {
         'Analytics dashboard',
         'Custom integrations'
       ],
-      limitations: [],
       cta: 'Buy Professional Pack',
-      ctaLink: '/auth/signup?plan=professional'
+      ctaLink: null // Will use payment form
     }
   ];
+
+  const handlePurchase = async (credits: number, price: number) => {
+    setIsLoading(true);
+    try {
+      // In a real app, you would:
+      // 1. Create a payment intent on your backend
+      // 2. Redirect to Stripe Checkout or use Stripe Elements
+      // 3. Handle the payment success/failure
+      
+      console.log(`Purchasing ${credits} credits for $${(price / 100).toFixed(2)}`);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Update user credits (in real app, this would come from backend)
+      setUserCredits(prev => prev + credits);
+      
+      alert(`Successfully purchased ${credits} credits!`);
+    } catch (error) {
+      console.error('Payment failed:', error);
+      alert('Payment failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const addOns = [
     {
@@ -145,13 +166,6 @@ export default function PricingPage() {
     yearly: 0
   };
 
-  pricingPlans.forEach(plan => {
-    if (plan.originalPrice) {
-      savings.monthly += plan.originalPrice.monthly - plan.price.monthly;
-      savings.yearly += plan.originalPrice.yearly - plan.price.yearly;
-    }
-  });
-
   return (
     <div className="min-h-screen relative">
       {/* Background gradients */}
@@ -204,6 +218,24 @@ export default function PricingPage() {
             </div>
           </motion.section>
 
+          {/* Credit Balance Display */}
+          {userCredits > 0 && (
+            <motion.section
+              className="py-8 px-4 sm:px-6 lg:px-8 relative"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <div className="max-w-4xl mx-auto">
+                <CreditBalance 
+                  balance={userCredits} 
+                  onAddCredits={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                />
+              </div>
+            </motion.section>
+          )}
+
           {/* Pricing Plans */}
           <motion.section
             className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative"
@@ -214,92 +246,67 @@ export default function PricingPage() {
           >
             <div className="max-w-7xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {pricingPlans.map((plan, index) => {
-                  const Icon = plan.icon;
-                  const isPopular = plan.popular;
-                  
-                  return (
-                    <motion.div
-                      key={plan.name}
-                      className={`relative bg-card border rounded-lg p-8 ${
-                        isPopular 
-                          ? 'border-[#ff0000] shadow-lg scale-105' 
-                          : 'border-border hover:shadow-lg'
-                      } transition-all duration-300`}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.8, delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      whileHover={{ y: -5 }}
-                    >
-                      {isPopular && (
-                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                          <span className="bg-[#ff0000] text-white text-sm font-medium px-4 py-2 rounded-full">
-                            Most Popular
-                          </span>
-                        </div>
-                      )}
-                      
-                      <div className="text-center mb-8">
-                        <div className={`w-16 h-16 bg-gradient-to-r ${plan.color} flex items-center justify-center mx-auto mb-4 rounded-lg`}>
-                          <Icon className="w-8 h-8 text-white" />
-                        </div>
-                        
-                        <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
-                        <p className="text-muted-foreground mb-6">{plan.description}</p>
-                        
-                        <div className="mb-6">
-                          {plan.price.monthly === 0 ? (
-                            <div className="text-4xl font-bold text-foreground">Free</div>
-                          ) : (
-                            <div className="flex items-baseline justify-center">
-                              <span className="text-4xl font-bold text-foreground">
-                                ${plan.price.monthly}
-                              </span>
-                            </div>
-                          )}
-                          <div className="text-lg text-muted-foreground mt-1">{plan.credits}</div>
+                {pricingPlans.map((plan, index) => (
+                  <motion.div
+                    key={plan.name}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ y: -5 }}
+                  >
+                    {plan.ctaLink ? (
+                      // Free plan with link
+                      <div className="relative bg-card border rounded-lg p-8 border-border hover:shadow-lg transition-all duration-300">
+                        <div className="text-center mb-8">
+                          <div className={`w-16 h-16 bg-gradient-to-r ${plan.color} flex items-center justify-center mx-auto mb-4 rounded-lg`}>
+                            <plan.icon className="w-8 h-8 text-white" />
+                          </div>
                           
-                          {plan.originalPrice && (
-                            <div className="text-sm text-muted-foreground line-through mt-1">
-                              ${plan.originalPrice.monthly}
-                            </div>
-                          )}
+                          <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
+                          <p className="text-muted-foreground mb-6">{plan.description}</p>
+                          
+                          <div className="mb-6">
+                            <div className="text-4xl font-bold text-foreground">Free</div>
+                            <div className="text-lg text-muted-foreground mt-1">{plan.credits} credits</div>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <ul className="space-y-4 mb-8">
-                        {plan.features.map((feature, featureIndex) => (
-                          <li key={featureIndex} className="flex items-start space-x-3">
-                            <Check className="w-5 h-5 text-[#ff0000] flex-shrink-0 mt-0.5" />
-                            <span className="text-sm text-foreground">{feature}</span>
-                          </li>
-                        ))}
                         
-                        {plan.limitations.map((limitation, limitationIndex) => (
-                          <li key={limitationIndex} className="flex items-start space-x-3">
-                            <X className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                            <span className="text-sm text-muted-foreground">{limitation}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      
-                      <Link href={plan.ctaLink}>
-                        <motion.button
-                          className={`w-full py-3 px-6 rounded-lg font-medium transition-colors duration-200 ${
-                            isPopular
-                              ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]'
-                              : 'bg-muted text-foreground hover:bg-muted/80'
-                          }`}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          {plan.cta}
-                        </motion.button>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
+                        <ul className="space-y-4 mb-8">
+                          {plan.features.map((feature, featureIndex) => (
+                            <li key={featureIndex} className="flex items-start space-x-3">
+                              <Check className="w-5 h-5 text-[#ff0000] flex-shrink-0 mt-0.5" />
+                              <span className="text-sm text-foreground">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        
+                        <Link href={plan.ctaLink}>
+                          <motion.button
+                            className="w-full py-3 px-6 rounded-lg font-medium transition-colors duration-200 bg-muted text-foreground hover:bg-muted/80"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            {plan.cta}
+                          </motion.button>
+                        </Link>
+                      </div>
+                    ) : (
+                      // Paid plans with payment integration
+                      <PricingCard
+                        title={plan.name}
+                        price={plan.price}
+                        credits={plan.credits}
+                        description={plan.description}
+                        features={plan.features}
+                        isPopular={plan.popular}
+                        isRecommended={plan.recommended}
+                        onPurchase={handlePurchase}
+                        isLoading={isLoading}
+                      />
+                    )}
+                  </motion.div>
+                ))}
               </div>
             </div>
           </motion.section>
