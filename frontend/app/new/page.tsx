@@ -16,7 +16,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function NewJobPage() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const [voiceTrack, setVoiceTrack] = useState<File | null>(null);
   const [backgroundTrack, setBackgroundTrack] = useState<File | null>(null);
   const [targetLanguages, setTargetLanguages] = useState<string[]>([]);
@@ -33,9 +33,6 @@ export default function NewJobPage() {
   // Refs for instructions
   const instructionsRef = useRef<HTMLDivElement>(null);
   
-  // State for checking if user has past jobs
-  const [hasPastJobs, setHasPastJobs] = useState<boolean | null>(null);
-  const [isCheckingJobs, setIsCheckingJobs] = useState(true);
   
   // State for showing How It Works modal
   const [showHowItWorks, setShowHowItWorks] = useState(false);
@@ -61,7 +58,6 @@ export default function NewJobPage() {
   }, []);
 
   const steps = [
-    { id: 0, title: 'How It Works', description: 'Learn the process', icon: Scissors },
     { id: 1, title: 'Voice Track', description: 'Upload your voice-only audio or video file', icon: Mic },
     { id: 2, title: 'Background Track', description: 'Add background music (optional)', icon: Music },
     { id: 3, title: 'Target Languages', description: 'Select languages for dubbing', icon: Globe },
@@ -145,35 +141,6 @@ export default function NewJobPage() {
     }
   ];
 
-  // Function to check if user has past jobs
-  const checkPastJobs = useCallback(async () => {
-    setIsCheckingJobs(true);
-    try {
-      // Simulate API call to check for past jobs
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock data - in real app, this would be an API call
-      // For now, we'll use localStorage to simulate user state
-      const hasJobs = localStorage.getItem('ytdubber_has_jobs') === 'true';
-      setHasPastJobs(hasJobs);
-      
-      // If user has past jobs, start at step 1 (Voice Track)
-      if (hasJobs) {
-        setCurrentStep(1);
-      }
-    } catch (error) {
-      console.error('Error checking past jobs:', error);
-      // Default to showing instructions if there's an error
-      setHasPastJobs(false);
-    } finally {
-      setIsCheckingJobs(false);
-    }
-  }, []);
-
-  // Check for past jobs on component mount
-  useEffect(() => {
-    checkPastJobs();
-  }, [checkPastJobs]);
 
   // Handle modal keyboard events and focus management
   useEffect(() => {
@@ -212,10 +179,6 @@ export default function NewJobPage() {
 
 
   const validateStep = useCallback((step: number) => {
-    if (step === 0) {
-      return true; // Intro step is always valid
-    }
-
     if (step === 1 && !voiceTrack) {
       return false;
     }
@@ -252,18 +215,16 @@ export default function NewJobPage() {
   }, [validateStep]);
 
   const nextStep = useCallback(() => {
-    if (isStepValid && currentStep < steps.length) {
+    if (isStepValid && currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
-  }, [isStepValid, currentStep, steps.length]);
+  }, [isStepValid, currentStep]);
 
   const prevStep = useCallback(() => {
-    // For returning users, don't allow going back to step 0 (audio setup)
-    const minStep = hasPastJobs ? 1 : 0;
-    if (currentStep > minStep) {
+    if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
-  }, [currentStep, hasPastJobs]);
+  }, [currentStep]);
 
   const handleSubmit = useCallback(async () => {
     if (!isFinalStepValid) {
@@ -298,24 +259,6 @@ export default function NewJobPage() {
     }
   }, [isFinalStepValid, voiceTrack, backgroundTrack, targetLanguages, router]);
 
-  // Show loading state while checking for past jobs (after all hooks)
-  if (isCheckingJobs) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navigation currentPath="/new" />
-        <main className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-center min-h-[400px]">
-              <div className="text-center">
-                <div className="w-8 h-8 border-2 border-[#ff0000] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                <p className="text-muted-foreground">Loading...</p>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <ProtectedRoute>
@@ -405,196 +348,10 @@ export default function NewJobPage() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="min-h-[300px] flex flex-col justify-start"
             >
-              {/* Step 0: Audio Setup Introduction - Only for first-time users */}
-              {currentStep === 0 && hasPastJobs === false && (
-                <div className="space-y-8">
-                  {/* Main Header */}
-                  <motion.div
-                    className="text-center max-w-4xl mx-auto"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                  >
-                    <motion.div
-                      className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full mb-6 shadow-lg"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <Scissors className="w-10 h-10 text-white" />
-                    </motion.div>
-                    
-                    <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight">
-                      Get Started Now
-                    </h2>
-                    <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                      Learn how our AI-powered platform transforms your content into multilingual dubs in just 4 simple steps
-                    </p>
-                  </motion.div>
-
-                  {/* How It Works Steps */}
-                  <motion.div
-                    ref={instructionsRef}
-                    className="max-w-6xl mx-auto"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                  >
-                    <div className="space-y-12">
-                      {howItWorksSteps.map((step, index) => {
-                        const Icon = step.icon;
-                        const isEven = index % 2 === 0;
-                        
-                        return (
-                          <motion.div
-                            key={step.number}
-                            className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-8`}
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: index * 0.2 }}
-                          >
-                            {/* Content */}
-                            <div className="flex-1">
-                              <motion.div
-                                className="flex items-center space-x-4 mb-6"
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.6, delay: index * 0.2 + 0.2 }}
-                              >
-                                <div className={`w-16 h-16 bg-gradient-to-r ${step.color} flex items-center justify-center rounded-lg`}>
-                                  <Icon className="w-8 h-8 text-white" />
-                                </div>
-                                <div>
-                                  <div className="text-sm font-medium text-[#ff0000] mb-1">Step {step.number}</div>
-                                  <h3 className="text-2xl font-bold text-foreground">{step.title}</h3>
-                                </div>
-                              </motion.div>
-                              
-                              <motion.p
-                                className="text-lg text-muted-foreground mb-8 font-light leading-relaxed"
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.6, delay: index * 0.2 + 0.3 }}
-                              >
-                                {step.description}
-                              </motion.p>
-                              
-                              <div className="space-y-6">
-                                <div>
-                                  <h4 className="text-lg font-semibold text-foreground mb-4">What you&apos;ll do:</h4>
-                                  <ul className="space-y-3">
-                                    {step.details.map((detail, detailIndex) => (
-                                      <motion.li
-                                        key={detailIndex}
-                                        className="flex items-start space-x-3"
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.6, delay: index * 0.2 + 0.4 + detailIndex * 0.1 }}
-                                      >
-                                        <CheckCircle className="w-5 h-5 text-[#ff0000] flex-shrink-0 mt-0.5" />
-                                        <span className="text-muted-foreground">{detail}</span>
-                                      </motion.li>
-                                    ))}
-                                  </ul>
-                                </div>
-                                
-                                <div>
-                                  <h4 className="text-lg font-semibold text-foreground mb-4">Pro tips:</h4>
-                                  <ul className="space-y-2">
-                                    {step.tips.map((tip, tipIndex) => (
-                                      <motion.li
-                                        key={tipIndex}
-                                        className="flex items-start space-x-3"
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.6, delay: index * 0.2 + 0.5 + tipIndex * 0.1 }}
-                                      >
-                                        <Star className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-1" />
-                                        <span className="text-sm text-muted-foreground">{tip}</span>
-                                      </motion.li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* Visual */}
-                            <div className="flex-1 flex justify-center">
-                              <motion.div
-                                className={`w-80 h-80 bg-gradient-to-br ${step.color} rounded-2xl flex items-center justify-center relative overflow-hidden`}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.8, delay: index * 0.2 + 0.3 }}
-                                whileHover={{ scale: 1.05 }}
-                              >
-                                <Icon className="w-32 h-32 text-white/80" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
-                                  <span className="text-white font-bold text-sm">{step.number}</span>
-                                </div>
-                              </motion.div>
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  </motion.div>
-
-                  {/* CTA Section */}
-                  <motion.div
-                    className="max-w-4xl mx-auto text-center"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 1.0 }}
-                  >
-                    <div className="bg-gradient-to-r from-[#ff0000]/10 to-[#ff0000]/5 border border-[#ff0000]/20 p-8 rounded-lg">
-                      <h3 className="text-2xl font-bold text-foreground mb-4 tracking-tight">
-                        Ready to Get Started?
-                      </h3>
-                      
-                      <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto font-light leading-relaxed">
-                        Now that you know how it works, let&apos;s create your first multilingual dub!
-                      </p>
-                      
-                      <motion.button
-                        onClick={() => setCurrentStep(1)}
-                        className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Upload className="w-5 h-5" />
-                        <span>Get Started</span>
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                </div>
-              )}
 
               {/* Step 1: Voice Track Upload */}
               {currentStep === 1 && (
                 <div className="space-y-6">
-                  {/* Welcome back message for returning users */}
-                  {hasPastJobs && (
-                    <motion.div
-                      className="max-w-2xl mx-auto mb-6 p-4 bg-[#ff0000]/10 border border-[#ff0000]/20 rounded-lg"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-6 h-6 bg-[#ff0000] rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-bold">✓</span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Welcome back!</p>
-                          <p className="text-xs text-muted-foreground">
-                            Since you&apos;ve created jobs before, we&apos;ll skip the audio preparation guide and go straight to uploading.
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
                   {/* Creative Horizontal Header with Icon Left */}
                   <motion.div
                     className="flex items-center justify-center space-x-6 max-w-2xl mx-auto"
@@ -1227,17 +984,7 @@ export default function NewJobPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="flex items-center justify-center space-x-8">
-              {steps
-                .filter(step => {
-                  // Show "How it Works" step (id 0) only for users with no past jobs
-                  if (step.id === 0) {
-                    return hasPastJobs === false;
-                  }
-                  // For returning users, hide step 0 (audio setup) and show steps 1-3
-                  // For new users, show all steps including "How it Works"
-                  return true;
-                })
-                .map((step, index) => {
+              {steps.map((step, index) => {
                 const Icon = step.icon;
                 const isActive = currentStep === step.id;
                 const isCompleted = currentStep > step.id;
@@ -1271,7 +1018,7 @@ export default function NewJobPage() {
                         <p className={`text-sm font-medium ${
                           isActive || isCompleted ? 'text-foreground' : 'text-muted-foreground'
                         }`}>
-                          {hasPastJobs && step.id === 1 ? 'Step 1: ' : ''}{step.title}
+                          {step.title}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {step.description}
@@ -1299,10 +1046,10 @@ export default function NewJobPage() {
           >
             <motion.button
               onClick={prevStep}
-              disabled={currentStep === 0}
+              disabled={currentStep === 1}
               onTouchEnd={(e) => {
                 e.preventDefault();
-                if (currentStep > 0) {
+                if (currentStep > 1) {
                   prevStep();
                   // Haptic feedback
                   if (navigator.vibrate) {
@@ -1311,18 +1058,18 @@ export default function NewJobPage() {
                 }
               }}
               className={`inline-flex items-center justify-center space-x-2 px-6 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation min-h-[44px] ${
-                currentStep === 0
+                currentStep === 1
                   ? 'bg-muted text-muted-foreground cursor-not-allowed'
                   : 'bg-card text-foreground hover:bg-muted border border-border'
               }`}
-              whileHover={currentStep > 0 ? { scale: 1.05 } : {}}
-              whileTap={currentStep > 0 ? { scale: 0.95 } : {}}
+              whileHover={currentStep > 1 ? { scale: 1.05 } : {}}
+              whileTap={currentStep > 1 ? { scale: 0.95 } : {}}
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Previous</span>
             </motion.button>
 
-            {currentStep < steps.length - 1 ? (
+            {currentStep < 4 ? (
               <motion.button
                 onClick={nextStep}
                 disabled={!isStepValid}

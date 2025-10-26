@@ -25,12 +25,13 @@ A FastAPI-based backend service for the YouTube Multilingual Dubber application,
 
 ## 🎯 **Current Project Status**
 
-- **Frontend**: UI and mock flows are ready for wiring; relies on development bypass token ⚠️
+- **Frontend**: UI optimized with streamlined job creation flow; relies on development bypass token ⚠️
 - **Backend Phase 0**: ✅ **COMPLETED** – Configuration, models, auth scaffolding, and rate limiting are in place
 - **Backend Phase 1**: 🚧 **IN PROGRESS** – Signed upload URLs work, but Supabase storage persistence and metadata capture remain TODO
 - **Frontend Integration**: ⚠️ **BLOCKED** – Job status/listing responses use placeholder data and mismatch the frontend’s expectations
 - **Documentation**: Core setup documented; status sections now reflect outstanding work
 - **Environment**: Local development scripts run, but production credentials/config still required
+- **User Experience**: ✅ **IMPROVED** – Removed redundant onboarding content for faster user flow
 
 ## 🚧 Integration Status
 
