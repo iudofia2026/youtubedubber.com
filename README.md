@@ -87,6 +87,7 @@ npm run dev
 - **ORM**: SQLAlchemy with Alembic migrations
 - **Auth**: Supabase Auth + JWT verification
 - **Storage**: Supabase Storage
+- **Payments**: Stripe integration with credit management
 - **AI Services**:
   - Deepgram (Speech-to-Text, Text-to-Speech)
   - OpenAI (Translation)
@@ -107,9 +108,14 @@ npm run dev
 2. **Multi-Language Support**: 20+ target languages with visual flags
 3. **Job Management**: Create, track, and manage dubbing jobs with real-time progress
 4. **Download System**: Download dubbed audio, full video, and captions
-5. **Authentication**: Sign up, login, password reset, profile management
-6. **Mobile Optimized**: Touch targets, swipe gestures, haptic feedback
-7. **Progress Tracking**: Per-language status with visual indicators
+5. **Payment System**: Credit-based pricing with Stripe integration
+   - 3 pricing tiers: Starter ($9.99), Creator ($39.99), Professional ($99.99)
+   - Dynamic pricing based on language complexity and duration
+   - Real-time credit balance tracking and transaction history
+   - Secure payment processing with Stripe
+6. **Authentication**: Sign up, login, password reset, profile management
+7. **Mobile Optimized**: Touch targets, swipe gestures, haptic feedback
+8. **Progress Tracking**: Per-language status with visual indicators
 
 ### Technical Features
 1. **Development Mode**: Bypass authentication for rapid testing

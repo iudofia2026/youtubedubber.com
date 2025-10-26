@@ -745,6 +745,8 @@ The backend is now **production-ready** and **fully tested** for frontend integr
   Background worker loop polling pending jobs, controlling concurrency, and emitting progress heartbeats. Tested with mocked vendors.  
 - ✅ **BK-023 – Vendor integration (Deepgram STT/TTS + OpenAI translate)**
   COMPLETED: Service clients implemented with Deepgram STT/TTS and OpenAI GPT-4o-mini translation. File upload/download to Supabase Storage integrated.  
+- ✅ **BK-026 – Payment system integration**
+  COMPLETED: Full Stripe integration with credit-based pricing, transaction management, and dynamic cost calculation. Includes payment APIs, credit tracking, and billing dashboard.
 - **BK-024 – Media processing pipeline**  
   Alignment + mixing via librosa/ffmpeg, caption and manifest generation, upload outputs back to Supabase Storage. Includes golden-sample tests.  
 - **BK-025 – Artifact download endpoint**  
@@ -755,12 +757,42 @@ The backend is now **production-ready** and **fully tested** for frontend integr
   Abstract enqueue interface and document steps to drop in Redis/Dramatiq + worker container.  
 - **BK-031 – Premium voice feature flag**  
   Scaffold optional premium TTS integration behind feature flag with configuration toggles.  
-- **BK-032 – Billing groundwork**  
-  Prepare job_events cost fields, export script, and notes for future Stripe integration.  
+- ✅ **BK-032 – Billing groundwork**  
+  **COMPLETED**: Full Stripe integration with credit management, transaction tracking, and dynamic pricing.  
 - **BK-033 – Observability hooks**  
   Structured logging adapters, basic metrics emission, and backlog notes for Prometheus/Grafana rollout.  
 - **BK-034 – Automated retention & delete-now**  
   Scheduler integration and user-triggered deletion endpoint building on BK-013.
+
+## 💳 **Payment System Overview**
+
+### **Credit-Based Pricing Model**
+The system uses a credit-based pricing model with dynamic cost calculation:
+
+- **Base Rate**: 0.1 credits per second of audio
+- **Language Multipliers**:
+  - Common languages (English, Spanish, French, German): 1.0x
+  - Uncommon languages (Japanese, Korean, Arabic): 1.2x
+  - Rare languages (Hindi, Russian, Chinese): 1.5x
+- **Duration Bonuses**: Additional credits for longer content
+
+### **Pricing Plans**
+- **Starter Pack**: 100 credits for $9.99
+- **Creator Pack**: 500 credits for $39.99
+- **Professional Pack**: 1500 credits for $99.99
+
+### **Payment APIs**
+- `POST /api/payments/create-payment-intent` - Create Stripe payment intent
+- `POST /api/payments/confirm-payment` - Confirm payment and add credits
+- `GET /api/payments/credits` - Get user credit balance
+- `GET /api/payments/transactions` - Get transaction history
+- `POST /api/payments/calculate-job-cost` - Calculate job cost
+- `GET /api/payments/can-afford-job` - Check if user can afford job
+
+### **Database Models**
+- `UserCredits` - User credit balance tracking
+- `CreditTransaction` - Transaction history and audit trail
+- `DubbingJob.credit_cost` - Credits consumed per job
 
 ## 🎯 **Success Criteria Overview**
 
@@ -768,10 +800,12 @@ The backend is now **production-ready** and **fully tested** for frontend integr
 - [x] JWT parsing hardened and development bypass isolated to explicit token
 - [x] Rate limiting middleware enabled on sensitive routes
 - [x] Error responses sanitised to avoid leaking internal details
+- [x] Payment processing secured with Stripe integration
 - [ ] Monitoring/alerting – logging hooks exist, but end-to-end verification with Supabase + worker is still pending
 
 ### **Functional Requirements**
-- [ ] Upload URLs issued and recorded in the database
+- [x] Upload URLs issued and recorded in the database
+- [x] Payment system with credit management and transaction tracking
 - [ ] Job creation persists voice/background storage paths and durations
 - [ ] Worker generates real transcripts/audio and uploads artifacts
 - [ ] Job status/list endpoints return per-language progress sourced from the database
