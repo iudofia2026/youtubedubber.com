@@ -226,20 +226,25 @@ class JobProcessor:
         try:
             if not job.voice_track_url:
                 raise Exception("No voice track URL found")
-            
-            # For MVP, we'll create a placeholder file
-            # In a real implementation, you'd download from Supabase Storage
-            temp_file = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+
+            logger.info(f"Downloading voice track from: {job.voice_track_url}")
+
+            # Download file from Supabase Storage
+            file_data = await self.storage_service.download_file(job.voice_track_url)
+
+            # Determine file extension from URL
+            file_ext = os.path.splitext(job.voice_track_url)[1] or ".mp3"
+
+            # Save to temporary file
+            temp_file = tempfile.NamedTemporaryFile(suffix=file_ext, delete=False)
+            temp_file.write(file_data)
             temp_file.close()
-            
-            # Create a placeholder audio file (in real implementation, download from storage)
-            with open(temp_file.name, "wb") as f:
-                f.write(b"placeholder audio data")
-            
+
+            logger.info(f"Downloaded voice track to: {temp_file.name}")
             return temp_file.name
-            
+
         except Exception as e:
-            logger.error(f"Error downloading voice track: {e}")
+            logger.error(f"Error downloading voice track: {e}", exc_info=True)
             return None
     
     async def extract_audio_from_video(self, video_path: str) -> str:

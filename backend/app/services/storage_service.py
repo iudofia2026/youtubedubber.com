@@ -102,6 +102,39 @@ class StorageService:
             logger.error(f"Error generating download URL: {e}")
             raise Exception("Failed to generate download URL")
     
+    async def download_file(self, file_path: str) -> bytes:
+        """
+        Download a file from storage
+        """
+        try:
+            return await self.supabase_storage.download_file(
+                bucket=self.bucket,
+                file_path=file_path
+            )
+        except Exception as e:
+            logger.error(f"Error downloading file: {e}")
+            raise Exception(f"Failed to download file: {str(e)}")
+
+    async def upload_file(
+        self,
+        file_path: str,
+        file_data: bytes,
+        content_type: str = None
+    ) -> str:
+        """
+        Upload a file to storage
+        """
+        try:
+            return await self.supabase_storage.upload_file(
+                bucket=self.bucket,
+                file_path=file_path,
+                file_data=file_data,
+                content_type=content_type
+            )
+        except Exception as e:
+            logger.error(f"Error uploading file: {e}")
+            raise Exception(f"Failed to upload file: {str(e)}")
+
     async def delete_file(self, file_path: str) -> bool:
         """
         Delete a file from storage
@@ -114,13 +147,13 @@ class StorageService:
         except Exception as e:
             logger.error(f"Error deleting file: {e}")
             return False
-    
+
     def get_file_path(self, user_id: str, job_id: str, file_type: str, filename: str) -> str:
         """
         Generate a standardized file path
         """
         return f"uploads/{user_id}/{job_id}/{file_type}_{filename}"
-    
+
     def get_artifact_path(self, user_id: str, job_id: str, language_code: str, artifact_type: str, filename: str) -> str:
         """
         Generate a path for processed artifacts
