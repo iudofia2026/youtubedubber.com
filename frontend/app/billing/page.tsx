@@ -117,7 +117,7 @@ export default function BillingPage() {
     }
   };
 
-  const handlePaymentSuccess = (paymentIntent: any) => {
+  const handlePaymentSuccess = (paymentIntent: unknown) => {
     console.log('Payment successful:', paymentIntent);
     // Handle successful payment
   };

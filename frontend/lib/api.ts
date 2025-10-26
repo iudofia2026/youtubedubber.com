@@ -809,7 +809,7 @@ export const submitDubbingJob = async (
       errorMessage = error.message;
     } else if (typeof error === 'object' && error !== null) {
       // Handle API errors
-      const apiError = error as any;
+      const apiError = error as { message?: string; status?: number; type?: string };
       if (apiError.message) {
         errorMessage = apiError.message;
       } else if (apiError.type) {

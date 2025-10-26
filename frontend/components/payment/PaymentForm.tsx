@@ -17,7 +17,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 interface PaymentFormProps {
   amount: number;
-  onSuccess: (paymentIntent: any) => void;
+  onSuccess: (paymentIntent: unknown) => void;
   onError: (error: string) => void;
   isLoading?: boolean;
 }

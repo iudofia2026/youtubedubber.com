@@ -166,13 +166,6 @@ export default function PricingPage() {
     yearly: 0
   };
 
-  pricingPlans.forEach(plan => {
-    if (plan.originalPrice) {
-      savings.monthly += plan.originalPrice.monthly - plan.price.monthly;
-      savings.yearly += plan.originalPrice.yearly - plan.price.yearly;
-    }
-  });
-
   return (
     <div className="min-h-screen relative">
       {/* Background gradients */}
