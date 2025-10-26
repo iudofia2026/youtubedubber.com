@@ -494,14 +494,12 @@ export default function NewJobPage() {
               className="fixed right-0 top-4 z-50"
               initial={{ x: "100%" }}
               animate={{ 
-                x: isScrollingUp ? "-100%" : 0,
-                opacity: isScrollingUp ? 0 : 1
+                x: isScrollingUp ? 0 : "100%"
               }}
               exit={{ x: "100%" }}
               transition={{ 
                 duration: 0.4, 
-                ease: "easeInOut",
-                opacity: { duration: 0.3 }
+                ease: "easeInOut"
               }}
             >
               <motion.button
@@ -1156,64 +1154,247 @@ export default function NewJobPage() {
           </motion.div>
 
 
-          {/* Navigation Buttons */}
+          {/* Enhanced Navigation Buttons - Sticky and Professional */}
           <motion.div
-            className="flex flex-col sm:flex-row justify-between mt-8 gap-3 sm:gap-0 mobile-button-group"
+            className="sticky top-4 z-40 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <motion.button
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                if (currentStep > 1) {
-                  prevStep();
-                  // Haptic feedback
-                  if (navigator.vibrate) {
-                    navigator.vibrate(30);
-                  }
-                }
-              }}
-              className={`inline-flex items-center justify-center space-x-2 px-6 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation min-h-[44px] ${
-                currentStep === 1
-                  ? 'bg-muted text-muted-foreground cursor-not-allowed'
-                  : 'bg-card text-foreground hover:bg-muted border border-border'
-              }`}
-              whileHover={currentStep > 1 ? { scale: 1.05 } : {}}
-              whileTap={currentStep > 1 ? { scale: 0.95 } : {}}
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Previous</span>
-            </motion.button>
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-background/95 backdrop-blur-md border border-border/50 rounded-2xl shadow-lg p-4">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                  {/* Previous Button */}
+                  <motion.button
+                    onClick={prevStep}
+                    disabled={currentStep === 1}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      if (currentStep > 1) {
+                        prevStep();
+                        // Haptic feedback
+                        if (navigator.vibrate) {
+                          navigator.vibrate(30);
+                        }
+                      }
+                    }}
+                    className={`group relative inline-flex items-center justify-center space-x-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 touch-manipulation min-h-[52px] min-w-[140px] ${
+                      currentStep === 1
+                        ? 'bg-muted/50 text-muted-foreground cursor-not-allowed border border-muted/30'
+                        : 'bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 text-slate-700 dark:text-slate-200 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-700 dark:hover:to-slate-600 border border-slate-300 dark:border-slate-600 shadow-md hover:shadow-lg'
+                    }`}
+                    whileHover={currentStep > 1 ? { 
+                      scale: 1.02,
+                      y: -2,
+                      transition: { duration: 0.2 }
+                    } : {}}
+                    whileTap={currentStep > 1 ? { 
+                      scale: 0.98,
+                      y: 0,
+                      transition: { duration: 0.1 }
+                    } : {}}
+                  >
+                    <motion.div
+                      className="flex items-center space-x-2"
+                      animate={currentStep > 1 ? {
+                        x: [-2, 0, -2]
+                      } : {}}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                      <span className="text-sm font-medium">Previous</span>
+                    </motion.div>
+                    
+                    {/* Subtle glow effect for enabled state */}
+                    {currentStep > 1 && (
+                      <motion.div
+                        className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        initial={false}
+                      />
+                    )}
+                  </motion.button>
 
-            {currentStep < 4 && (
-              <motion.button
-                onClick={nextStep}
-                disabled={!isStepValid}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  if (isStepValid) {
-                    nextStep();
-                    // Haptic feedback
-                    if (navigator.vibrate) {
-                      navigator.vibrate(30);
-                    }
-                  }
-                }}
-                className={`inline-flex items-center justify-center space-x-2 px-8 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation min-h-[44px] ${
-                  isStepValid
-                    ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]'
-                    : 'bg-muted text-muted-foreground cursor-not-allowed'
-                }`}
-                whileHover={isStepValid ? { scale: 1.05 } : {}}
-                whileTap={isStepValid ? { scale: 0.95 } : {}}
-              >
-                <span>Next</span>
-                <ArrowRight className="w-4 h-4" />
-              </motion.button>
-            )}
+                  {/* Step Indicator */}
+                  <div className="flex items-center space-x-2 px-4 py-2 bg-muted/30 rounded-full">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Step {currentStep} of 4
+                    </span>
+                    <div className="flex space-x-1">
+                      {[1, 2, 3, 4].map((step) => (
+                        <motion.div
+                          key={step}
+                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                            step <= currentStep
+                              ? 'bg-[#ff0000]'
+                              : 'bg-muted-foreground/30'
+                          }`}
+                          animate={step === currentStep ? {
+                            scale: [1, 1.2, 1],
+                            opacity: [0.7, 1, 0.7]
+                          } : {}}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Next Button */}
+                  {currentStep < 4 && (
+                    <motion.button
+                      onClick={nextStep}
+                      disabled={!isStepValid}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        if (isStepValid) {
+                          nextStep();
+                          // Haptic feedback
+                          if (navigator.vibrate) {
+                            navigator.vibrate(30);
+                          }
+                        }
+                      }}
+                      className={`group relative inline-flex items-center justify-center space-x-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 touch-manipulation min-h-[52px] min-w-[140px] ${
+                        isStepValid
+                          ? 'bg-gradient-to-r from-[#ff0000] to-[#cc0000] text-white hover:from-[#cc0000] hover:to-[#aa0000] shadow-lg hover:shadow-xl'
+                          : 'bg-muted/50 text-muted-foreground cursor-not-allowed border border-muted/30'
+                      }`}
+                      whileHover={isStepValid ? { 
+                        scale: 1.02,
+                        y: -2,
+                        transition: { duration: 0.2 }
+                      } : {}}
+                      whileTap={isStepValid ? { 
+                        scale: 0.98,
+                        y: 0,
+                        transition: { duration: 0.1 }
+                      } : {}}
+                    >
+                      <motion.div
+                        className="flex items-center space-x-2"
+                        animate={isStepValid ? {
+                          x: [0, 2, 0]
+                        } : {}}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        <span className="text-sm font-medium">Next</span>
+                        <ArrowRight className="w-5 h-5" />
+                      </motion.div>
+                      
+                      {/* Animated background effect for enabled state */}
+                      {isStepValid && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/20 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          initial={false}
+                        />
+                      )}
+                      
+                      {/* Subtle pulse effect */}
+                      {isStepValid && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl border-2 border-white/30"
+                          animate={{
+                            scale: [1, 1.05, 1],
+                            opacity: [0.5, 0.8, 0.5]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      )}
+                    </motion.button>
+                  )}
+
+                  {/* Launch Button for Step 4 */}
+                  {currentStep === 4 && (
+                    <motion.button
+                      onClick={handleSubmit}
+                      disabled={isSubmitting || !isFinalStepValid}
+                      className={`group relative inline-flex items-center justify-center space-x-3 px-12 py-4 rounded-xl font-bold transition-all duration-300 touch-manipulation min-h-[52px] min-w-[180px] ${
+                        isSubmitting || !isFinalStepValid
+                          ? 'bg-muted/50 text-muted-foreground cursor-not-allowed border border-muted/30'
+                          : 'bg-gradient-to-r from-[#ff0000] to-[#cc0000] text-white hover:from-[#cc0000] hover:to-[#aa0000] shadow-xl hover:shadow-2xl'
+                      }`}
+                      whileHover={!isSubmitting && isFinalStepValid ? { 
+                        scale: 1.05,
+                        y: -3,
+                        transition: { duration: 0.2 }
+                      } : {}}
+                      whileTap={!isSubmitting && isFinalStepValid ? { 
+                        scale: 0.95,
+                        y: 0,
+                        transition: { duration: 0.1 }
+                      } : {}}
+                    >
+                      <motion.div
+                        className="flex items-center space-x-2"
+                        animate={!isSubmitting && isFinalStepValid ? {
+                          scale: [1, 1.05, 1]
+                        } : {}}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <motion.div
+                              className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            />
+                            <span className="text-sm font-medium">Launching...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="w-5 h-5" />
+                            <span className="text-sm font-medium">LAUNCH</span>
+                          </>
+                        )}
+                      </motion.div>
+                      
+                      {/* Enhanced glow effect for launch button */}
+                      {!isSubmitting && isFinalStepValid && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/30 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          initial={false}
+                        />
+                      )}
+                      
+                      {/* Pulsing ring effect */}
+                      {!isSubmitting && isFinalStepValid && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl border-2 border-white/40"
+                          animate={{
+                            scale: [1, 1.1, 1],
+                            opacity: [0.6, 1, 0.6]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      )}
+                    </motion.button>
+                  )}
+                </div>
+              </div>
+            </div>
           </motion.div>
 
           {/* Error Messages */}
