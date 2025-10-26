@@ -1111,11 +1111,11 @@ CREATE TABLE jobs (
 - **Error Messages**: Mobile-friendly error display
 
 **Latest Updates**:
-- ✅ **Creative Floating Button Design**: Moved "How It Works" button to top-right corner with geometric positioning
-- ✅ **Smooth Spring Animation**: Added elegant spring-based entrance animation with 1.2s delay
-- ✅ **Enhanced Visual Effects**: Implemented gradient background, floating particles, and animated glow effects
-- ✅ **Interactive Hover States**: Added sophisticated hover animations with scale, lift, and shadow effects
-- ✅ **Floating Tooltip**: Added contextual tooltip that appears on hover for better user guidance
+- ✅ **Integrated Button Design**: Moved "How It Works" button to natural position after step progress bar
+- ✅ **Subtle Animations**: Added gentle icon rotation, glow effects, and smooth hover transitions
+- ✅ **Natural Layout Flow**: Button now sits naturally in the page flow instead of floating overlay
+- ✅ **Enhanced Visual Effects**: Implemented subtle glow effects and animated elements for visual interest
+- ✅ **Improved User Experience**: Button placement feels more integrated and less intrusive
 - ✅ **Streamlined Job Creation Flow**: Removed redundant "Get Started Now" section that was causing excessive scrolling
 - ✅ **Improved User Experience**: Users now start directly at voice track upload for faster onboarding
 - ✅ **Simplified Step Navigation**: Reduced from 5 steps to 4 steps with cleaner progression
@@ -1391,15 +1391,15 @@ CREATE TABLE jobs (
   - **Improved information architecture** - right content for right users
 
 ### Upload Page Enhancements (Latest Update)
-- **Creative Floating "How It Works" Button**: Redesigned for better geometric positioning and visual appeal
-  - **Top-Right Corner Placement**: Fixed position (top-20 right-6) for optimal accessibility
-  - **Spring Animation Entrance**: Smooth spring-based animation with 1.2s delay for elegant introduction
-  - **Gradient Design**: Red gradient background (from-[#ff0000] to-[#ff4444]) with rounded-2xl styling
-  - **Floating Particles**: Animated white particle that floats above the icon for visual interest
-  - **Interactive Hover Effects**: Scale (1.08), lift (-3px), and enhanced shadow on hover
+- **Integrated "How It Works" Button**: Redesigned for natural page flow and better user experience
+  - **Natural Positioning**: Placed after step progress bar for logical flow and better integration
+  - **Subtle Entrance Animation**: Gentle fade-in with y-axis movement for smooth introduction
+  - **Clean Design**: Border-based styling with hover states that match the overall design system
+  - **Gentle Animations**: Icon rotation, glow effects, and pulsing dot for visual interest
+  - **Interactive Hover Effects**: Scale (1.05), lift (-2px), and enhanced shadow on hover
   - **Animated Icon**: Scissors icon with subtle rotation and scale animations
-  - **Contextual Tooltip**: "Click to learn the process" tooltip that appears on hover
-  - **Backdrop Blur**: Subtle backdrop-blur-sm effect for modern glass-morphism look
+  - **Integrated Layout**: Button feels like a natural part of the page instead of an overlay
+  - **Consistent Styling**: Matches the overall design language and color scheme
 
 - **Smart First-Time User Detection**: Implemented intelligent user flow based on job history
   - **First-Time Users**: See complete "How It Works" guide (Step 0) with 4-step process explanation

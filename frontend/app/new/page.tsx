@@ -303,124 +303,6 @@ export default function NewJobPage() {
           
         </motion.div>
 
-        {/* Floating How It Works Button - Top Right Corner */}
-        <motion.div
-          className="fixed top-20 right-6 z-40"
-          initial={{ opacity: 0, scale: 0.8, x: 50 }}
-          animate={{ opacity: 1, scale: 1, x: 0 }}
-          transition={{ 
-            duration: 0.8, 
-            delay: 1.2,
-            type: "spring",
-            stiffness: 200,
-            damping: 20
-          }}
-        >
-          <motion.button
-            ref={openButtonRef}
-            onClick={handleOpenModal}
-            className="group relative inline-flex items-center space-x-2 px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#ff0000] to-[#ff4444] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2 backdrop-blur-sm"
-            whileHover={{ 
-              scale: 1.08, 
-              y: -3,
-              boxShadow: "0 20px 25px -5px rgba(255, 0, 0, 0.3), 0 10px 10px -5px rgba(255, 0, 0, 0.1)"
-            }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="Learn how the dubbing process works"
-            aria-expanded={showHowItWorks}
-            aria-haspopup="dialog"
-          >
-            {/* Animated Background Glow */}
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-[#ff0000] to-[#ff4444] rounded-2xl opacity-75"
-              animate={{ 
-                scale: [1, 1.1, 1],
-                opacity: [0.75, 0.9, 0.75]
-              }}
-              transition={{ 
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-            
-            {/* Icon with Creative Animation */}
-            <div className="relative z-10">
-              <motion.div
-                animate={{ 
-                  rotate: [0, 5, -5, 0],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{ 
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <Scissors className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-              </motion.div>
-              
-              {/* Floating Particles */}
-              <motion.div
-                className="absolute -top-1 -right-1 w-2 h-2 bg-white rounded-full"
-                animate={{ 
-                  y: [0, -8, 0],
-                  opacity: [0.8, 1, 0.8],
-                  scale: [1, 1.2, 1]
-                }}
-                transition={{ 
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.5
-                }}
-              />
-            </div>
-            
-            <span className="relative z-10 font-semibold">How It Works</span>
-            
-            {/* Animated Arrow */}
-            <motion.div
-              className="relative z-10"
-              animate={{ 
-                x: [0, 3, 0],
-                opacity: [0.8, 1, 0.8]
-              }}
-              transition={{ 
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <ArrowRight className="w-3 h-3" />
-            </motion.div>
-            
-            {/* Subtle Border Animation */}
-            <motion.div
-              className="absolute inset-0 border-2 border-white/20 rounded-2xl"
-              animate={{ 
-                borderColor: ["rgba(255,255,255,0.2)", "rgba(255,255,255,0.4)", "rgba(255,255,255,0.2)"]
-              }}
-              transition={{ 
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          </motion.button>
-          
-          {/* Floating Tooltip */}
-          <motion.div
-            className="absolute -top-12 right-0 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 0, y: 10 }}
-            whileHover={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            Click to learn the process
-            <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
-          </motion.div>
-        </motion.div>
 
         {/* Step Content */}
         <div className="max-w-6xl mx-auto">
@@ -1120,6 +1002,74 @@ export default function NewJobPage() {
                 );
               })}
             </div>
+          </motion.div>
+
+          {/* How It Works Button - Integrated into Layout */}
+          <motion.div
+            className="flex justify-center mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <motion.button
+              ref={openButtonRef}
+              onClick={handleOpenModal}
+              className="group relative inline-flex items-center space-x-3 px-6 py-3 text-sm font-medium text-foreground hover:text-[#ff0000] hover:bg-[#ff0000]/5 border border-border rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2 shadow-sm hover:shadow-md"
+              whileHover={{ 
+                scale: 1.05, 
+                y: -2,
+                boxShadow: "0 10px 15px -3px rgba(255, 0, 0, 0.1), 0 4px 6px -2px rgba(255, 0, 0, 0.05)"
+              }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Learn how the dubbing process works"
+              aria-expanded={showHowItWorks}
+              aria-haspopup="dialog"
+            >
+              <div className="relative">
+                <motion.div
+                  animate={{ 
+                    rotate: [0, 3, -3, 0],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{ 
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Scissors className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+                </motion.div>
+                
+                {/* Subtle Glow Effect */}
+                <motion.div
+                  className="absolute inset-0 w-5 h-5 border border-[#ff0000]/20 rounded-full"
+                  animate={{ 
+                    scale: [1, 1.2, 1], 
+                    opacity: [0.3, 0.6, 0.3] 
+                  }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              </div>
+              
+              <span className="font-medium">Learn How It Works</span>
+              
+              <motion.div
+                className="w-2 h-2 bg-[#ff0000] rounded-full"
+                animate={{ 
+                  scale: [1, 1.3, 1], 
+                  opacity: [0.8, 1, 0.8] 
+                }}
+                transition={{ 
+                  duration: 1.5, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }}
+              />
+            </motion.button>
           </motion.div>
 
           {/* Navigation Buttons */}
