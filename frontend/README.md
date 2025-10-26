@@ -1111,11 +1111,11 @@ CREATE TABLE jobs (
 - **Error Messages**: Mobile-friendly error display
 
 **Latest Updates**:
-- ✅ **Integrated Button Design**: Moved "How It Works" button to natural position after step progress bar
-- ✅ **Subtle Animations**: Added gentle icon rotation, glow effects, and smooth hover transitions
-- ✅ **Natural Layout Flow**: Button now sits naturally in the page flow instead of floating overlay
-- ✅ **Enhanced Visual Effects**: Implemented subtle glow effects and animated elements for visual interest
-- ✅ **Improved User Experience**: Button placement feels more integrated and less intrusive
+- ✅ **Prominent Banner Design**: Created large, eye-catching banner with animated gradient background
+- ✅ **High Visibility Elements**: Large text, prominent CTA button, and animated patterns for maximum attention
+- ✅ **Advanced Animations**: Animated gradient background, pulsing rings, shimmer effects, and rotating decorative elements
+- ✅ **Professional Layout**: Full-width banner with proper spacing and visual hierarchy
+- ✅ **Enhanced User Experience**: Impossible to miss with clear value proposition and compelling call-to-action
 - ✅ **Streamlined Job Creation Flow**: Removed redundant "Get Started Now" section that was causing excessive scrolling
 - ✅ **Improved User Experience**: Users now start directly at voice track upload for faster onboarding
 - ✅ **Simplified Step Navigation**: Reduced from 5 steps to 4 steps with cleaner progression
@@ -1391,15 +1391,15 @@ CREATE TABLE jobs (
   - **Improved information architecture** - right content for right users
 
 ### Upload Page Enhancements (Latest Update)
-- **Integrated "How It Works" Button**: Redesigned for natural page flow and better user experience
-  - **Natural Positioning**: Placed after step progress bar for logical flow and better integration
-  - **Subtle Entrance Animation**: Gentle fade-in with y-axis movement for smooth introduction
-  - **Clean Design**: Border-based styling with hover states that match the overall design system
-  - **Gentle Animations**: Icon rotation, glow effects, and pulsing dot for visual interest
-  - **Interactive Hover Effects**: Scale (1.05), lift (-2px), and enhanced shadow on hover
-  - **Animated Icon**: Scissors icon with subtle rotation and scale animations
-  - **Integrated Layout**: Button feels like a natural part of the page instead of an overlay
-  - **Consistent Styling**: Matches the overall design language and color scheme
+- **Prominent "How It Works" Banner**: Completely redesigned for maximum visibility and impact
+  - **Full-Width Banner**: Large banner section that spans the full width for maximum attention
+  - **Animated Gradient Background**: Moving gradient from red to lighter red with continuous animation
+  - **Animated Pattern Overlay**: Moving dot pattern overlay for visual depth and interest
+  - **Large Typography**: Bold "New to AI Dubbing?" headline with clear value proposition
+  - **Prominent CTA Button**: Large white button with red text and shimmer effect animation
+  - **Advanced Animations**: Pulsing rings, rotating decorative elements, and shimmer effects
+  - **Professional Layout**: Proper spacing, visual hierarchy, and responsive design
+  - **High Contrast**: White text on red background with white button for maximum visibility
 
 - **Smart First-Time User Detection**: Implemented intelligent user flow based on job history
   - **First-Time Users**: See complete "How It Works" guide (Step 0) with 4-step process explanation
