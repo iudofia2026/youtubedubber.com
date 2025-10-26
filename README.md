@@ -1,6 +1,6 @@
 # YT Dubber - AI-Powered Video Dubbing Platform
 
-A modern, full-stack application for AI-powered video dubbing with real-time processing, multi-language support (20+ languages), and seamless user experience. Upload videos, select target languages, and receive professionally dubbed content with automated speech-to-text, translation, and text-to-speech processing.
+A modern, full-stack application for AI-powered video dubbing with real-time processing, multi-language support (12 languages), and seamless user experience. Upload videos, select target languages, and receive professionally dubbed content with automated speech-to-text, translation, and text-to-speech processing.
 
 ## 🚀 Quick Start (Local Development)
 
@@ -59,7 +59,7 @@ npm run dev
   - Dynamic pricing based on language complexity
 
 - ✅ **Payment System**: Full Stripe integration with credit-based pricing
-  - 3 pricing tiers: Starter ($9.99), Creator ($39.99), Professional ($99.99)
+  - 3 pricing tiers: Creator Pack (50 credits - $29), Professional Pack (250 credits - $99), Enterprise Pack (1000 credits - $299)
   - Dynamic pricing based on language complexity and duration
   - Real-time credit balance tracking and transaction history
   - Secure payment processing with Stripe
@@ -117,11 +117,11 @@ npm run dev
 
 ### User Features
 1. **Multi-Format Upload**: Audio (MP3, WAV, M4A) and Video (MP4 with auto audio extraction)
-2. **Multi-Language Support**: 20+ target languages with visual flags
+2. **Multi-Language Support**: 12 target languages with visual flags (EN, ES, FR, DE, JA, ZH, KO, PT, IT, RU, AR, HI)
 3. **Job Management**: Create, track, and manage dubbing jobs with real-time progress
 4. **Download System**: Download dubbed audio, full video, and captions
 5. **Payment System**: Credit-based pricing with Stripe integration
-   - 3 pricing tiers: Starter ($9.99), Creator ($39.99), Professional ($99.99)
+   - 3 pricing tiers: Creator Pack (50 credits - $29), Professional Pack (250 credits - $99), Enterprise Pack (1000 credits - $299)
    - Dynamic pricing based on language complexity and duration
    - Real-time credit balance tracking and transaction history
    - Secure payment processing with Stripe
@@ -182,11 +182,11 @@ youtubedubber.com/
 - **Top Banner Design**: Moved "How It Works" banner to the top of the page for maximum visibility and immediate attention
 - **High Visibility**: Large banner with animated patterns, pulsing effects, and prominent CTA button positioned at the top
 - **Maintained Accessibility**: "How It Works" content still available via modal button for users who need guidance
-- **Improved Navigation**: Simplified step flow from 5 steps to 4 steps for better user progression
+- **Improved Navigation**: Streamlined 4-step process (Voice Track → Background Track → Target Languages → Review & Submit)
 
 ### ✅ Payment System Implementation (Oct 26, 2024)
 - Complete Stripe integration with credit-based pricing model
-- 3 pricing tiers: Starter ($9.99), Creator ($39.99), Professional ($99.99)
+- 3 pricing tiers: Creator Pack (50 credits - $29), Professional Pack (250 credits - $99), Enterprise Pack (1000 credits - $299)
 - Dynamic pricing based on language complexity and duration
 - Real-time credit balance tracking and transaction history
 - Complete billing dashboard with payment forms and transaction management

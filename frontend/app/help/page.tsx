@@ -82,7 +82,7 @@ export default function HelpCenter() {
       id: 9,
       category: 'billing',
       question: 'How does the credit system work?',
-      answer: 'Our credit system is simple and transparent. Each dubbing job costs 1 credit regardless of length or number of languages. Credits never expire, so you can buy them in advance and use them whenever you need. We offer Starter (2 free), Creator (50 credits for $29), and Professional (250 credits for $99) packs.',
+      answer: 'Our credit system is simple and transparent. Each dubbing job costs 1 credit regardless of length or number of languages. Credits never expire, so you can buy them in advance and use them whenever you need. We offer Creator Pack (50 credits for $29), Professional Pack (250 credits for $99), and Enterprise Pack (1000 credits for $299).',
       tags: ['billing', 'credits', 'pricing']
     },
     {

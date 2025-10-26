@@ -780,9 +780,9 @@ The system uses a credit-based pricing model with dynamic cost calculation:
 - **Duration Bonuses**: Additional credits for longer content
 
 ### **Pricing Plans**
-- **Starter Pack**: 100 credits for $9.99
-- **Creator Pack**: 500 credits for $39.99
-- **Professional Pack**: 1500 credits for $99.99
+- **Creator Pack**: 50 credits for $29
+- **Professional Pack**: 250 credits for $99
+- **Enterprise Pack**: 1000 credits for $299
 
 ### **Payment APIs**
 - `POST /api/payments/create-payment-intent` - Create Stripe payment intent

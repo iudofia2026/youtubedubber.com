@@ -152,7 +152,7 @@ frontend/
 
 ### Core Functionality
 - **File Upload System** - Drag & drop audio and video file uploads with progress tracking
-- **Language Selection** - Multi-language dubbing support (20+ languages)
+- **Language Selection** - Multi-language dubbing support (12 languages)
 - **Job Management** - Real-time job status tracking with per-language progress
 - **Authentication** - Supabase-powered user management with JWT tokens
 - **Responsive Design** - Mobile-first UI/UX with touch optimization
@@ -753,7 +753,7 @@ Based on the backend architecture and business requirements, the frontend needs 
   - Billing dashboard with transaction history and credit balance
   - Dynamic pricing calculation based on language complexity
   - Payment components (PaymentForm, CreditBalance, BillingHistory, PricingCard)
-  - Three pricing tiers: Starter ($9.99), Creator ($39.99), Professional ($99.99)
+  - Three pricing tiers: Creator Pack (50 credits - $29), Professional Pack (250 credits - $99), Enterprise Pack (1000 credits - $299)
   - Real-time credit tracking and transaction management
   - Secure payment processing with error handling
 
@@ -1118,7 +1118,7 @@ CREATE TABLE jobs (
 - ✅ **Enhanced User Experience**: Impossible to miss with clear value proposition and compelling call-to-action
 - ✅ **Streamlined Job Creation Flow**: Removed redundant "Get Started Now" section that was causing excessive scrolling
 - ✅ **Improved User Experience**: Users now start directly at voice track upload for faster onboarding
-- ✅ **Simplified Step Navigation**: Reduced from 5 steps to 4 steps with cleaner progression
+- ✅ **Simplified Step Navigation**: Streamlined 4-step process with cleaner progression
 - ✅ **Maintained Accessibility**: "How It Works" content still available via modal for users who need guidance
 - ✅ **Enhanced Job View Page**: Created comprehensive job details page with rich data and clean UX
 - ✅ **Interactive Job Cards**: Added 4 detailed overview cards (Audio Files, Languages, Settings, Activity)
