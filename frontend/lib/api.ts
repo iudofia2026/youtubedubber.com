@@ -541,10 +541,16 @@ const getAuthHeaders = async (): Promise<Record<string, string>> => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.access_token) {
           headers['Authorization'] = `Bearer ${session.access_token}`;
+          return headers;
         }
       }
     } catch (error) {
       console.warn('Failed to get auth token:', error);
+    }
+
+    // In development mode, use dev-token if no Supabase session exists
+    if (config.devMode) {
+      headers['Authorization'] = 'Bearer dev-token';
     }
   }
 
