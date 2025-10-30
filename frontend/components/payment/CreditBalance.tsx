@@ -20,24 +20,24 @@ const CreditBalance: React.FC<CreditBalanceProps> = ({
   };
 
   const getCreditStatus = (credits: number) => {
-    if (credits >= 1000) return { color: 'text-green-600', icon: TrendingUp, label: 'High' };
-    if (credits >= 100) return { color: 'text-yellow-600', icon: Zap, label: 'Medium' };
-    return { color: 'text-red-600', icon: Coins, label: 'Low' };
+    if (credits >= 1000) return { color: 'text-green-600 dark:text-green-400', icon: TrendingUp, label: 'High' };
+    if (credits >= 100) return { color: 'text-yellow-600 dark:text-yellow-400', icon: Zap, label: 'Medium' };
+    return { color: 'text-red-600 dark:text-red-400', icon: Coins, label: 'Low' };
   };
 
   const status = getCreditStatus(balance);
   const StatusIcon = status.icon;
 
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 p-6 ${className}`}>
+    <div className={`bg-card rounded-lg border border-border p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <Coins className="h-6 w-6 text-blue-600" />
+          <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+            <Coins className="h-6 w-6 text-blue-600 dark:text-blue-300" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Credit Balance</h3>
-            <p className="text-sm text-gray-500">Available credits for dubbing</p>
+            <h3 className="text-lg font-semibold text-foreground">Credit Balance</h3>
+            <p className="text-sm text-muted-foreground">Available credits for dubbing</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
@@ -49,23 +49,23 @@ const CreditBalance: React.FC<CreditBalanceProps> = ({
       </div>
 
       <div className="mb-6">
-        <div className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="text-3xl font-bold text-foreground mb-2">
           {formatCredits(balance)}
         </div>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-muted-foreground">
           credits remaining
         </div>
       </div>
 
       <div className="space-y-3">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Estimated videos:</span>
+          <span className="text-muted-foreground">Estimated videos:</span>
           <span className="font-medium">
             {Math.floor(balance / 10)} videos
           </span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Cost per video:</span>
+          <span className="text-muted-foreground">Cost per video:</span>
           <span className="font-medium">10 credits</span>
         </div>
       </div>
