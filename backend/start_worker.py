@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Background worker startup script for YT Dubber
-Processes dubbing jobs in the background
+Processes dubbing jobs in the background using Supabase
 """
 import asyncio
 import logging
@@ -12,7 +12,7 @@ from pathlib import Path
 backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
 
-from app.worker.processor import JobProcessor
+from app.worker.supabase_processor import SupabaseJobProcessor
 
 # Configure logging
 logging.basicConfig(
@@ -23,10 +23,10 @@ logger = logging.getLogger(__name__)
 
 
 async def main():
-    """Main function to run the job processor"""
-    logger.info("Starting YT Dubber background worker...")
+    """Main function to run the Supabase job processor"""
+    logger.info("Starting YT Dubber background worker (Supabase)...")
 
-    processor = JobProcessor()
+    processor = SupabaseJobProcessor()
 
     try:
         await processor.start()

@@ -154,8 +154,17 @@ class SupabaseJobProcessor:
             
             # Transcribe the actual audio file using Deepgram
             logger.info(f"Transcribing audio file: {voice_track_path}")
-            transcribed_text = await self.ai_service.transcribe_audio(voice_track_path, "en")
-            
+            transcription_result = await self.ai_service.transcribe_audio(voice_track_path, "en")
+
+            # Extract transcript text from result dict
+            if isinstance(transcription_result, dict):
+                transcribed_text = transcription_result["transcript"]
+                confidence = transcription_result.get("confidence", 0)
+                logger.info(f"Transcription confidence: {confidence:.2%}")
+            else:
+                # Fallback for old string return type
+                transcribed_text = transcription_result
+
             logger.info(f"Transcribed text ({len(transcribed_text)} chars): {transcribed_text[:100]}...")
             
             # Update task status
@@ -176,14 +185,55 @@ class SupabaseJobProcessor:
             # Generate speech using chunked approach for long texts
             if len(translated_text) > 1000:
                 logger.info(f"Using chunked speech generation for long text ({len(translated_text)} chars)")
-                audio_data = await self.ai_service.generate_speech_chunked(translated_text, language_code)
+                speech_audio = await self.ai_service.generate_speech_chunked(translated_text, language_code)
             else:
-                audio_data = await self.ai_service.generate_speech(translated_text, language_code)
-            logger.info(f"Generated audio: {len(audio_data)} bytes")
-            
+                speech_audio = await self.ai_service.generate_speech(translated_text, language_code)
+            logger.info(f"Generated audio: {len(speech_audio)} bytes")
+
+            # Mix with background audio if present
+            final_audio = speech_audio
+            background_track_path = self.find_uploaded_file(job_id, "background")
+
+            if background_track_path:
+                try:
+                    await self.update_language_task_status(task_id, "processing", 85, "Mixing with background audio...")
+                    logger.info(f"Found background track: {background_track_path}")
+
+                    # Save speech audio to temp file
+                    speech_temp = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+                    speech_temp.write(speech_audio)
+                    speech_temp.close()
+
+                    # Create output file for mixed audio
+                    mixed_temp = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+                    mixed_temp.close()
+
+                    # Mix the audio tracks
+                    mixed_path = await self.ai_service.mix_audio_tracks(
+                        voice_track_path=speech_temp.name,
+                        background_track_path=str(background_track_path),
+                        output_path=mixed_temp.name
+                    )
+
+                    # Read mixed audio
+                    with open(mixed_path, 'rb') as f:
+                        final_audio = f.read()
+
+                    # Clean up temp files
+                    os.remove(speech_temp.name)
+                    os.remove(mixed_temp.name)
+
+                    logger.info(f"Successfully mixed voice with background audio: {len(final_audio)} bytes")
+                except Exception as e:
+                    logger.error(f"Error mixing audio tracks: {e}")
+                    logger.warning("Using voice-only audio due to mixing error")
+                    final_audio = speech_audio
+            else:
+                logger.info("No background track found, using voice-only audio")
+
             # Update task status
             await self.update_language_task_status(task_id, "processing", 90, "Saving audio...")
-            
+
             # Save audio to downloads directory for frontend access
             downloads_path = Path("downloads")
             downloads_path.mkdir(exist_ok=True)
@@ -191,21 +241,21 @@ class SupabaseJobProcessor:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"dubbed_audio_{job_id}_{language_code}_{timestamp}.mp3"
             file_path = downloads_path / filename
-            
+
             with open(file_path, "wb") as f:
-                f.write(audio_data)
-            
+                f.write(final_audio)
+
             logger.info(f"Audio saved to downloads: {file_path}")
-            
+
             # Update task status to complete with download URL
             download_url = f"/download/{filename}"
             await self.update_language_task_status(
-                task_id, 
-                "complete", 
-                100, 
+                task_id,
+                "complete",
+                100,
                 f"Audio generated successfully. Download: {download_url}",
                 download_url=download_url,
-                file_size=len(audio_data)
+                file_size=len(final_audio)
             )
             
             logger.info(f"Completed language task {task_id} for {language_code}")

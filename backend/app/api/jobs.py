@@ -53,21 +53,7 @@ async def create_job(
     This endpoint matches the frontend API contract exactly
     """
     try:
-        # For development mode, skip validation and return mock response
-        if settings.supabase_url == "https://test.supabase.co" or settings.debug:
-            logger.info(f"Development mode: Creating job {request.job_id} for user {current_user.id}")
-            
-            # Log job creation to dedicated log file for development
-            job_log_path = Path("uploads.log")
-            with open(job_log_path, "a") as log_file:
-                from datetime import datetime
-                log_file.write(f"[{datetime.now().isoformat()}] DEV JOB CREATED: {request.job_id} for user {current_user.id} with languages {request.languages}\n")
-            
-            logger.info(f"Created job {request.job_id} successfully (dev mode)")
-            
-            return SubmitJobResponse(job_id=request.job_id)
-        
-        # Production mode - validate input data
+        # Validate input data
         validated_job_id = validate_job_id(request.job_id)
         validated_languages = validate_language_codes(request.languages)
         
@@ -119,162 +105,10 @@ async def get_job_status(
     try:
         # Validate job ID
         validated_job_id = validate_job_id(job_id)
-        
+
         logger.info(f"Getting status for job {validated_job_id} for user {current_user.id}")
-        
-        # For development mode, return mock job status with simulated progression
-        if settings.supabase_url == "https://test.supabase.co" or settings.debug:
-            from app.schemas import JobStatusResponse, LanguageProgress, get_language_info
-            from datetime import datetime, timedelta
-            import re
-            import ast
 
-            # Read the languages and creation time from uploads.log
-            job_languages = []
-            job_created_at = None
-            job_log_path = Path("uploads.log")
-            if job_log_path.exists():
-                with open(job_log_path, "r") as log_file:
-                    for line in log_file:
-                        if validated_job_id in line and ("JOB_CREATED" in line or "DEV JOB CREATED" in line):
-                            # Extract timestamp from log line
-                            # Format: [2025-01-29T12:34:56.789012] or [2025-01-29 12:34:56]
-                            timestamp_match = re.search(r"\[([^\]]+)\]", line)
-                            if timestamp_match:
-                                timestamp_str = timestamp_match.group(1)
-                                try:
-                                    # Try ISO format first
-                                    job_created_at = datetime.fromisoformat(timestamp_str)
-                                except ValueError:
-                                    try:
-                                        # Try alternative format
-                                        job_created_at = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
-                                    except ValueError:
-                                        pass
-
-                            # Extract languages from log line
-                            match = re.search(r"languages (\[.*?\])", line)
-                            if match:
-                                job_languages = ast.literal_eval(match.group(1))
-                            break
-
-            # If no languages found in log, default to Spanish
-            if not job_languages:
-                job_languages = ["es"]
-
-            # If no creation time found, use current time (job just created)
-            if not job_created_at:
-                job_created_at = datetime.now()
-
-            # Calculate elapsed time since job creation (use datetime.now() to match log timestamps)
-            elapsed_seconds = (datetime.now() - job_created_at).total_seconds()
-
-            # Simulate job progression based on elapsed time
-            # Total simulation time: 120 seconds (2 minutes)
-            simulation_duration = 120  # seconds
-
-            if elapsed_seconds < 30:
-                # Phase 1: Processing (0-30 seconds, 0-40% progress)
-                overall_status = "processing"
-                overall_progress = int((elapsed_seconds / 30) * 40)
-                overall_message = "Processing audio files..."
-                remaining_time = simulation_duration - elapsed_seconds
-
-                # Languages: first one processing, rest pending
-                lang_statuses = ["processing"] + ["pending"] * (len(job_languages) - 1)
-                lang_progress = [overall_progress] + [0] * (len(job_languages) - 1)
-                lang_messages = [f"Processing audio..." ] + ["Waiting to start..."] * (len(job_languages) - 1)
-                completed_count = 0
-
-            elif elapsed_seconds < 60:
-                # Phase 2: Generating (30-60 seconds, 40-70% progress)
-                overall_status = "generating"
-                overall_progress = 40 + int(((elapsed_seconds - 30) / 30) * 30)
-                overall_message = "Generating dubbed audio..."
-                remaining_time = simulation_duration - elapsed_seconds
-
-                # Languages: first one generating, second processing, rest pending
-                lang_statuses = ["generating", "processing"] + ["pending"] * (len(job_languages) - 2) if len(job_languages) > 1 else ["generating"]
-                lang_progress = [overall_progress, int(overall_progress * 0.5)] + [0] * (len(job_languages) - 2) if len(job_languages) > 1 else [overall_progress]
-                lang_messages = ["Generating dubbed audio..."] + (["Processing..."] if len(job_languages) > 1 else []) + ["Waiting to start..."] * max(0, len(job_languages) - 2)
-                completed_count = 0
-
-            elif elapsed_seconds < 90:
-                # Phase 3: Finalizing (60-90 seconds, 70-95% progress)
-                overall_status = "finalizing"
-                overall_progress = 70 + int(((elapsed_seconds - 60) / 30) * 25)
-                overall_message = "Finalizing output files..."
-                remaining_time = simulation_duration - elapsed_seconds
-
-                # Languages: first one finalizing, second generating, third processing, rest pending
-                if len(job_languages) == 1:
-                    lang_statuses = ["finalizing"]
-                    lang_progress = [overall_progress]
-                    lang_messages = ["Finalizing output..."]
-                elif len(job_languages) == 2:
-                    lang_statuses = ["finalizing", "generating"]
-                    lang_progress = [overall_progress, int(overall_progress * 0.7)]
-                    lang_messages = ["Finalizing output...", "Generating dubbed audio..."]
-                else:
-                    lang_statuses = ["finalizing", "generating", "processing"] + ["pending"] * (len(job_languages) - 3)
-                    lang_progress = [overall_progress, int(overall_progress * 0.7), int(overall_progress * 0.4)] + [0] * (len(job_languages) - 3)
-                    lang_messages = ["Finalizing output...", "Generating dubbed audio...", "Processing..."] + ["Waiting to start..."] * (len(job_languages) - 3)
-
-                completed_count = 0
-
-            else:
-                # Phase 4: Complete (90+ seconds)
-                overall_status = "complete"
-                overall_progress = 100
-                overall_message = "Job completed successfully!"
-                remaining_time = 0
-
-                # All languages complete with mock download URLs
-                lang_statuses = ["complete"] * len(job_languages)
-                lang_progress = [100] * len(job_languages)
-                lang_messages = ["Complete!"] * len(job_languages)
-                completed_count = len(job_languages)
-
-            # Create mock language progress for each language
-            languages = []
-            for idx, lang_code in enumerate(job_languages):
-                lang_info = get_language_info(lang_code)
-
-                # Generate mock download URL if complete
-                download_url = None
-                if idx < len(lang_statuses) and lang_statuses[idx] == "complete":
-                    download_url = f"/api/jobs/{validated_job_id}/download?lang={lang_code}&type=full"
-
-                languages.append(
-                    LanguageProgress(
-                        languageCode=lang_code,
-                        languageName=lang_info["name"],
-                        flag=lang_info["flag"],
-                        status=lang_statuses[idx] if idx < len(lang_statuses) else "pending",
-                        progress=lang_progress[idx] if idx < len(lang_progress) else 0,
-                        message=lang_messages[idx] if idx < len(lang_messages) else "Waiting to start...",
-                        estimatedTimeRemaining=int(remaining_time) if remaining_time > 0 else None,
-                        downloadUrl=download_url
-                    )
-                )
-
-            # Format the response
-            estimated_completion = None
-            if overall_status != "complete":
-                estimated_completion = (job_created_at + timedelta(seconds=simulation_duration)).isoformat()
-
-            return JobStatusResponse(
-                id=validated_job_id,
-                status=overall_status,
-                progress=overall_progress,
-                message=overall_message,
-                languages=languages,
-                totalLanguages=len(languages),
-                completedLanguages=completed_count,
-                startedAt=job_created_at.isoformat(),
-                estimatedCompletion=estimated_completion
-            )
-        
+        # Get real job status from Supabase
         job_service = SupabaseJobService()
         
         # Get job status
