@@ -62,7 +62,7 @@ A Next.js application for AI-powered multilingual video dubbing, enabling YouTub
 - **Job Management**: Complete job history, filtering, status tracking, and individual job detail pages with real API integration.
 - **Payment System**: Complete Stripe integration with credit-based pricing, billing dashboard, and transaction management.
 - **Mobile Optimization**: Comprehensive mobile experience with touch optimization, swipe gestures, haptic feedback, and responsive design.
-- **API Integration**: Complete integration with backend APIs for all functionality.
+- **API Integration**: Partial integration. Real endpoints are used for job creation and status; uploads currently use mock PUT endpoints pending switch to signed-upload flow.
 - **Development Mode**: When `NEXT_PUBLIC_DEV_MODE=true`, the app bypasses Supabase auth for testing.
 - **Production Ready**: All components are production-ready and waiting for backend API integration and Supabase configuration.
 
@@ -240,14 +240,19 @@ frontend/
 
 ## 🔌 Backend Integration Expectations
 
-### Current Mock API (`lib/api.ts`)
-The frontend currently uses mock functions that simulate backend behavior:
+### Current API status (`lib/api.ts`)
+The frontend includes real API clients for job creation and status, plus a temporary mock upload path:
 
 ```typescript
-// Current mock functions
-submitDubbingJob(data: DubbingJobData): Promise<SubmitJobResponse>
-getJobStatus(jobId: string, targetLanguages: string[]): Promise<GetJobStatusResponse>
-pollJobStatus(jobId, languages, onProgress, onComplete): () => void
+// Real API helpers
+requestSignedUploadUrls(request: UploadUrlsRequest): Promise<SignedUploadUrls>
+uploadFileToStorage(file: File, signedUrl: string, onProgress?): Promise<void>
+notifyUploadComplete(request: JobCreationRequest): Promise<SubmitJobResponse>
+getJobStatus(jobId: string, targetLanguages?: string[]): Promise<GetJobStatusResponse>
+pollJobStatus(jobId, targetLanguages, onProgress, onComplete, onError): () => void
+
+// Temporary upload path used by JobCreationWizard
+submitDubbingJob(data: DubbingJobData, onProgress?): Promise<SubmitJobResponse>
 ```
 
 ### Backend Processing Requirements
@@ -356,8 +361,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000  # Frontend URL for callbacks
 
 ## 🔄 Integration Steps
 
-### 1. Replace Mock API
-Update `lib/api.ts` to make real HTTP requests:
+### 1. Replace temporary upload path with signed uploads
+Update the UI to use the existing signed-upload helpers in `lib/api.ts` instead of the mock `submitDubbingJob` PUTs to `${API_BASE}/mock-upload/...`.
 ```typescript
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -386,8 +391,8 @@ export const submitDubbingJob = async (data: DubbingJobData): Promise<SubmitJobR
 };
 ```
 
-### 2. Update Job Status Polling
-Replace the mock `simulateJobProgress` with real polling:
+### 2. Job Status Polling
+Real polling is already implemented via `pollJobStatus`. Keep using it.
 ```typescript
 export const pollJobStatus = (
   jobId: string,
@@ -410,7 +415,7 @@ export const pollJobStatus = (
 ```
 
 ### 3. Handle File Downloads
-Update download links to point to backend endpoints:
+Download URLs are generated with `getDownloadUrl(jobId, langCode, fileType)` which targets backend endpoints:
 ```typescript
 const downloadUrl = `${API_BASE}/api/jobs/${jobId}/download?lang=${langCode}&type=${fileType}`;
 ```
