@@ -2,7 +2,7 @@
 Pydantic schemas for request/response validation
 These schemas match exactly what the frontend expects
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from enum import Enum
@@ -29,11 +29,18 @@ class LanguageTaskStatus(str, Enum):
 
 
 # Request schemas (matching frontend types)
+class ContentTypes(BaseModel):
+    """Content types for uploaded files"""
+    voice: str = Field(..., description="MIME type of the voice track")
+    background: Optional[str] = Field(None, description="MIME type of the background track")
+
+
 class UploadUrlsRequest(BaseModel):
     """Request schema for generating signed upload URLs"""
-    languages: List[str] = Field(..., description="List of target language codes")
-    voice_track_name: str = Field(..., description="Name of the voice track file")
-    background_track_name: Optional[str] = Field(None, description="Name of the background track file")
+    job_id: str = Field(..., description="Client-generated job identifier")
+    voice_filename: str = Field(..., description="Name of the voice track file")
+    background_filename: Optional[str] = Field(None, description="Name of the background track file")
+    content_types: ContentTypes = Field(..., description="MIME types of the files")
 
 
 class JobCreationRequest(BaseModel):
@@ -52,16 +59,15 @@ class JobCreationRequest(BaseModel):
 class SignedUploadUrls(BaseModel):
     """Response schema for signed upload URLs"""
     job_id: str = Field(..., description="Unique job identifier")
-    upload_urls: Dict[str, str] = Field(..., description="Signed URLs for file uploads")
-    
+    voice_url: str = Field(..., description="Signed URL for voice track upload")
+    background_url: Optional[str] = Field(None, description="Signed URL for background track upload")
+
     class Config:
         json_schema_extra = {
             "example": {
                 "job_id": "job_123456789",
-                "upload_urls": {
-                    "voice_track": "https://storage.supabase.co/...",
-                    "background_track": "https://storage.supabase.co/..."
-                }
+                "voice_url": "https://storage.supabase.co/...",
+                "background_url": "https://storage.supabase.co/..."
             }
         }
 
@@ -73,6 +79,11 @@ class SubmitJobResponse(BaseModel):
 
 class LanguageProgress(BaseModel):
     """Language-specific progress information"""
+    model_config = ConfigDict(
+        # Preserve camelCase field names in JSON
+        populate_by_name=True
+    )
+
     languageCode: str = Field(..., description="Language code (e.g., 'es', 'fr')")
     languageName: str = Field(..., description="Human-readable language name")
     flag: str = Field(..., description="Flag emoji for the language")
@@ -86,6 +97,11 @@ class LanguageProgress(BaseModel):
 
 class JobStatusResponse(BaseModel):
     """Response schema for job status"""
+    model_config = ConfigDict(
+        # Preserve camelCase field names in JSON
+        populate_by_name=True
+    )
+
     id: str = Field(..., description="Job identifier")
     status: JobStatus = Field(..., description="Overall job status")
     progress: int = Field(0, ge=0, le=100, description="Overall progress percentage (0-100)")
