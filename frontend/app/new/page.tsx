@@ -333,7 +333,7 @@ export default function NewJobPage() {
               className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group"
             >
               <span>View Jobs</span>
-              <span className="group-hover:translate-x-1 transition-transform duration-200">?</span>
+              <span className="group-hover:translate-x-1 transition-transform duration-200">-&gt;</span>
             </Link>
           </div>
           
