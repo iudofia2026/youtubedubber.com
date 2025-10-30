@@ -1,9 +1,9 @@
 """
 Job management API endpoints
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from app.schemas import (
-    JobCreationRequest, JobStatusResponse, SubmitJobResponse, 
+    JobCreationRequest, JobStatusResponse, SubmitJobResponse,
     BackendErrorResponse, JobStatus, UploadUrlsRequest, SignedUploadUrls
 )
 from app.services.supabase_job_service import SupabaseJobService
@@ -18,6 +18,7 @@ from app.config import settings
 from sqlalchemy.orm import Session
 from pathlib import Path
 import logging
+import aiofiles
 
 logger = logging.getLogger(__name__)
 
@@ -121,43 +122,157 @@ async def get_job_status(
         
         logger.info(f"Getting status for job {validated_job_id} for user {current_user.id}")
         
-        # For development mode, return mock job status
+        # For development mode, return mock job status with simulated progression
         if settings.supabase_url == "https://test.supabase.co" or settings.debug:
-            from app.schemas import JobStatusResponse, LanguageProgress
+            from app.schemas import JobStatusResponse, LanguageProgress, get_language_info
             from datetime import datetime, timedelta
-            
-            # Create mock language progress
-            languages = [
-                LanguageProgress(
-                    language_code="es",
-                    language_name="Spanish",
-                    flag="🇪🇸",
-                    status="processing",
-                    progress=45,
-                    message="Generating Spanish dub...",
-                    estimated_time_remaining=120
-                ),
-                LanguageProgress(
-                    language_code="fr", 
-                    language_name="French",
-                    flag="🇫🇷",
-                    status="pending",
-                    progress=0,
-                    message="Waiting to start...",
-                    estimated_time_remaining=180
+            import re
+            import ast
+
+            # Read the languages and creation time from uploads.log
+            job_languages = []
+            job_created_at = None
+            job_log_path = Path("uploads.log")
+            if job_log_path.exists():
+                with open(job_log_path, "r") as log_file:
+                    for line in log_file:
+                        if validated_job_id in line and ("JOB_CREATED" in line or "DEV JOB CREATED" in line):
+                            # Extract timestamp from log line
+                            # Format: [2025-01-29T12:34:56.789012] or [2025-01-29 12:34:56]
+                            timestamp_match = re.search(r"\[([^\]]+)\]", line)
+                            if timestamp_match:
+                                timestamp_str = timestamp_match.group(1)
+                                try:
+                                    # Try ISO format first
+                                    job_created_at = datetime.fromisoformat(timestamp_str)
+                                except ValueError:
+                                    try:
+                                        # Try alternative format
+                                        job_created_at = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+                                    except ValueError:
+                                        pass
+
+                            # Extract languages from log line
+                            match = re.search(r"languages (\[.*?\])", line)
+                            if match:
+                                job_languages = ast.literal_eval(match.group(1))
+                            break
+
+            # If no languages found in log, default to Spanish
+            if not job_languages:
+                job_languages = ["es"]
+
+            # If no creation time found, use current time (job just created)
+            if not job_created_at:
+                job_created_at = datetime.now()
+
+            # Calculate elapsed time since job creation (use datetime.now() to match log timestamps)
+            elapsed_seconds = (datetime.now() - job_created_at).total_seconds()
+
+            # Simulate job progression based on elapsed time
+            # Total simulation time: 120 seconds (2 minutes)
+            simulation_duration = 120  # seconds
+
+            if elapsed_seconds < 30:
+                # Phase 1: Processing (0-30 seconds, 0-40% progress)
+                overall_status = "processing"
+                overall_progress = int((elapsed_seconds / 30) * 40)
+                overall_message = "Processing audio files..."
+                remaining_time = simulation_duration - elapsed_seconds
+
+                # Languages: first one processing, rest pending
+                lang_statuses = ["processing"] + ["pending"] * (len(job_languages) - 1)
+                lang_progress = [overall_progress] + [0] * (len(job_languages) - 1)
+                lang_messages = [f"Processing audio..." ] + ["Waiting to start..."] * (len(job_languages) - 1)
+                completed_count = 0
+
+            elif elapsed_seconds < 60:
+                # Phase 2: Generating (30-60 seconds, 40-70% progress)
+                overall_status = "generating"
+                overall_progress = 40 + int(((elapsed_seconds - 30) / 30) * 30)
+                overall_message = "Generating dubbed audio..."
+                remaining_time = simulation_duration - elapsed_seconds
+
+                # Languages: first one generating, second processing, rest pending
+                lang_statuses = ["generating", "processing"] + ["pending"] * (len(job_languages) - 2) if len(job_languages) > 1 else ["generating"]
+                lang_progress = [overall_progress, int(overall_progress * 0.5)] + [0] * (len(job_languages) - 2) if len(job_languages) > 1 else [overall_progress]
+                lang_messages = ["Generating dubbed audio..."] + (["Processing..."] if len(job_languages) > 1 else []) + ["Waiting to start..."] * max(0, len(job_languages) - 2)
+                completed_count = 0
+
+            elif elapsed_seconds < 90:
+                # Phase 3: Finalizing (60-90 seconds, 70-95% progress)
+                overall_status = "finalizing"
+                overall_progress = 70 + int(((elapsed_seconds - 60) / 30) * 25)
+                overall_message = "Finalizing output files..."
+                remaining_time = simulation_duration - elapsed_seconds
+
+                # Languages: first one finalizing, second generating, third processing, rest pending
+                if len(job_languages) == 1:
+                    lang_statuses = ["finalizing"]
+                    lang_progress = [overall_progress]
+                    lang_messages = ["Finalizing output..."]
+                elif len(job_languages) == 2:
+                    lang_statuses = ["finalizing", "generating"]
+                    lang_progress = [overall_progress, int(overall_progress * 0.7)]
+                    lang_messages = ["Finalizing output...", "Generating dubbed audio..."]
+                else:
+                    lang_statuses = ["finalizing", "generating", "processing"] + ["pending"] * (len(job_languages) - 3)
+                    lang_progress = [overall_progress, int(overall_progress * 0.7), int(overall_progress * 0.4)] + [0] * (len(job_languages) - 3)
+                    lang_messages = ["Finalizing output...", "Generating dubbed audio...", "Processing..."] + ["Waiting to start..."] * (len(job_languages) - 3)
+
+                completed_count = 0
+
+            else:
+                # Phase 4: Complete (90+ seconds)
+                overall_status = "complete"
+                overall_progress = 100
+                overall_message = "Job completed successfully!"
+                remaining_time = 0
+
+                # All languages complete with mock download URLs
+                lang_statuses = ["complete"] * len(job_languages)
+                lang_progress = [100] * len(job_languages)
+                lang_messages = ["Complete!"] * len(job_languages)
+                completed_count = len(job_languages)
+
+            # Create mock language progress for each language
+            languages = []
+            for idx, lang_code in enumerate(job_languages):
+                lang_info = get_language_info(lang_code)
+
+                # Generate mock download URL if complete
+                download_url = None
+                if idx < len(lang_statuses) and lang_statuses[idx] == "complete":
+                    download_url = f"/api/jobs/{validated_job_id}/download?lang={lang_code}&type=full"
+
+                languages.append(
+                    LanguageProgress(
+                        languageCode=lang_code,
+                        languageName=lang_info["name"],
+                        flag=lang_info["flag"],
+                        status=lang_statuses[idx] if idx < len(lang_statuses) else "pending",
+                        progress=lang_progress[idx] if idx < len(lang_progress) else 0,
+                        message=lang_messages[idx] if idx < len(lang_messages) else "Waiting to start...",
+                        estimatedTimeRemaining=int(remaining_time) if remaining_time > 0 else None,
+                        downloadUrl=download_url
+                    )
                 )
-            ]
-            
+
+            # Format the response
+            estimated_completion = None
+            if overall_status != "complete":
+                estimated_completion = (job_created_at + timedelta(seconds=simulation_duration)).isoformat()
+
             return JobStatusResponse(
                 id=validated_job_id,
-                status="processing",
-                progress=25,
-                message="Processing audio files...",
+                status=overall_status,
+                progress=overall_progress,
+                message=overall_message,
                 languages=languages,
-                total_languages=len(languages),
-                completed_languages=0,
-                started_at=datetime.utcnow().isoformat(),
-                estimated_completion=(datetime.utcnow() + timedelta(minutes=5)).isoformat()
+                totalLanguages=len(languages),
+                completedLanguages=completed_count,
+                startedAt=job_created_at.isoformat(),
+                estimatedCompletion=estimated_completion
             )
         
         job_service = SupabaseJobService()
@@ -245,56 +360,176 @@ async def request_upload_urls(
     This endpoint matches the frontend API contract exactly
     """
     try:
-        # For development mode, skip validation
-        if settings.supabase_url == "https://test.supabase.co":
-            logger.info(f"Development mode: Generating upload URLs for user {current_user.id}, languages: {request.languages}")
-            
-            # Generate signed URLs directly
-            signed_urls = await storage_service.generate_upload_urls(
-                user_id=current_user.id,
-                languages=request.languages,
-                voice_track_name=request.voice_track_name,
-                background_track_name=request.background_track_name
-            )
-            
-            logger.info(f"Generated upload URLs for job {signed_urls.job_id}")
-            return signed_urls
-        
+        logger.info(f"Generating upload URLs for user {current_user.id}, job_id: {request.job_id}")
+
         # Skip validation in development mode for easier testing
         if not settings.debug:
             # Production mode - validate input data
-            from app.utils.validation import validate_language_codes, validate_filename
-            validated_languages = validate_language_codes(request.languages)
-            validated_voice_track = validate_filename(request.voice_track_name, "voice_track_name")
-            validated_background_track = validate_filename(request.background_track_name, "background_track_name") if request.background_track_name else None
-            
+            from app.utils.validation import validate_filename
+            validated_voice_filename = validate_filename(request.voice_filename, "voice_filename")
+            validated_background_filename = validate_filename(request.background_filename, "background_filename") if request.background_filename else None
+
             # Update request with validated data
-            request.languages = validated_languages
-            request.voice_track_name = validated_voice_track
-            request.background_track_name = validated_background_track
+            request.voice_filename = validated_voice_filename
+            request.background_filename = validated_background_filename
         else:
             # Development mode - just log the filenames
-            logger.info(f"Development mode: Skipping validation for filenames: {request.voice_track_name}, {request.background_track_name}")
-        
-        logger.info(f"Generating upload URLs for user {current_user.id}, languages: {request.languages}")
-        
+            logger.info(f"Development mode: Skipping validation for filenames: {request.voice_filename}, {request.background_filename}")
+
         # Generate signed URLs
+        # Note: We pass empty languages list since languages are provided later when creating the job
         signed_urls = await storage_service.generate_upload_urls(
             user_id=current_user.id,
-            languages=request.languages,
-            voice_track_name=request.voice_track_name,
-            background_track_name=request.background_track_name
+            languages=[],  # Languages will be provided in the job creation request
+            voice_track_name=request.voice_filename,
+            background_track_name=request.background_filename
         )
-        
+
         logger.info(f"Generated upload URLs for job {signed_urls.job_id}")
         return signed_urls
-        
+
     except Exception as e:
         logger.error(f"Error generating upload URLs: {e}", exc_info=True)
         raise create_http_exception(
             error_type="upload_url_generation_failed",
             message="Failed to generate upload URLs",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            details={"user_id": current_user.id, "languages": request.languages},
+            details={"user_id": current_user.id, "job_id": request.job_id},
             original_error=e
+        )
+
+
+@router.get("/{job_id}/download")
+async def download_job_file(
+    job_id: str,
+    lang: str,
+    type: str = "full",
+    current_user: UserResponse = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Download completed dubbed audio file for a specific language
+    Supports both production (Supabase) and dev mode (local files)
+    """
+    try:
+        validated_job_id = validate_job_id(job_id)
+        logger.info(f"Download request for job {validated_job_id}, language {lang}, type {type}")
+
+        # In development mode, serve from downloads directory
+        if settings.supabase_url == "https://test.supabase.co" or settings.debug:
+            from fastapi.responses import FileResponse
+            import glob
+
+            # Look for audio files in downloads directory
+            downloads_dir = Path("downloads")
+            if not downloads_dir.exists():
+                downloads_dir.mkdir(parents=True, exist_ok=True)
+
+            # Search for files matching the language
+            pattern = f"ytdubber_{lang}_*.mp3"
+            matching_files = list(downloads_dir.glob(pattern))
+
+            if matching_files:
+                # Return the most recent file
+                latest_file = max(matching_files, key=lambda p: p.stat().st_mtime)
+                logger.info(f"Serving file: {latest_file}")
+
+                return FileResponse(
+                    path=str(latest_file),
+                    media_type="audio/mpeg",
+                    filename=f"{validated_job_id}_{lang}_dubbed.mp3",
+                    headers={
+                        "Content-Disposition": f'attachment; filename="{validated_job_id}_{lang}_dubbed.mp3"'
+                    }
+                )
+
+            # If no file found, return 404
+            raise create_http_exception(
+                error_type="file_not_found",
+                message=f"No dubbed audio found for language {lang}",
+                status_code=status.HTTP_404_NOT_FOUND,
+                details={"job_id": validated_job_id, "language": lang}
+            )
+
+        # Production mode - get from database and serve from Supabase Storage
+        from app.models import LanguageTask
+
+        # Get the language task for this job and language
+        language_task = db.query(LanguageTask).filter(
+            LanguageTask.job_id == validated_job_id,
+            LanguageTask.language_code == lang
+        ).first()
+
+        if not language_task:
+            raise create_http_exception(
+                error_type="task_not_found",
+                message=f"No task found for language {lang}",
+                status_code=status.HTTP_404_NOT_FOUND,
+                details={"job_id": validated_job_id, "language": lang}
+            )
+
+        if not language_task.download_url:
+            raise create_http_exception(
+                error_type="file_not_ready",
+                message=f"Audio file not ready for download yet",
+                status_code=status.HTTP_404_NOT_FOUND,
+                details={"job_id": validated_job_id, "language": lang, "status": language_task.status}
+            )
+
+        # Redirect to the Supabase storage URL
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url=language_task.download_url)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error downloading file: {e}", exc_info=True)
+        raise create_http_exception(
+            error_type="download_failed",
+            message="Failed to download file",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details={"job_id": job_id, "language": lang},
+            original_error=e
+        )
+
+
+@router.put("/mock-upload/{file_path:path}")
+async def mock_file_upload(
+    file_path: str,
+    request: Request
+):
+    """
+    Mock endpoint for file uploads in development mode.
+    Saves files to the backend/uploads directory.
+    """
+    try:
+        logger.info(f"Mock upload: Receiving file for path: {file_path}")
+
+        # Read the file content from the request body
+        file_content = await request.body()
+
+        # Create the full path in the backend uploads directory
+        upload_dir = Path("backend/uploads") if Path("backend").exists() else Path("uploads")
+        full_path = upload_dir / file_path
+
+        # Ensure the directory exists
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Write the file
+        async with aiofiles.open(full_path, 'wb') as f:
+            await f.write(file_content)
+
+        logger.info(f"Mock upload: Successfully saved file to {full_path}")
+
+        return {
+            "message": "File uploaded successfully",
+            "path": str(full_path),
+            "size": len(file_content)
+        }
+
+    except Exception as e:
+        logger.error(f"Mock upload error: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to upload file: {str(e)}"
         )

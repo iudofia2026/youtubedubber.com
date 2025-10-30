@@ -81,13 +81,13 @@ export function IndividualLanguageProgress({ language, onDownload }: IndividualL
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <span className="text-2xl">{language.flag}</span>
+          <span className="text-2xl">{language.flag || '🌐'}</span>
           <div>
             <h3 className="text-lg font-semibold text-foreground">
-              {language.languageName}
+              {language.languageName || 'Unknown Language'}
             </h3>
             <p className="text-sm text-muted-foreground uppercase tracking-wider">
-              {language.languageCode}
+              {language.languageCode || 'N/A'}
             </p>
           </div>
         </div>
@@ -125,7 +125,7 @@ export function IndividualLanguageProgress({ language, onDownload }: IndividualL
           )}
         </div>
         
-        {language.status === 'complete' && onDownload && (
+        {language.status === 'complete' && onDownload && language.languageCode && (
           <motion.button
             onClick={() => onDownload(language.languageCode)}
             className="flex items-center space-x-2 px-3 py-1.5 bg-[#ff0000] text-white text-sm font-medium hover:bg-[#cc0000] transition-colors duration-200"

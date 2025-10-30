@@ -31,12 +31,13 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "YT Dubber",
   description: "Transform your content with AI-powered multilingual dubbing",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

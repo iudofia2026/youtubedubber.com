@@ -433,7 +433,7 @@ export default function JobStatusPage() {
                   <AnimatePresence>
                     {jobStatus.languages.map((language, index) => (
                       <motion.div
-                        key={language.languageCode}
+                        key={language.languageCode || `language-${index}`}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}

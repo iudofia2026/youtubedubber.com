@@ -41,42 +41,40 @@ class StorageService:
             
             # For development, use a simple mock endpoint that actually works
             # This simulates the upload process without requiring real Supabase setup
-            upload_urls = {
-                "voice_track": f"http://localhost:8000/mock-upload/{voice_track_path}",
-            }
-            
+            voice_url = f"http://localhost:8000/api/jobs/mock-upload/{voice_track_path}"
+            background_url = None
+
             if background_track_path:
-                upload_urls["background_track"] = f"http://localhost:8000/mock-upload/{background_track_path}"
-            
+                background_url = f"http://localhost:8000/api/jobs/mock-upload/{background_track_path}"
+
             logger.info(f"Development mode: Generated mock upload URLs for job {job_id}")
             return SignedUploadUrls(
                 job_id=job_id,
-                upload_urls=upload_urls
+                voice_url=voice_url,
+                background_url=background_url
             )
             
             # Production mode - use real Supabase
-            upload_urls = {}
-            
             # Voice track URL
             voice_url = await self.supabase_storage.generate_signed_upload_url(
                 bucket=self.bucket,
                 file_path=voice_track_path,
                 expires_in=3600  # 1 hour
             )
-            upload_urls["voice_track"] = voice_url
-            
+
             # Background track URL (if provided)
+            background_url = None
             if background_track_path:
                 background_url = await self.supabase_storage.generate_signed_upload_url(
                     bucket=self.bucket,
                     file_path=background_track_path,
                     expires_in=3600
                 )
-                upload_urls["background_track"] = background_url
-            
+
             return SignedUploadUrls(
                 job_id=job_id,
-                upload_urls=upload_urls
+                voice_url=voice_url,
+                background_url=background_url
             )
             
         except Exception as e:
