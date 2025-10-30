@@ -6,11 +6,11 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Check, X, Star, Zap, Crown, DollarSign, Clock, Users, BarChart3, Shield, Headphones, Globe, Mic, CreditCard } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
-import { PricingCard, CreditBalance } from '@/components/payment';
+import { PricingCard } from '@/components/payment';
 
 export default function PricingPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [userCredits, setUserCredits] = useState(0); // This would come from user context/API
+  const [userCredits, setUserCredits] = useState(0); // Deprecated on pricing: credits now managed in billing
 
   const pricingPlans = [
     {
@@ -218,23 +218,7 @@ export default function PricingPage() {
             </div>
           </motion.section>
 
-          {/* Credit Balance Display */}
-          {userCredits > 0 && (
-            <motion.section
-              className="py-8 px-4 sm:px-6 lg:px-8 relative"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <div className="max-w-4xl mx-auto">
-                <CreditBalance 
-                  balance={userCredits} 
-                  onAddCredits={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                />
-              </div>
-            </motion.section>
-          )}
+          {/* Credit balance UI removed from pricing. See /billing for management. */}
 
           {/* Pricing Plans */}
           <motion.section
