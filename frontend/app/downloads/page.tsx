@@ -30,6 +30,7 @@ import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ToastNotifications';
 import { DownloadHistoryItem, DownloadFileType, LANGUAGES } from '@/types';
+import { fetchDownloads } from '@/lib/api';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 type SortField = 'downloadedAt' | 'fileName' | 'languageName' | 'fileType' | 'fileSize';
@@ -48,128 +49,19 @@ function DownloadsPageContent() {
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data - in real app, this would come from API
   useEffect(() => {
-    const mockHistory: DownloadHistoryItem[] = [
-      {
-        id: '1',
-        jobId: 'job-12345678',
-        jobTitle: 'Tutorial Video',
-        languageCode: 'es',
-        languageName: 'Spanish',
-        fileType: 'full',
-        fileName: 'job-12345678_es_full.mp3',
-        fileSize: 15728640, // 15MB
-        downloadedAt: '2024-01-15T10:30:00Z',
-        expiresAt: '2024-01-17T10:30:00Z',
-        isExpired: false,
-        downloadUrl: '/api/downloads/job-12345678_es_full.mp3'
-      },
-      {
-        id: '2',
-        jobId: 'job-12345678',
-        jobTitle: 'Tutorial Video',
-        languageCode: 'es',
-        languageName: 'Spanish',
-        fileType: 'voice',
-        fileName: 'job-12345678_es_voice.mp3',
-        fileSize: 8388608, // 8MB
-        downloadedAt: '2024-01-15T10:25:00Z',
-        expiresAt: '2024-01-17T10:25:00Z',
-        isExpired: false,
-        downloadUrl: '/api/downloads/job-12345678_es_voice.mp3'
-      },
-      {
-        id: '3',
-        jobId: 'job-87654321',
-        jobTitle: 'Product Demo',
-        languageCode: 'fr',
-        languageName: 'French',
-        fileType: 'full',
-        fileName: 'job-87654321_fr_full.mp3',
-        fileSize: 20971520, // 20MB
-        downloadedAt: '2024-01-14T15:45:00Z',
-        expiresAt: '2024-01-16T15:45:00Z',
-        isExpired: true,
-        downloadUrl: undefined
-      },
-      {
-        id: '4',
-        jobId: 'job-87654321',
-        jobTitle: 'Product Demo',
-        languageCode: 'fr',
-        languageName: 'French',
-        fileType: 'captions',
-        fileName: 'job-87654321_fr_captions.srt',
-        fileSize: 102400, // 100KB
-        downloadedAt: '2024-01-14T15:40:00Z',
-        expiresAt: '2024-01-16T15:40:00Z',
-        isExpired: true,
-        downloadUrl: undefined
-      },
-      {
-        id: '5',
-        jobId: 'job-11223344',
-        jobTitle: 'Marketing Video',
-        languageCode: 'de',
-        languageName: 'German',
-        fileType: 'full',
-        fileName: 'job-11223344_de_full.mp3',
-        fileSize: 12582912, // 12MB
-        downloadedAt: '2024-01-13T09:20:00Z',
-        expiresAt: '2024-01-15T09:20:00Z',
-        isExpired: false,
-        downloadUrl: '/api/downloads/job-11223344_de_full.mp3'
-      },
-      {
-        id: '6',
-        jobId: 'job-99887766',
-        jobTitle: 'Educational Content',
-        languageCode: 'ja',
-        languageName: 'Japanese',
-        fileType: 'voice',
-        fileName: 'job-99887766_ja_voice.mp3',
-        fileSize: 18874368, // 18MB
-        downloadedAt: '2024-01-12T14:30:00Z',
-        expiresAt: '2024-01-14T14:30:00Z',
-        isExpired: false,
-        downloadUrl: '/api/downloads/job-99887766_ja_voice.mp3'
-      },
-      {
-        id: '7',
-        jobId: 'job-99887766',
-        jobTitle: 'Educational Content',
-        languageCode: 'ja',
-        languageName: 'Japanese',
-        fileType: 'captions',
-        fileName: 'job-99887766_ja_captions.srt',
-        fileSize: 81920, // 80KB
-        downloadedAt: '2024-01-12T14:25:00Z',
-        expiresAt: '2024-01-14T14:25:00Z',
-        isExpired: false,
-        downloadUrl: '/api/downloads/job-99887766_ja_captions.srt'
-      },
-      {
-        id: '8',
-        jobId: 'job-55443322',
-        jobTitle: 'Podcast Episode',
-        languageCode: 'pt',
-        languageName: 'Portuguese',
-        fileType: 'full',
-        fileName: 'job-55443322_pt_full.mp3',
-        fileSize: 25165824, // 24MB
-        downloadedAt: '2024-01-11T08:15:00Z',
-        expiresAt: '2024-01-13T08:15:00Z',
-        isExpired: true,
-        downloadUrl: undefined
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        const items = await fetchDownloads();
+        setDownloadHistory(items);
+      } catch {
+        setDownloadHistory([]);
+      } finally {
+        setIsLoading(false);
       }
-    ];
-
-    // Simulate loading
-    setTimeout(() => {
-      setDownloadHistory(mockHistory);
-      setIsLoading(false);
-    }, 800);
+    };
+    load();
   }, []);
 
   const getFileTypeIcon = (fileType: DownloadFileType) => {
@@ -331,15 +223,15 @@ function DownloadsPageContent() {
 
   const handleRefresh = async () => {
     setIsLoading(true);
-    // Simulate API refresh
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setIsLoading(false);
-    addToast({
-      type: 'success',
-      title: 'Refreshed',
-      message: 'Download history has been refreshed.',
-      duration: 3000
-    });
+    try {
+      const items = await fetchDownloads();
+      setDownloadHistory(items);
+      addToast({ type: 'success', title: 'Refreshed', message: 'Download history has been refreshed.', duration: 3000 });
+    } catch {
+      addToast({ type: 'error', title: 'Refresh failed', message: 'Could not refresh downloads.', duration: 3000 });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const stats = useMemo(() => {
@@ -743,7 +635,7 @@ function DownloadCard({
               {item.fileName}
             </h3>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              {getFileTypeLabel(item.fileType)} • {item.languageName}
+              {getFileTypeLabel(item.fileType)} ? {item.languageName}
             </p>
           </div>
         </div>
@@ -843,7 +735,7 @@ function DownloadListItem({
               {item.fileName}
             </h3>
             <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-              {getFileTypeLabel(item.fileType)} • {item.languageName} • {item.jobTitle}
+              {getFileTypeLabel(item.fileType)} ? {item.languageName} ? {item.jobTitle}
             </p>
           </div>
         </div>
