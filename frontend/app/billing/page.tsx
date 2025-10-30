@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { CreditCard, Download, Eye, Plus, Settings, History, TrendingUp } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { CreditBalance, BillingHistory, PaymentForm } from '@/components/payment';
+import { getCredits, setCredits } from '@/lib/credits';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -19,14 +20,16 @@ interface Transaction {
 }
 
 export default function BillingPage() {
-  const [userCredits, setUserCredits] = useState(150); // This would come from user context/API
+  const [userCredits, setUserCredits] = useState<number>(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<{ credits: number; price: number } | null>(null);
 
-  // Mock transaction data - in real app, this would come from API
+  // Initialize credits and mock transaction data - in real app, fetch from API
   useEffect(() => {
+    // Load stored credits for quick UX continuity
+    setUserCredits(getCredits());
     const mockTransactions: Transaction[] = [
       {
         id: 'txn_001',
@@ -90,8 +93,12 @@ export default function BillingPage() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Update user credits
-      setUserCredits(prev => prev + credits);
+      // Update user credits and persist
+      setUserCredits(prev => {
+        const next = prev + credits;
+        setCredits(next);
+        return next;
+      });
       
       // Add transaction to history
       const newTransaction: Transaction = {
@@ -360,7 +367,7 @@ export default function BillingPage() {
                   setSelectedPlan(null);
                 }}
               >
-                ×
+                ?
               </Button>
             </div>
 
