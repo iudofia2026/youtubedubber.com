@@ -136,18 +136,72 @@ frontend/
 └── eslint.config.mjs    # ESLint setup
 ```
 
+## Error Handling & Environment Controls
+- `lib/api.ts` centralizes fetch logic. `createApiError` maps status codes to the `ApiError` shape and feeds helpers such as `withRetry`.
+- `withRetry` adds exponential backoff (3 attempts, 1s base) and only retries requests that return `retryable: true`.
+- `types/index.ts` exports the `ApiError` interface that downstream components (toasts, job views) consume.
+- Logging is currently ad hoc: `lib/api.ts` logs API configuration and token-selection decisions in every environment, and `createApiError` always exposes backend payloads via `details`. Sanitize or gate this before production.
+- The repository does not include the previously documented backend health check component or environment-aware logging utilities. Add them when ready and update this section instead of relying on stale guides.
+- `scripts/validate-env.js` is a lightweight sanity check for `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_APP_URL`. Run it manually (`node scripts/validate-env.js`) or wire it into an npm `prebuild` script if you need automated enforcement.
+
+```ts
+// Example: wrap an API call with retry semantics from lib/api.ts
+await withRetry(async () => {
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw createApiError(await response.json().catch(() => ({})), response);
+  }
+  return response.json();
+});
+```
+
+## Backend Integration
+
+The frontend is fully prepared for backend integration with the following improvements:
+
+### 1. Backend Response Mapping ✅
+- `lib/api.ts` includes mapping functions that handle both camelCase (official Pydantic schema) and snake_case (database fields) for backward compatibility
+- All API responses are validated and mapped through `mapJobResponse()`, `mapLanguageProgress()`, and `mapJobSummary()`
+- Download URLs are automatically resolved (relative → absolute) via `resolveDownloadUrl()`
+- Progress values are clamped to 0-100 range with fallback defaults
+
+### 2. Runtime Type Validation ✅
+- Type guard functions in `types/index.ts` validate all backend responses before mapping
+- Invalid array items are skipped rather than failing entire requests (graceful degradation)
+- `ValidationError` class provides user-friendly error messages while preserving technical details
+- Supports flexible field naming (camelCase/snake_case) during API migrations
+
+### 3. Environment-Aware Error Handling ✅
+- Error details are hidden in production (`config.devMode` checks throughout `createApiError()`)
+- Development mode shows full error context; production shows sanitized messages
+- `ErrorBoundary.tsx` includes environment-aware logging (detailed in dev, minimal in prod)
+- `scripts/validate-env.js` prevents accidental dev mode deployment (run with `npm run prebuild`)
+
+### Integration Checklist
+- [ ] Backend running at `NEXT_PUBLIC_API_URL`
+- [ ] Set `NEXT_PUBLIC_DEV_MODE=false` for production
+- [ ] Run `node scripts/validate-env.js` before production builds
+- [ ] Test all API endpoints with real backend responses
+- [ ] Verify type guards handle backend response format
+
 ## Development Notes
 - The repository does not ship automated tests; rely on manual QA and ESLint.
 - Turbopack is enabled for development/build; clear `.next` if you encounter cache glitches.
 - `PaymentForm` assumes a working Stripe publishable key and backend intent endpoint—without them the billing flow will surface errors.
 - Supabase integration requires both URL and anon key; otherwise, authentication falls back to the development bypass.
 - Mobile interactions use `navigator.vibrate` where supported and gracefully no-op elsewhere.
+- Run `node scripts/validate-env.js` locally (or via an npm `prebuild` hook) to verify the minimum environment variables.
 
 ## Known Gaps
 - Realtime updates are still handled with polling; WebSocket/SSE wiring is not in place.
 - There is no dedicated profile or settings page beyond Supabase metadata.
 - Credit balances are tracked locally and not yet synchronized with backend state.
 - Several marketing claims (e.g., retention windows, premium tiers) are static copy until the backend delivers matching capabilities.
+- API logging lacks sanitization: `lib/api.ts` prints configuration details and auth-token decisions in all environments.
+- `createApiError` surfaces backend payloads in `details`; tighten messages for production before exposing users to them.
+- No guard rails prevent deploying with `NEXT_PUBLIC_DEV_MODE=true`; add a build-time check in `lib/config.ts` or a script.
+- There is no structured request logging, health-check component, or error-reporting integration—add them if those flows are required.
+- Automated tests for the error-handling helpers and configuration logic are still missing.
 
 ## Contributing & Support
 1. Create a feature branch and make your changes.
