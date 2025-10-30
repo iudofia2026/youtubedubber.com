@@ -238,8 +238,8 @@ export default function BillingPage() {
                       {creditPacks.map((pack, index) => (
                         <motion.div
                           key={pack.name}
-                          className={`relative bg-white rounded-lg border-2 p-6 ${
-                            pack.popular ? 'border-blue-500 shadow-lg' : 'border-gray-200'
+                          className={`relative bg-card rounded-lg border-2 p-6 ${
+                            pack.popular ? 'border-blue-500 shadow-lg' : 'border-border'
                           }`}
                           initial={{ opacity: 0, y: 30 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -255,14 +255,14 @@ export default function BillingPage() {
                           )}
                           
                           <div className="text-center mb-6">
-                            <h4 className="text-xl font-bold text-gray-900 mb-2">{pack.name}</h4>
-                            <div className="text-3xl font-bold text-gray-900 mb-2">
+                            <h4 className="text-xl font-bold text-foreground mb-2">{pack.name}</h4>
+                            <div className="text-3xl font-bold text-foreground mb-2">
                               ${(pack.price / 100).toFixed(2)}
                             </div>
-                            <div className="text-lg text-gray-600">
+                            <div className="text-lg text-muted-foreground">
                               {pack.credits.toLocaleString()} credits
                             </div>
-                            <div className="text-sm text-gray-500 mt-1">
+                            <div className="text-sm text-muted-foreground mt-1">
                               ${(pack.price / pack.credits / 100).toFixed(3)} per credit
                             </div>
                           </div>
@@ -287,9 +287,9 @@ export default function BillingPage() {
                   </div>
 
                   {/* Custom Amount */}
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Custom Amount</h4>
-                    <p className="text-gray-600 mb-4">
+                  <div className="bg-muted rounded-lg p-6">
+                    <h4 className="text-lg font-semibold text-foreground mb-4">Custom Amount</h4>
+                    <p className="text-muted-foreground mb-4">
                       Need a different amount? Contact us for custom credit packages.
                     </p>
                     <Button variant="outline" className="w-full">
@@ -307,9 +307,9 @@ export default function BillingPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
                 >
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Methods</h3>
-                    <p className="text-gray-600 mb-4">
+                  <div className="bg-card rounded-lg border border-border p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">Payment Methods</h3>
+                    <p className="text-muted-foreground mb-4">
                       Manage your saved payment methods and billing information.
                     </p>
                     <Button variant="outline">
@@ -318,9 +318,9 @@ export default function BillingPage() {
                     </Button>
                   </div>
 
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Billing Information</h3>
-                    <p className="text-gray-600 mb-4">
+                  <div className="bg-card rounded-lg border border-border p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">Billing Information</h3>
+                    <p className="text-muted-foreground mb-4">
                       Update your billing address and tax information.
                     </p>
                     <Button variant="outline">
@@ -329,9 +329,9 @@ export default function BillingPage() {
                     </Button>
                   </div>
 
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Invoices & Receipts</h3>
-                    <p className="text-gray-600 mb-4">
+                  <div className="bg-card rounded-lg border border-border p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">Invoices & Receipts</h3>
+                    <p className="text-muted-foreground mb-4">
                       Download past invoices and receipts for your records.
                     </p>
                     <Button variant="outline">
@@ -348,15 +348,15 @@ export default function BillingPage() {
 
       {/* Payment Form Modal */}
       {showPaymentForm && selectedPlan && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <motion.div
-            className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto"
+            className="bg-card rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto border border-border"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
           >
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">
+              <h3 className="text-xl font-semibold text-foreground">
                 Complete Purchase
               </h3>
               <Button
@@ -371,7 +371,7 @@ export default function BillingPage() {
               </Button>
             </div>
 
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <div className="mb-6 p-4 bg-muted rounded-lg">
               <div className="flex justify-between items-center">
                 <span className="font-medium">{selectedPlan.credits} Credits</span>
                 <span className="text-lg font-bold">
