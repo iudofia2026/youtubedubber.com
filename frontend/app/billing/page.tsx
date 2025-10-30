@@ -6,6 +6,7 @@ import { CreditCard, Download, Eye, Plus, Settings, History, TrendingUp } from '
 import { Navigation } from '@/components/Navigation';
 import { CreditBalance, BillingHistory, PaymentForm } from '@/components/payment';
 import { getCredits, setCredits } from '@/lib/credits';
+import { fetchTransactions, createPaymentIntent } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -26,99 +27,38 @@ export default function BillingPage() {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<{ credits: number; price: number } | null>(null);
 
-  // Initialize credits and mock transaction data - in real app, fetch from API
+  // Initialize credits and load real transactions from backend
   useEffect(() => {
-    // Load stored credits for quick UX continuity
     setUserCredits(getCredits());
-    const mockTransactions: Transaction[] = [
-      {
-        id: 'txn_001',
-        date: '2024-01-15T10:30:00Z',
-        type: 'purchase',
-        description: 'Creator Pack - 50 Credits',
-        amount: 2900,
-        credits: 50,
-        status: 'completed'
-      },
-      {
-        id: 'txn_002',
-        date: '2024-01-14T15:45:00Z',
-        type: 'usage',
-        description: 'Video dubbing - Spanish',
-        amount: 0,
-        credits: -10,
-        status: 'completed'
-      },
-      {
-        id: 'txn_003',
-        date: '2024-01-13T09:20:00Z',
-        type: 'usage',
-        description: 'Video dubbing - French',
-        amount: 0,
-        credits: -10,
-        status: 'completed'
-      },
-      {
-        id: 'txn_004',
-        date: '2024-01-12T14:15:00Z',
-        type: 'purchase',
-        description: 'Professional Pack - 250 Credits',
-        amount: 9900,
-        credits: 250,
-        status: 'completed'
-      },
-      {
-        id: 'txn_005',
-        date: '2024-01-11T11:30:00Z',
-        type: 'usage',
-        description: 'Video dubbing - German',
-        amount: 0,
-        credits: -10,
-        status: 'completed'
+    (async () => {
+      try {
+        const txns = await fetchTransactions();
+        const mapped: Transaction[] = txns.map((t: any) => ({
+          id: t.id,
+          date: t.created_at,
+          type: (t.amount > 0 ? 'purchase' : 'usage') as Transaction['type'],
+          description: t.description || 'Transaction',
+          amount: t.amount,
+          credits: 0,
+          status: (t.status === 'succeeded' ? 'completed' : t.status) as Transaction['status'],
+        }));
+        setTransactions(mapped);
+      } catch {
+        setTransactions([]);
       }
-    ];
-    setTransactions(mockTransactions);
+    })();
   }, []);
 
   const handlePurchase = async (credits: number, price: number) => {
     setIsLoading(true);
     try {
-      // In a real app, you would:
-      // 1. Create a payment intent on your backend
-      // 2. Process the payment with Stripe
-      // 3. Update user credits on success
-      
-      console.log(`Purchasing ${credits} credits for $${(price / 100).toFixed(2)}`);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Update user credits and persist
-      setUserCredits(prev => {
-        const next = prev + credits;
-        setCredits(next);
-        return next;
-      });
-      
-      // Add transaction to history
-      const newTransaction: Transaction = {
-        id: `txn_${Date.now()}`,
-        date: new Date().toISOString(),
-        type: 'purchase',
-        description: `Credit Purchase - ${credits} Credits`,
-        amount: price,
-        credits: credits,
-        status: 'completed'
-      };
-      
-      setTransactions(prev => [newTransaction, ...prev]);
-      setShowPaymentForm(false);
-      setSelectedPlan(null);
-      
-      alert(`Successfully purchased ${credits} credits!`);
+      await createPaymentIntent(price); // client secret is retrieved in PaymentForm
+      setSelectedPlan({ credits, price });
+      setShowPaymentForm(true);
+      return;
     } catch (error) {
-      console.error('Payment failed:', error);
-      alert('Payment failed. Please try again.');
+      console.error('Payment init failed:', error);
+      alert('Payment initialization failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -126,7 +66,15 @@ export default function BillingPage() {
 
   const handlePaymentSuccess = (paymentIntent: unknown) => {
     console.log('Payment successful:', paymentIntent);
-    // Handle successful payment
+    if (selectedPlan) {
+      setUserCredits(prev => {
+        const next = prev + selectedPlan.credits;
+        setCredits(next);
+        return next;
+      });
+      setShowPaymentForm(false);
+      setSelectedPlan(null);
+    }
   };
 
   const handlePaymentError = (error: string) => {

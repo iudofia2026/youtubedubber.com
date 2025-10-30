@@ -790,72 +790,33 @@ export const submitDubbingJob = async (
   onProgress?: (progress: UploadProgress) => void
 ): Promise<SubmitJobResponse> => {
   try {
-    // Generate a unique job ID
-    const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Step 1: Upload files using mock upload endpoint
-    onProgress?.({
-      progress: 10,
-      status: 'uploading',
-      message: 'Uploading voice track...'
+    // Generate a client-side job id (backend may replace/accept it)
+    const jobId = `job_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+
+    // 1) Request signed URLs for uploads
+    onProgress?.({ progress: 5, status: 'uploading', message: 'Requesting upload URLs...' });
+
+    const uploadUrls = await requestSignedUploadUrls({
+      job_id: jobId,
+      voice_filename: data.voiceTrack.name,
+      background_filename: data.backgroundTrack?.name,
+      content_types: {
+        voice: data.voiceTrack.type,
+        background: data.backgroundTrack?.type,
+      },
     });
 
-    // Upload voice track using mock endpoint
-    const voiceFormData = new FormData();
-    voiceFormData.append('file', data.voiceTrack);
-    
-    const voiceResponse = await fetch(`${API_BASE}/mock-upload/voice_${jobId}.wav`, {
-      method: 'PUT',
-      body: data.voiceTrack,
-      headers: {
-        'Content-Type': data.voiceTrack.type
-      }
-    });
+    // 2) Upload files to storage
+    onProgress?.({ progress: 15, status: 'uploading', message: 'Uploading voice track...' });
+    await uploadFileToStorage(data.voiceTrack, uploadUrls.voice_url, (p) => onProgress?.(p));
 
-    if (!voiceResponse.ok) {
-      throw new Error('Failed to upload voice track');
+    if (data.backgroundTrack && uploadUrls.background_url) {
+      onProgress?.({ progress: 60, status: 'uploading', message: 'Uploading background track...' });
+      await uploadFileToStorage(data.backgroundTrack, uploadUrls.background_url, (p) => onProgress?.(p));
     }
 
-    onProgress?.({
-      progress: 30,
-      status: 'uploading',
-      message: 'Voice track uploaded successfully'
-    });
-
-    // Upload background track if provided
-    if (data.backgroundTrack) {
-      onProgress?.({
-        progress: 40,
-        status: 'uploading',
-        message: 'Uploading background track...'
-      });
-
-      const backgroundResponse = await fetch(`${API_BASE}/mock-upload/background_${jobId}.wav`, {
-        method: 'PUT',
-        body: data.backgroundTrack,
-        headers: {
-          'Content-Type': data.backgroundTrack.type
-        }
-      });
-
-      if (!backgroundResponse.ok) {
-        throw new Error('Failed to upload background track');
-      }
-
-      onProgress?.({
-        progress: 60,
-        status: 'uploading',
-        message: 'Background track uploaded successfully'
-      });
-    }
-
-    // Step 2: Create job in backend
-    onProgress?.({
-      progress: 80,
-      status: 'processing',
-      message: 'Creating job...'
-    });
-
+    // 3) Notify backend to create/process job
+    onProgress?.({ progress: 85, status: 'processing', message: 'Creating job...' });
     const result = await notifyUploadComplete({
       job_id: jobId,
       voice_track_uploaded: true,
@@ -863,38 +824,84 @@ export const submitDubbingJob = async (
       languages: data.targetLanguages,
     });
 
-    onProgress?.({
-      progress: 100,
-      status: 'complete',
-      message: 'Job created successfully!'
-    });
-
+    onProgress?.({ progress: 100, status: 'complete', message: 'Job created successfully!' });
     return result;
-
   } catch (error) {
     console.error('Error submitting dubbing job:', error);
-    
-    // Provide more specific error messages
-    let errorMessage = 'Upload failed';
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else if (typeof error === 'object' && error !== null) {
-      // Handle API errors
-      const apiError = error as { message?: string; status?: number; type?: string };
-      if (apiError.message) {
-        errorMessage = apiError.message;
-      } else if (apiError.type) {
-        errorMessage = `API Error: ${apiError.type}`;
-      }
-    }
-    
-    onProgress?.({
-      progress: 0,
-      status: 'error',
-      message: errorMessage
-    });
+    const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+    onProgress?.({ progress: 0, status: 'error', message: errorMessage });
     throw error;
   }
+};
+
+// Jobs list APIs
+export const fetchJobs = async (): Promise<Job[]> => {
+  return withRetry(async () => {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE}/api/jobs`, { headers });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const apiError = createApiError(errorData, response);
+      throw apiError;
+    }
+    const data = await response.json();
+    const jobs: Job[] = Array.isArray(data) ? data.map((j: unknown) => mapJobSummary(j as any)) : [];
+    return jobs;
+  });
+};
+
+export const deleteJob = async (jobId: string): Promise<void> => {
+  return withRetry(async () => {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE}/api/jobs/${jobId}`, { method: 'DELETE', headers });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const apiError = createApiError(errorData, response);
+      throw apiError;
+    }
+  });
+};
+
+// Billing APIs
+export interface Transaction {
+  id: string;
+  amount: number;
+  currency: string;
+  status: 'succeeded' | 'pending' | 'failed';
+  created_at: string;
+  description?: string;
+}
+
+export const fetchTransactions = async (): Promise<Transaction[]> => {
+  return withRetry(async () => {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE}/api/billing/transactions`, { headers });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const apiError = createApiError(errorData, response);
+      throw apiError;
+    }
+    const data = await response.json();
+    return Array.isArray(data) ? data as Transaction[] : [];
+  });
+};
+
+export const createPaymentIntent = async (amount: number): Promise<{ clientSecret: string }> => {
+  return withRetry(async () => {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE}/api/billing/create-payment-intent`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ amount }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const apiError = createApiError(errorData, response);
+      throw apiError;
+    }
+    const data = await response.json();
+    return { clientSecret: data.client_secret || data.clientSecret };
+  });
 };
 
 export const getJobStatus = async (jobId: string, targetLanguages: string[] = []): Promise<GetJobStatusResponse> => {

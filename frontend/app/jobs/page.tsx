@@ -10,6 +10,7 @@ import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { JobHistory } from '@/components/jobs/JobHistory';
 import { Job } from '@/types';
+import { fetchJobs, deleteJob as apiDeleteJob } from '@/lib/api';
 import { useToastHelpers } from '@/components/ToastNotifications';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
@@ -33,94 +34,26 @@ function JobsPageContent() {
     }
   }, [searchParams]);
 
-  // Mock data for demonstration - in real app, this would come from API
   useEffect(() => {
     const loadJobs = async () => {
       setLoading(true);
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock job data
-        const mockJobs: Job[] = [
-          {
-            id: 'job_12345678',
-            status: 'complete',
-            progress: 100,
-            message: 'All languages completed successfully',
-            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            voiceTrackDuration: 180,
-            targetLanguages: ['es', 'fr', 'de'],
-            backgroundTrack: true,
-            completedLanguages: 3,
-            totalLanguages: 3,
-            downloadUrls: {
-              'es': { voice: '/download/es/voice', full: '/download/es/full' },
-              'fr': { voice: '/download/fr/voice', full: '/download/fr/full' },
-              'de': { voice: '/download/de/voice', full: '/download/de/full' }
-            }
-          },
-          {
-            id: 'job_87654321',
-            status: 'processing',
-            progress: 65,
-            message: 'Generating Spanish dub...',
-            createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-            voiceTrackDuration: 240,
-            targetLanguages: ['ja', 'ko', 'zh'],
-            backgroundTrack: false,
-            completedLanguages: 1,
-            totalLanguages: 3,
-            estimatedCompletion: new Date(Date.now() + 30 * 60 * 1000).toISOString()
-          },
-          {
-            id: 'job_11223344',
-            status: 'pending',
-            progress: 0,
-            message: 'Waiting in queue...',
-            createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-            voiceTrackDuration: 120,
-            targetLanguages: ['pt', 'it'],
-            backgroundTrack: true,
-            completedLanguages: 0,
-            totalLanguages: 2
-          },
-          {
-            id: 'job_55667788',
-            status: 'error',
-            progress: 0,
-            message: 'Audio file validation failed',
-            createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-            voiceTrackDuration: 90,
-            targetLanguages: ['ru', 'ar'],
-            backgroundTrack: false,
-            completedLanguages: 0,
-            totalLanguages: 2
-          }
-        ];
-        
-        setJobs(mockJobs);
-      } catch {
+        const realJobs = await fetchJobs();
+        setJobs(realJobs);
+      } catch (e) {
         showError('Failed to load jobs', 'There was an error loading your jobs. Please try again.');
       } finally {
         setLoading(false);
       }
     };
-
     loadJobs();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Remove showError from dependencies to prevent infinite re-renders
+  }, [showError]);
 
   const handleRefresh = async () => {
     setLoading(true);
     try {
-      // Simulate API refresh
-      await new Promise(resolve => setTimeout(resolve, 500));
-      // In real app, would refetch from API
+      const realJobs = await fetchJobs();
+      setJobs(realJobs);
     } catch {
       showError('Refresh failed', 'There was an error refreshing the jobs. Please try again.');
     } finally {
@@ -159,8 +92,7 @@ function JobsPageContent() {
 
   const handleDeleteJob = async (jobId: string) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await apiDeleteJob(jobId);
       setJobs(prev => prev.filter(job => job.id !== jobId));
     } catch {
       showError('Delete failed', 'There was an error deleting the job. Please try again.');
