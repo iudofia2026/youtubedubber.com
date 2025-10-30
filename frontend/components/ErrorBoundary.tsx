@@ -29,13 +29,21 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    // Environment-aware error logging
+    if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+      console.error('ErrorBoundary caught:', error, errorInfo);
+    } else {
+      console.error('Application error:', { name: error.name, message: error.message });
+    }
+
     this.setState({ error, errorInfo });
-    
+
     // Call custom error handler if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
+
+    // TODO: In production, send to error reporting service (Sentry, LogRocket, etc.)
   }
 
   componentDidUpdate(prevProps: ErrorBoundaryProps) {
