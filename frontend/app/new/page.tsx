@@ -13,9 +13,11 @@ import { LANGUAGES } from '@/types';
 import { submitDubbingJob } from '@/lib/api';
 import { areDurationsEqual, formatDurationDifference, formatDuration } from '@/lib/audio-utils';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/lib/auth-context';
 
 export default function NewJobPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [voiceTrack, setVoiceTrack] = useState<File | null>(null);
   const [backgroundTrack, setBackgroundTrack] = useState<File | null>(null);
@@ -40,6 +42,7 @@ export default function NewJobPage() {
   // State for banner dismissal
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [bannerAnimationComplete, setBannerAnimationComplete] = useState(false);
+  const [hasPastJobs, setHasPastJobs] = useState<boolean>(false);
   
   // Refs for accessibility
   const modalRef = useRef<HTMLDivElement>(null);
@@ -53,6 +56,14 @@ export default function NewJobPage() {
       setBannerAnimationComplete(false);
     }
   }, [bannerDismissed]);
+
+  // Determine if the current user has any past jobs (client-only, per-user key)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const storageKey = `ytdubber_has_jobs:${user?.id ?? 'anon'}`;
+    const hasJobs = localStorage.getItem(storageKey) === 'true' || localStorage.getItem('ytdubber_has_jobs') === 'true';
+    setHasPastJobs(hasJobs);
+  }, [user?.id]);
 
   // Handle banner interactions
   const handleDismissBanner = useCallback(() => {
@@ -267,7 +278,10 @@ export default function NewJobPage() {
 
       const result = await submitDubbingJob(jobData);
       
-      // Mark that user now has jobs (for future visits)
+      // Mark that user now has jobs (for future visits) using per-user key
+      const storageKey = `ytdubber_has_jobs:${user?.id ?? 'anon'}`;
+      localStorage.setItem(storageKey, 'true');
+      // Back-compat for any previous non-scoped checks
       localStorage.setItem('ytdubber_has_jobs', 'true');
       
       const languagesParam = targetLanguages.join(',');
@@ -319,7 +333,7 @@ export default function NewJobPage() {
               className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group"
             >
               <span>View Jobs</span>
-              <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+              <span className="group-hover:translate-x-1 transition-transform duration-200">?</span>
             </Link>
           </div>
           
@@ -327,7 +341,7 @@ export default function NewJobPage() {
 
         {/* Prominent How It Works Banner - Moved to Top */}
         <AnimatePresence>
-          {!bannerDismissed && (
+          {!hasPastJobs && !bannerDismissed && (
             <motion.div
               className="relative mb-8 overflow-hidden"
               initial={{ opacity: 0, scale: 0.95, maxHeight: 0, marginBottom: 0 }}
@@ -661,7 +675,7 @@ export default function NewJobPage() {
                                   ease: "easeInOut"
                                 }}
                               >
-                                ♪
+                                ?
                               </motion.div>
                             ))}
                           </div>
@@ -729,11 +743,11 @@ export default function NewJobPage() {
                       <div className="mt-3 text-center">
                         {areDurationsEqual(voiceDuration, backgroundDuration) ? (
                           <p className="text-green-600 dark:text-green-400 font-medium">
-                            ✅ Tracks match perfectly
+                            ? Tracks match perfectly
                           </p>
                         ) : (
                           <p className="text-yellow-600 dark:text-yellow-400 font-medium">
-                            ⚠️ Duration difference: {formatDurationDifference(voiceDuration, backgroundDuration)}
+                            ?? Duration difference: {formatDurationDifference(voiceDuration, backgroundDuration)}
                           </p>
                         )}
                       </div>
@@ -1333,7 +1347,7 @@ export default function NewJobPage() {
               >
                 {errors.durationMismatch && (
                   <div className="flex items-center space-x-2 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-lg">
-                    <div className="w-5 h-5 text-yellow-600">⚠️</div>
+                    <div className="w-5 h-5 text-yellow-600">??</div>
                     <div>
                       <p className="font-medium">Duration Mismatch</p>
                       <p className="text-sm">{errors.durationMismatch}</p>
@@ -1343,7 +1357,7 @@ export default function NewJobPage() {
 
                 {errors.general && (
                   <div className="flex items-center space-x-2 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg">
-                    <div className="w-5 h-5">❌</div>
+                    <div className="w-5 h-5">?</div>
                     <span>{errors.general}</span>
                   </div>
                 )}
@@ -1848,7 +1862,7 @@ export default function NewJobPage() {
                 whileTap={{ scale: 0.95 }}
               >
                 <span>Show Guide</span>
-                <span className="group-hover:translate-y-1 transition-transform duration-200">↑</span>
+                <span className="group-hover:translate-y-1 transition-transform duration-200">?</span>
               </motion.button>
             </motion.div>
           )}
