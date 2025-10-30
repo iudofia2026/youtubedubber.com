@@ -35,19 +35,34 @@ function JobsPageContent() {
   }, [searchParams]);
 
   useEffect(() => {
+    let isMounted = true;
     const loadJobs = async () => {
       setLoading(true);
       try {
         const realJobs = await fetchJobs();
+        if (!isMounted) return;
         setJobs(realJobs);
       } catch (e) {
-        showError('Failed to load jobs', 'There was an error loading your jobs. Please try again.');
+        if (!isMounted) return;
+        // Quietly continue; redirect effect will handle empty state
+        setJobs([]);
       } finally {
+        if (!isMounted) return;
         setLoading(false);
       }
     };
     loadJobs();
-  }, [showError]);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // If user has no jobs, redirect to create their first job
+  useEffect(() => {
+    if (!loading && jobs.length === 0) {
+      router.push('/new');
+    }
+  }, [loading, jobs.length, router]);
 
   const handleRefresh = async () => {
     setLoading(true);
@@ -55,7 +70,7 @@ function JobsPageContent() {
       const realJobs = await fetchJobs();
       setJobs(realJobs);
     } catch {
-      showError('Refresh failed', 'There was an error refreshing the jobs. Please try again.');
+      // Keep quiet; leave existing list
     } finally {
       setLoading(false);
     }
