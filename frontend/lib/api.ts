@@ -1126,6 +1126,62 @@ export const downloadMultipleFiles = async (
   }
 };
 
+// Downloads APIs
+export interface DownloadHistoryItemApi {
+  id: string;
+  job_id: string;
+  job_title?: string;
+  language_code: string;
+  language_name?: string;
+  file_type: 'voice' | 'full' | 'captions';
+  file_name: string;
+  file_size?: number;
+  downloaded_at: string;
+  expires_at?: string;
+  is_expired?: boolean;
+  download_url?: string;
+}
+
+export const fetchDownloads = async (): Promise<{
+  id: string;
+  jobId: string;
+  jobTitle: string;
+  languageCode: string;
+  languageName: string;
+  fileType: 'voice' | 'full' | 'captions';
+  fileName: string;
+  fileSize?: number;
+  downloadedAt: string;
+  expiresAt?: string;
+  isExpired: boolean;
+  downloadUrl?: string;
+}[]> => {
+  return withRetry(async () => {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE}/api/downloads`, { headers });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const apiError = createApiError(errorData, response);
+      throw apiError;
+    }
+    const data: DownloadHistoryItemApi[] = await response.json();
+    return (Array.isArray(data) ? data : []).map((d) => ({
+      id: d.id,
+      jobId: d.job_id,
+      jobTitle: d.job_title || 'Job',
+      languageCode: d.language_code,
+      languageName: d.language_name || d.language_code.toUpperCase(),
+      fileType: d.file_type,
+      fileName: d.file_name,
+      fileSize: d.file_size,
+      downloadedAt: d.downloaded_at,
+      expiresAt: d.expires_at,
+      isExpired: d.is_expired ?? (d.expires_at ? new Date(d.expires_at) < new Date() : false),
+      downloadUrl: resolveDownloadUrl(d.download_url),
+    }));
+  });
+};
+
 /**
  * Get download history from localStorage (in real app, this would be from API)
  */

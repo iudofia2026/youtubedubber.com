@@ -86,28 +86,8 @@ export default function PricingPage() {
   ];
 
   const handlePurchase = async (credits: number, price: number) => {
-    setIsLoading(true);
-    try {
-      // In a real app, you would:
-      // 1. Create a payment intent on your backend
-      // 2. Redirect to Stripe Checkout or use Stripe Elements
-      // 3. Handle the payment success/failure
-      
-      console.log(`Purchasing ${credits} credits for $${(price / 100).toFixed(2)}`);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Update user credits (in real app, this would come from backend)
-      setUserCredits(prev => prev + credits);
-      
-      alert(`Successfully purchased ${credits} credits!`);
-    } catch (error) {
-      console.error('Payment failed:', error);
-      alert('Payment failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    // Redirect users to billing where the real payment form is integrated
+    window.location.href = `/billing?credits=${credits}&price=${price}`;
   };
 
   const addOns = [
