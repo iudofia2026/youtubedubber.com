@@ -52,18 +52,26 @@ const PaymentFormElement: React.FC<PaymentFormProps> = ({
     }
 
     try {
-      const { error, paymentIntent } = await stripe.confirmCardPayment(
-        // In a real app, you'd get this from your backend
-        'pi_1234567890', // This should come from your backend
-        {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name: 'Customer Name', // Get from form
-            },
+      // Request a client secret from backend for the amount
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/billing/create-payment-intent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.message || 'Failed to initialize payment');
+      }
+      const { client_secret: clientSecret } = await res.json();
+
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: 'Customer Name',
           },
-        }
-      );
+        },
+      });
 
       if (error) {
         setError(error.message || 'Payment failed');

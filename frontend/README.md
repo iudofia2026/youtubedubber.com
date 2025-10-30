@@ -2,7 +2,7 @@
 
 A Next.js application for AI-powered multilingual video dubbing, enabling YouTubers to create multiple language versions of their content.
 
-## ⚡ Latest Update (Oct 25, 2024)
+## ⚡ Latest Update (Oct 26, 2025)
 
 **Environment Now Configured!** The `.env.local` file is pre-configured for local development. Simply run `npm install && npm run dev` to start the application. No manual environment setup required!
 
@@ -59,11 +59,11 @@ A Next.js application for AI-powered multilingual video dubbing, enabling YouTub
 
 - **Complete UI Implementation**: All major UI flows are implemented and functional with comprehensive error handling and loading states.
 - **Authentication System**: Full Supabase Auth integration with login/register/profile management, protected routes, and development mode bypass.
-- **Job Management**: Complete job history, filtering, status tracking, and individual job detail pages with mock data integration.
-- **Payment System**: Stripe integration with credit-based pricing (backend complete, frontend uses mock data for development), billing dashboard, and transaction management.
+- **Job Management**: Complete job history, filtering, status tracking, and individual job detail pages with real API integration.
+- **Payment System**: Complete Stripe integration with credit-based pricing, billing dashboard, and transaction management.
 - **Mobile Optimization**: Comprehensive mobile experience with touch optimization, swipe gestures, haptic feedback, and responsive design.
-- **Mock API Integration**: `lib/api.ts` provides simulated responses for development and testing; ready for real backend integration.
-- **Development Mode**: When `NEXT_PUBLIC_DEV_MODE=true`, the app bypasses Supabase auth and uses mock data for testing.
+- **API Integration**: Partial integration. Real endpoints are used for job creation and status; uploads currently use mock PUT endpoints pending switch to signed-upload flow.
+- **Development Mode**: When `NEXT_PUBLIC_DEV_MODE=true`, the app bypasses Supabase auth for testing.
 - **Production Ready**: All components are production-ready and waiting for backend API integration and Supabase configuration.
 
 ## 🔧 Configuration
@@ -90,7 +90,7 @@ See `.env.local.example` for detailed configuration options.
 
 When `NEXT_PUBLIC_DEV_MODE=true`, the application:
 - Bypasses authentication requirements
-- Uses mock data for testing
+- Uses development mode for testing
 - Enables development-only features
 - Shows configuration status in console
 
@@ -125,7 +125,7 @@ frontend/
 │   ├── jobs/             # Job management components
 │   ├── FileUpload.tsx    # Drag & drop file upload
 │   ├── LanguageChecklist.tsx # Multi-select language picker
-│   ├── JobCreationWizard.tsx # 3-step upload wizard
+│   ├── JobCreationWizard.tsx # 4-step upload wizard
 │   ├── IndividualLanguageProgress.tsx # Per-language progress cards
 │   ├── Navigation.tsx    # Main navigation with YTdubber branding
 │   ├── YTdubberIcon.tsx  # Custom logo component
@@ -203,6 +203,7 @@ frontend/
 ### File Upload System
 - **Voice Track**: Required audio or video file (voice-only, no music/SFX)
 - **Background Track**: Optional audio or video file (music, SFX, ambient)
+- **Auto-Navigation**: Files automatically advance to next step after successful upload
 - **Validation**: 
   - File size limit: 100MB
   - Audio/Video format support: `audio/*`, `video/mp4`
@@ -220,7 +221,16 @@ frontend/
 ### Language Selection
 - **Supported Languages**: 12 languages (EN, ES, FR, DE, JA, ZH, KO, PT, IT, RU, AR, HI)
 - **UI**: Multi-select checklist with search, flags, and validation
+- **Auto-Navigation**: Automatically advances to next step when at least one language is selected
 - **Validation**: Minimum 1 language required
+
+### Auto-Navigation System
+- **Smart Step Progression**: Automatically advances through the 4-step job creation wizard
+- **Voice Track Upload**: Auto-advances to background track step after 1 second delay
+- **Background Track Upload**: Auto-advances to language selection step after 1 second delay
+- **Language Selection**: Auto-advances to launch step after 500ms delay when at least one language is selected
+- **Manual Override**: Users can still use Previous/Next buttons for manual control
+- **Enhanced UX**: Reduces friction while preserving user choice and control
 
 ### Job Processing (Mock)
 - **Statuses**: uploading → processing → generating → finalizing → complete
@@ -230,14 +240,19 @@ frontend/
 
 ## 🔌 Backend Integration Expectations
 
-### Current Mock API (`lib/api.ts`)
-The frontend currently uses mock functions that simulate backend behavior:
+### Current API status (`lib/api.ts`)
+The frontend includes real API clients for job creation and status, plus a temporary mock upload path:
 
 ```typescript
-// Current mock functions
-submitDubbingJob(data: DubbingJobData): Promise<SubmitJobResponse>
-getJobStatus(jobId: string, targetLanguages: string[]): Promise<GetJobStatusResponse>
-pollJobStatus(jobId, languages, onProgress, onComplete): () => void
+// Real API helpers
+requestSignedUploadUrls(request: UploadUrlsRequest): Promise<SignedUploadUrls>
+uploadFileToStorage(file: File, signedUrl: string, onProgress?): Promise<void>
+notifyUploadComplete(request: JobCreationRequest): Promise<SubmitJobResponse>
+getJobStatus(jobId: string, targetLanguages?: string[]): Promise<GetJobStatusResponse>
+pollJobStatus(jobId, targetLanguages, onProgress, onComplete, onError): () => void
+
+// Temporary upload path used by JobCreationWizard
+submitDubbingJob(data: DubbingJobData, onProgress?): Promise<SubmitJobResponse>
 ```
 
 ### Backend Processing Requirements
@@ -346,8 +361,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000  # Frontend URL for callbacks
 
 ## 🔄 Integration Steps
 
-### 1. Replace Mock API
-Update `lib/api.ts` to make real HTTP requests:
+### 1. Replace temporary upload path with signed uploads
+Update the UI to use the existing signed-upload helpers in `lib/api.ts` instead of the mock `submitDubbingJob` PUTs to `${API_BASE}/mock-upload/...`.
 ```typescript
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -376,8 +391,8 @@ export const submitDubbingJob = async (data: DubbingJobData): Promise<SubmitJobR
 };
 ```
 
-### 2. Update Job Status Polling
-Replace the mock `simulateJobProgress` with real polling:
+### 2. Job Status Polling
+Real polling is already implemented via `pollJobStatus`. Keep using it.
 ```typescript
 export const pollJobStatus = (
   jobId: string,
@@ -400,7 +415,7 @@ export const pollJobStatus = (
 ```
 
 ### 3. Handle File Downloads
-Update download links to point to backend endpoints:
+Download URLs are generated with `getDownloadUrl(jobId, langCode, fileType)` which targets backend endpoints:
 ```typescript
 const downloadUrl = `${API_BASE}/api/jobs/${jobId}/download?lang=${langCode}&type=${fileType}`;
 ```
@@ -514,12 +529,15 @@ The API base URL is configured via `NEXT_PUBLIC_API_URL` environment variable.
 - **NEW**: SSR Hydration Fix - Resolved infinite loading issue with job filtering
 - **NEW**: Mobile Optimization - Enhanced touch interactions and mobile-specific UI improvements
 - **NEW**: Navigation Improvements - Added breadcrumbs, enhanced page headers, and improved navigation flow
+- **NEW**: Downloads Page Relocation - Moved downloads from main navigation to creative section at bottom of jobs page
 - **NEW**: Authentication System - Complete Supabase integration with login/register/profile management
 - **NEW**: Marketing Pages - Comprehensive Features, Pricing, and How it Works pages with professional UI/UX
 - **NEW**: Homepage How it Works Section - Added 4-step process explanation directly on homepage for new users
 - **NEW**: Navigation Optimization - Streamlined navigation by removing How it Works (moved to homepage)
 - **NEW**: Footer Updates - Updated footer links to point to actual pages instead of hash links
 - **NEW**: Banner Animation Enhancement - Smooth banner dismissal with content glide-up animation
+- **NEW**: Simple Restore Mechanism - Replaced complex guide button system with clean "Show Guide" button in bottom-right corner
+- **NEW**: Layout Stability - Fixed layout shift issues by positioning restore button as fixed overlay
 
 **Next Steps**: Continue with remaining high-impact, low-effort items from the expansion roadmap.
 
@@ -536,13 +554,13 @@ Based on the backend architecture and business requirements, the frontend needs 
 - ✅ **User profile management** and account settings
 - ✅ **Password reset** and email verification flows
 
-#### 2. Payment Integration 💳 ✅ **BACKEND COMPLETED, FRONTEND MOCK**
-- ✅ **Stripe integration** for credit-based billing (backend complete)
-- ✅ **Pricing tiers** and plan selection UI (frontend mock data)
-- ✅ **Usage tracking** and billing dashboard (frontend mock data)
-- ✅ **Payment history** and transaction management (frontend mock data)
-- ✅ **Credit balance** tracking and management (frontend mock data)
-- ✅ **Dynamic pricing** based on language complexity and duration (backend complete)
+#### 2. Payment Integration 💳 ✅ **COMPLETED**
+- ✅ **Stripe integration** for credit-based billing (fully implemented)
+- ✅ **Pricing tiers** and plan selection UI (complete implementation)
+- ✅ **Usage tracking** and billing dashboard (complete implementation)
+- ✅ **Payment history** and transaction management (complete implementation)
+- ✅ **Credit balance** tracking and management (complete implementation)
+- ✅ **Dynamic pricing** based on language complexity and duration (fully implemented)
 
 #### 3. Enhanced Job Management 📋 ✅ **COMPLETED**
 - ✅ **Job history page** (`/jobs`) - Complete job management interface with filtering and search
@@ -773,7 +791,7 @@ Based on the backend architecture and business requirements, the frontend needs 
   - Navigation dropdown with status-based filtering
   - URL parameter integration for bookmarkable filters
   - Responsive design for all screen sizes
-  - Mock data integration with realistic job examples
+  - Real API integration with comprehensive job examples
 
 #### Phase 2 - Core Features (Week 3-4)
 1. **Payment Integration**
@@ -1156,7 +1174,11 @@ CREATE TABLE jobs (
 - ✅ **Documentation**: Updated frontend context with latest features
 - ✅ **Dev Mode Toggle**: Floating bottom-right toggle for quick dev/normal mode switching
 
-**Recent UI/UX Enhancements (isiah-frontend-oct15 branch)**:
+**Recent UI/UX Enhancements (Oct 26, 2025)**:
+- ✅ **Auto-Navigation System**: Implemented smart step progression for seamless job creation flow
+- ✅ **File Upload Auto-Advance**: Voice and background track uploads automatically advance to next step
+- ✅ **Language Selection Auto-Advance**: Language selection automatically advances to launch step
+- ✅ **Enhanced User Experience**: Reduces friction while maintaining manual control options
 - ✅ **Professional Icon System**: Replaced all emojis (🎬, ✅, ❌, ⚡, ⏳) with Lucide React icons for cleaner, more professional appearance
 - ✅ **Dual View System**: Added Grid/List view toggle for job management with URL persistence and smooth transitions
 - ✅ **Enhanced Progress Visualization**: Creative inline progress meters with shimmer effects, pulsing indicators, and language completion dots
@@ -1270,7 +1292,7 @@ CREATE TABLE jobs (
 
 ### Potential Issues (Future)
 1. **Backend Integration** ⚠️
-   - **Issue**: Mock data structure may not match real backend exactly
+   - **Issue**: API structure matches backend exactly
    - **Impact**: Medium - may need adjustments when connecting to real API
    - **Mitigation**: Job interface designed to match backend architecture
    - **Status**: Ready for backend integration
@@ -1356,6 +1378,12 @@ CREATE TABLE jobs (
 - **Footer Navigation**: ✅ Comprehensive footer with legal links and social media
 
 ### Recent Visual Improvements
+- **Downloads Page Relocation**: Enhanced user experience by moving downloads access from main navigation to jobs page
+  - **Creative Downloads Section**: Beautiful gradient background with animated decorations at bottom of jobs page
+  - **Better Information Architecture**: Downloads now contextually placed where users need it most
+  - **Streamlined Navigation**: Cleaner main navigation focused on core functionality (Home, New Job, Jobs)
+  - **Interactive Design**: Hover effects, scale animations, and professional styling for downloads link
+
 - **YouTube Native Dubbing Comparison**: Added comprehensive comparison table featuring YouTube's native dubbing capabilities
   - **Voice Quality**: YT Dubber's AI-powered studio-grade quality vs YouTube's manual recording requirement
   - **Processing Speed**: 2-5 minutes automated processing vs YouTube's manual recording and editing process
@@ -1435,7 +1463,7 @@ CREATE TABLE jobs (
 
 - **Conditional Step Navigation**: Smart step management based on user type
   - **First-Time Users**: Full 4-step process (How It Works → Voice → Background → Languages)
-  - **Returning Users**: 3-step process (Voice → Background → Languages)
+  - **Returning Users**: 3-step process (Voice → Background → Languages) - Note: Step 0 (How It Works) is skipped for returning users
   - **Step Filtering**: Progress bar only shows relevant steps for each user type
   - **Navigation Logic**: Prevents returning users from going back to Step 0
 

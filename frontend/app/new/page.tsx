@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle, Scissors, FileAudio, Zap, Download, Star, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Mic, Music, Globe, Upload, CheckCircle, Scissors, FileAudio, Zap, Download, Star, X, Power, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { FileUpload } from '@/components/FileUpload';
 import { LanguageChecklist } from '@/components/LanguageChecklist';
@@ -13,9 +13,11 @@ import { LANGUAGES } from '@/types';
 import { submitDubbingJob } from '@/lib/api';
 import { areDurationsEqual, formatDurationDifference, formatDuration } from '@/lib/audio-utils';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/lib/auth-context';
 
 export default function NewJobPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [voiceTrack, setVoiceTrack] = useState<File | null>(null);
   const [backgroundTrack, setBackgroundTrack] = useState<File | null>(null);
@@ -39,25 +41,29 @@ export default function NewJobPage() {
   
   // State for banner dismissal
   const [bannerDismissed, setBannerDismissed] = useState(false);
-  const [showPullTab, setShowPullTab] = useState(false);
+  const [bannerAnimationComplete, setBannerAnimationComplete] = useState(false);
+  const [hasPastJobs, setHasPastJobs] = useState<boolean>(false);
   
   // Refs for accessibility
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const openButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Handle banner dismissal and pull tab visibility
+
+  // Handle banner dismissal
   useEffect(() => {
-    if (bannerDismissed) {
-      // Show pull tab after a short delay
-      const timer = setTimeout(() => {
-        setShowPullTab(true);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else {
-      setShowPullTab(false);
+    if (!bannerDismissed) {
+      setBannerAnimationComplete(false);
     }
   }, [bannerDismissed]);
+
+  // Determine if the current user has any past jobs (client-only, per-user key)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const storageKey = `ytdubber_has_jobs:${user?.id ?? 'anon'}`;
+    const hasJobs = localStorage.getItem(storageKey) === 'true' || localStorage.getItem('ytdubber_has_jobs') === 'true';
+    setHasPastJobs(hasJobs);
+  }, [user?.id]);
 
   // Handle banner interactions
   const handleDismissBanner = useCallback(() => {
@@ -66,7 +72,7 @@ export default function NewJobPage() {
 
   const handleRestoreBanner = useCallback(() => {
     setBannerDismissed(false);
-    setShowPullTab(false);
+    setBannerAnimationComplete(false);
   }, []);
 
   // Handle file removal with proper state reset
@@ -272,7 +278,10 @@ export default function NewJobPage() {
 
       const result = await submitDubbingJob(jobData);
       
-      // Mark that user now has jobs (for future visits)
+      // Mark that user now has jobs (for future visits) using per-user key
+      const storageKey = `ytdubber_has_jobs:${user?.id ?? 'anon'}`;
+      localStorage.setItem(storageKey, 'true');
+      // Back-compat for any previous non-scoped checks
       localStorage.setItem('ytdubber_has_jobs', 'true');
       
       const languagesParam = targetLanguages.join(',');
@@ -324,7 +333,7 @@ export default function NewJobPage() {
               className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-[#ff0000] hover:text-white hover:bg-[#ff0000] border border-[#ff0000] rounded-lg transition-all duration-200 group"
             >
               <span>View Jobs</span>
-              <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+              <span className="group-hover:translate-x-1 transition-transform duration-200">?</span>
             </Link>
           </div>
           
@@ -332,7 +341,7 @@ export default function NewJobPage() {
 
         {/* Prominent How It Works Banner - Moved to Top */}
         <AnimatePresence>
-          {!bannerDismissed && (
+          {!hasPastJobs && !bannerDismissed && (
             <motion.div
               className="relative mb-8 overflow-hidden"
               initial={{ opacity: 0, scale: 0.95, maxHeight: 0, marginBottom: 0 }}
@@ -342,7 +351,11 @@ export default function NewJobPage() {
                 maxHeight: 0,
                 marginBottom: 0,
                 scale: 0.95,
-                transition: { duration: 0.6, ease: "easeInOut" }
+                transition: { 
+                  duration: 0.6, 
+                  ease: "easeInOut",
+                  onComplete: () => setBannerAnimationComplete(true)
+                }
               }}
               transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 100 }}
             >
@@ -435,31 +448,6 @@ export default function NewJobPage() {
           )}
         </AnimatePresence>
 
-        {/* Pull-back Tab */}
-        <AnimatePresence>
-          {showPullTab && (
-            <motion.div
-              className="fixed right-0 top-1/2 -translate-y-1/2 z-50"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <motion.button
-                onClick={handleRestoreBanner}
-                className="bg-[#ff0000] text-white px-4 py-3 rounded-l-lg shadow-lg hover:bg-[#cc0000] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                aria-label="Restore banner"
-              >
-                <div className="flex items-center space-x-2">
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="text-sm font-medium">Restore Guide</span>
-                </div>
-              </motion.button>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Step Content */}
         <motion.div 
@@ -467,8 +455,12 @@ export default function NewJobPage() {
           layout
           transition={{ duration: 0.6, ease: "easeInOut" }}
           animate={{
-            y: bannerDismissed ? -20 : 0,
-            transition: { duration: 0.6, ease: "easeInOut" }
+            y: bannerAnimationComplete ? -20 : 0,
+            transition: { 
+              duration: 0.6, 
+              ease: "easeInOut",
+              delay: bannerAnimationComplete ? 0.1 : 0 // Small delay to ensure banner is completely gone
+            }
           }}
         >
           <AnimatePresence mode="wait">
@@ -595,10 +587,12 @@ export default function NewJobPage() {
                       maxSize={100}
                       onFileSelect={handleVoiceTrackChange}
                       onDurationChange={setVoiceDuration}
+                      onAutoNavigate={nextStep}
                       error={errors.voiceTrack}
                       value={voiceTrack}
                       duration={voiceDuration}
                       durationFormatted={voiceDuration ? formatDuration(voiceDuration) : undefined}
+                      autoNavigate={true}
                     />
                   </motion.div>
 
@@ -681,7 +675,7 @@ export default function NewJobPage() {
                                   ease: "easeInOut"
                                 }}
                               >
-                                ♪
+                                ?
                               </motion.div>
                             ))}
                           </div>
@@ -720,9 +714,11 @@ export default function NewJobPage() {
                       maxSize={100}
                       onFileSelect={handleBackgroundTrackChange}
                       onDurationChange={setBackgroundDuration}
+                      onAutoNavigate={nextStep}
                       value={backgroundTrack}
                       duration={backgroundDuration}
                       durationFormatted={backgroundDuration ? formatDuration(backgroundDuration) : undefined}
+                      autoNavigate={true}
                     />
                   </motion.div>
 
@@ -747,11 +743,11 @@ export default function NewJobPage() {
                       <div className="mt-3 text-center">
                         {areDurationsEqual(voiceDuration, backgroundDuration) ? (
                           <p className="text-green-600 dark:text-green-400 font-medium">
-                            ✅ Tracks match perfectly
+                            ? Tracks match perfectly
                           </p>
                         ) : (
                           <p className="text-yellow-600 dark:text-yellow-400 font-medium">
-                            ⚠️ Duration difference: {formatDurationDifference(voiceDuration, backgroundDuration)}
+                            ?? Duration difference: {formatDurationDifference(voiceDuration, backgroundDuration)}
                           </p>
                         )}
                       </div>
@@ -921,230 +917,112 @@ export default function NewJobPage() {
                       onChange={setTargetLanguages}
                       languages={LANGUAGES}
                       error={errors.targetLanguages}
+                      onAutoNavigate={nextStep}
+                      autoNavigate={true}
                     />
                   </motion.div>
                 </div>
               )}
 
-              {/* Step 4: Launch Job */}
+              {/* Step 4: Job Summary & Launch */}
               {currentStep === 4 && (
                 <div className="space-y-8">
-
-                  {/* Giant Minimalist Submit Button */}
+                  {/* Enhanced Job Summary */}
                   <motion.div
-                    className="flex justify-center"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ 
-                      duration: 0.6, 
-                      delay: 0.6,
-                      type: "spring",
-                      stiffness: 120,
-                      damping: 20
-                    }}
+                    className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-lg"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
                   >
-                    <motion.button
-                      onClick={handleSubmit}
-                      disabled={isSubmitting || !isFinalStepValid}
-                      onTouchEnd={(e) => {
-                        e.preventDefault();
-                        if (!isSubmitting && isFinalStepValid) {
-                          handleSubmit();
-                          if (navigator.vibrate) {
-                            navigator.vibrate(50);
-                          }
-                        }
-                      }}
-                      className={`relative group overflow-hidden transition-all duration-300 touch-manipulation ${
-                        isSubmitting || !isFinalStepValid
-                          ? 'opacity-50 cursor-not-allowed'
-                          : 'hover:scale-105 active:scale-95'
-                      }`}
-                      style={{
-                        width: '480px',
-                        height: '80px'
-                      }}
-                      whileHover={!isSubmitting && isFinalStepValid ? { 
-                        scale: 1.02,
-                        y: -2,
-                        transition: { duration: 0.2 }
-                      } : {}}
-                      whileTap={!isSubmitting && isFinalStepValid ? { 
-                        scale: 0.98,
-                        transition: { duration: 0.1 }
-                      } : {}}
-                    >
-                      {/* Clean Background */}
-                      <motion.div
-                        className="absolute inset-0 bg-[#dc2626]"
-                        animate={{
-                          backgroundColor: [
-                            '#dc2626',
-                            '#ef4444',
-                            '#dc2626'
-                          ]
-                        }}
-                        transition={{
-                          duration: 4,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-
-                      {/* Sharp Border */}
-                      <motion.div
-                        className="absolute inset-0 border-2 border-white/60"
-                        animate={{
-                          borderColor: [
-                            'rgba(255, 255, 255, 0.6)',
-                            'rgba(255, 255, 255, 0.9)',
-                            'rgba(255, 255, 255, 0.6)'
-                          ]
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-
-                      {/* Subtle Light Sweep */}
-                      {!isSubmitting && isFinalStepValid && (
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                          initial={{ x: "-100%" }}
-                          animate={{ x: "100%" }}
-                          transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            ease: "linear",
-                            delay: 1
-                          }}
-                        />
-                      )}
-
-                      {/* Button Content */}
-                      <div className="relative z-10 flex items-center justify-center h-full px-8">
-                        {isSubmitting ? (
-                          <div className="flex items-center space-x-6">
-                            <motion.div 
-                              className="w-8 h-8 border-2 border-white border-t-transparent"
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            />
-                            <span className="text-2xl font-bold text-white tracking-wide">PROCESSING...</span>
+                    <div className="flex items-center space-x-3 mb-6">
+                      <div className="w-10 h-10 bg-gradient-to-r from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-foreground">Ready to Launch</h3>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600">
+                          <div className="flex items-center space-x-3">
+                            <Mic className="w-5 h-5 text-[#ff0000]" />
+                            <span className="font-medium text-foreground">Voice Track</span>
                           </div>
-                        ) : (
-                          <div className="flex items-center space-x-6">
-                            {/* Clean Icon */}
-                            <motion.div
-                              className="w-10 h-10 bg-white/20 flex items-center justify-center"
-                              animate={{ 
-                                scale: [1, 1.05, 1]
-                              }}
-                              transition={{ 
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                            >
-                              <Zap className="w-5 h-5 text-white" />
-                            </motion.div>
-                            
-                            <div className="text-center">
-                              <motion.div
-                                className="text-3xl font-black text-white tracking-wider"
-                                animate={{
-                                  textShadow: [
-                                    '0 0 0px rgba(255,255,255,0)',
-                                    '0 0 15px rgba(255,255,255,0.3)',
-                                    '0 0 0px rgba(255,255,255,0)'
-                                  ]
-                                }}
-                                transition={{
-                                  duration: 2.5,
-                                  repeat: Infinity,
-                                  ease: "easeInOut"
-                                }}
-                              >
-                                LAUNCH
-                              </motion.div>
-                              <motion.div
-                                className="text-sm font-medium text-white/90 tracking-wide mt-1"
-                                animate={{
-                                  opacity: [0.8, 1, 0.8]
-                                }}
-                                transition={{
-                                  duration: 2,
-                                  repeat: Infinity,
-                                  ease: "easeInOut"
-                                }}
-                              >
-                                START DUBBING
-                              </motion.div>
+                          <span className="text-sm text-muted-foreground font-mono">{voiceTrack?.name}</span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600">
+                          <div className="flex items-center space-x-3">
+                            <Clock className="w-5 h-5 text-[#ff0000]" />
+                            <span className="font-medium text-foreground">Duration</span>
+                          </div>
+                          <span className="text-sm text-muted-foreground font-mono">
+                            {voiceDuration ? formatDuration(voiceDuration) : 'Unknown'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600">
+                          <div className="flex items-center space-x-3">
+                            <Globe className="w-5 h-5 text-[#ff0000]" />
+                            <span className="font-medium text-foreground">Languages</span>
+                          </div>
+                          <span className="text-sm text-muted-foreground font-medium">
+                            {targetLanguages.length} selected
+                          </span>
+                        </div>
+                        
+                        {backgroundTrack && (
+                          <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600">
+                            <div className="flex items-center space-x-3">
+                              <Music className="w-5 h-5 text-[#ff0000]" />
+                              <span className="font-medium text-foreground">Background</span>
                             </div>
-
-                            {/* Clean Arrow */}
-                            <motion.div
-                              className="w-10 h-10 bg-white/20 flex items-center justify-center"
-                              animate={{ 
-                                scale: [1, 1.05, 1],
-                                x: [0, 2, 0]
-                              }}
-                              transition={{ 
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                                delay: 0.5
-                              }}
-                            >
-                              <ArrowRight className="w-5 h-5 text-white" />
-                            </motion.div>
+                            <span className="text-sm text-muted-foreground font-mono">{backgroundTrack.name}</span>
                           </div>
                         )}
                       </div>
-
-                      {/* Minimal Pulse Effect */}
-                      {!isSubmitting && isFinalStepValid && (
-                        <motion.div
-                          className="absolute inset-0 border border-white/30"
-                          animate={{
-                            scale: [1, 1.01, 1],
-                            opacity: [0.3, 0.6, 0.3]
-                          }}
-                          transition={{
-                            duration: 4,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                        />
-                      )}
-                    </motion.button>
+                    </div>
+                    
+                    {/* Selected Languages Display */}
+                    <div className="mt-6 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600">
+                      <h4 className="font-medium text-foreground mb-3">Selected Languages:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {targetLanguages.map((lang) => {
+                          const language = LANGUAGES.find(l => l.code === lang);
+                          return (
+                            <span
+                              key={lang}
+                              className="inline-flex items-center space-x-2 px-3 py-1 bg-[#ff0000]/10 text-[#ff0000] rounded-full text-sm font-medium"
+                            >
+                              <span>{language?.flag}</span>
+                              <span>{language?.name}</span>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </motion.div>
 
-                  {/* Minimal Status Indicator */}
+                  {/* Status Message */}
                   {isSubmitting && (
                     <motion.div
-                      className="text-center"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
+                      className="text-center p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Initializing dubbing process...
-                      </p>
-                      <motion.div
-                        className="w-64 h-1 bg-muted rounded-full mx-auto overflow-hidden"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                      >
+                      <div className="flex items-center justify-center space-x-3">
                         <motion.div
-                          className="h-full bg-gradient-to-r from-[#dc2626] to-[#b91c1c] rounded-full"
-                          initial={{ width: "0%" }}
-                          animate={{ width: "100%" }}
-                          transition={{ duration: 3, ease: "easeInOut" }}
+                          className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                         />
-                      </motion.div>
+                        <span className="text-blue-800 dark:text-blue-200 font-medium">
+                          Processing your dubbing job...
+                        </span>
+                      </div>
                     </motion.div>
                   )}
                 </div>
@@ -1215,64 +1093,247 @@ export default function NewJobPage() {
           </motion.div>
 
 
-          {/* Navigation Buttons */}
+          {/* Enhanced Navigation Buttons - Sticky and Professional */}
           <motion.div
-            className="flex flex-col sm:flex-row justify-between mt-8 gap-3 sm:gap-0 mobile-button-group"
+            className="sticky top-4 z-40 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <motion.button
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                if (currentStep > 1) {
-                  prevStep();
-                  // Haptic feedback
-                  if (navigator.vibrate) {
-                    navigator.vibrate(30);
-                  }
-                }
-              }}
-              className={`inline-flex items-center justify-center space-x-2 px-6 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation min-h-[44px] ${
-                currentStep === 1
-                  ? 'bg-muted text-muted-foreground cursor-not-allowed'
-                  : 'bg-card text-foreground hover:bg-muted border border-border'
-              }`}
-              whileHover={currentStep > 1 ? { scale: 1.05 } : {}}
-              whileTap={currentStep > 1 ? { scale: 0.95 } : {}}
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Previous</span>
-            </motion.button>
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-background/95 backdrop-blur-md border border-border/50 rounded-2xl shadow-lg p-4">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                  {/* Previous Button */}
+                  <motion.button
+                    onClick={prevStep}
+                    disabled={currentStep === 1}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      if (currentStep > 1) {
+                        prevStep();
+                        // Haptic feedback
+                        if (navigator.vibrate) {
+                          navigator.vibrate(30);
+                        }
+                      }
+                    }}
+                    className={`group relative inline-flex items-center justify-center space-x-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 touch-manipulation min-h-[52px] min-w-[140px] ${
+                      currentStep === 1
+                        ? 'bg-muted/50 text-muted-foreground cursor-not-allowed border border-muted/30'
+                        : 'bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 text-slate-700 dark:text-slate-200 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-700 dark:hover:to-slate-600 border border-slate-300 dark:border-slate-600 shadow-md hover:shadow-lg'
+                    }`}
+                    whileHover={currentStep > 1 ? { 
+                      scale: 1.02,
+                      y: -2,
+                      transition: { duration: 0.2 }
+                    } : {}}
+                    whileTap={currentStep > 1 ? { 
+                      scale: 0.98,
+                      y: 0,
+                      transition: { duration: 0.1 }
+                    } : {}}
+                  >
+                    <motion.div
+                      className="flex items-center space-x-2"
+                      animate={currentStep > 1 ? {
+                        x: [-2, 0, -2]
+                      } : {}}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                      <span className="text-sm font-medium">Previous</span>
+                    </motion.div>
+                    
+                    {/* Subtle glow effect for enabled state */}
+                    {currentStep > 1 && (
+                      <motion.div
+                        className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        initial={false}
+                      />
+                    )}
+                  </motion.button>
 
-            {currentStep < 4 && (
-              <motion.button
-                onClick={nextStep}
-                disabled={!isStepValid}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  if (isStepValid) {
-                    nextStep();
-                    // Haptic feedback
-                    if (navigator.vibrate) {
-                      navigator.vibrate(30);
-                    }
-                  }
-                }}
-                className={`inline-flex items-center justify-center space-x-2 px-8 py-4 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation min-h-[44px] ${
-                  isStepValid
-                    ? 'bg-[#ff0000] text-white hover:bg-[#cc0000]'
-                    : 'bg-muted text-muted-foreground cursor-not-allowed'
-                }`}
-                whileHover={isStepValid ? { scale: 1.05 } : {}}
-                whileTap={isStepValid ? { scale: 0.95 } : {}}
-              >
-                <span>Next</span>
-                <ArrowRight className="w-4 h-4" />
-              </motion.button>
-            )}
+                  {/* Step Indicator */}
+                  <div className="flex items-center space-x-2 px-4 py-2 bg-muted/30 rounded-full">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Step {currentStep} of 4
+                    </span>
+                    <div className="flex space-x-1">
+                      {[1, 2, 3, 4].map((step) => (
+                        <motion.div
+                          key={step}
+                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                            step <= currentStep
+                              ? 'bg-[#ff0000]'
+                              : 'bg-muted-foreground/30'
+                          }`}
+                          animate={step === currentStep ? {
+                            scale: [1, 1.2, 1],
+                            opacity: [0.7, 1, 0.7]
+                          } : {}}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Next Button */}
+                  {currentStep < 4 && (
+                    <motion.button
+                      onClick={nextStep}
+                      disabled={!isStepValid}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        if (isStepValid) {
+                          nextStep();
+                          // Haptic feedback
+                          if (navigator.vibrate) {
+                            navigator.vibrate(30);
+                          }
+                        }
+                      }}
+                      className={`group relative inline-flex items-center justify-center space-x-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 touch-manipulation min-h-[52px] min-w-[140px] ${
+                        isStepValid
+                          ? 'bg-gradient-to-r from-[#ff0000] to-[#cc0000] text-white hover:from-[#cc0000] hover:to-[#aa0000] shadow-lg hover:shadow-xl'
+                          : 'bg-muted/50 text-muted-foreground cursor-not-allowed border border-muted/30'
+                      }`}
+                      whileHover={isStepValid ? { 
+                        scale: 1.02,
+                        y: -2,
+                        transition: { duration: 0.2 }
+                      } : {}}
+                      whileTap={isStepValid ? { 
+                        scale: 0.98,
+                        y: 0,
+                        transition: { duration: 0.1 }
+                      } : {}}
+                    >
+                      <motion.div
+                        className="flex items-center space-x-2"
+                        animate={isStepValid ? {
+                          x: [0, 2, 0]
+                        } : {}}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        <span className="text-sm font-medium">Next</span>
+                        <ArrowRight className="w-5 h-5" />
+                      </motion.div>
+                      
+                      {/* Animated background effect for enabled state */}
+                      {isStepValid && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/20 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          initial={false}
+                        />
+                      )}
+                      
+                      {/* Subtle pulse effect */}
+                      {isStepValid && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl border-2 border-white/30"
+                          animate={{
+                            scale: [1, 1.05, 1],
+                            opacity: [0.5, 0.8, 0.5]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      )}
+                    </motion.button>
+                  )}
+
+                  {/* Launch Button for Step 4 */}
+                  {currentStep === 4 && (
+                    <motion.button
+                      onClick={handleSubmit}
+                      disabled={isSubmitting || !isFinalStepValid}
+                      className={`group relative inline-flex items-center justify-center space-x-3 px-12 py-4 rounded-xl font-bold transition-all duration-300 touch-manipulation min-h-[52px] min-w-[180px] ${
+                        isSubmitting || !isFinalStepValid
+                          ? 'bg-muted/50 text-muted-foreground cursor-not-allowed border border-muted/30'
+                          : 'bg-gradient-to-r from-[#ff0000] to-[#cc0000] text-white hover:from-[#cc0000] hover:to-[#aa0000] shadow-xl hover:shadow-2xl'
+                      }`}
+                      whileHover={!isSubmitting && isFinalStepValid ? { 
+                        scale: 1.05,
+                        y: -3,
+                        transition: { duration: 0.2 }
+                      } : {}}
+                      whileTap={!isSubmitting && isFinalStepValid ? { 
+                        scale: 0.95,
+                        y: 0,
+                        transition: { duration: 0.1 }
+                      } : {}}
+                    >
+                      <motion.div
+                        className="flex items-center space-x-2"
+                        animate={!isSubmitting && isFinalStepValid ? {
+                          scale: [1, 1.05, 1]
+                        } : {}}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <motion.div
+                              className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            />
+                            <span className="text-sm font-medium">Launching...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="w-5 h-5" />
+                            <span className="text-sm font-medium">LAUNCH</span>
+                          </>
+                        )}
+                      </motion.div>
+                      
+                      {/* Enhanced glow effect for launch button */}
+                      {!isSubmitting && isFinalStepValid && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/30 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          initial={false}
+                        />
+                      )}
+                      
+                      {/* Pulsing ring effect */}
+                      {!isSubmitting && isFinalStepValid && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl border-2 border-white/40"
+                          animate={{
+                            scale: [1, 1.1, 1],
+                            opacity: [0.6, 1, 0.6]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      )}
+                    </motion.button>
+                  )}
+                </div>
+              </div>
+            </div>
           </motion.div>
 
           {/* Error Messages */}
@@ -1286,7 +1347,7 @@ export default function NewJobPage() {
               >
                 {errors.durationMismatch && (
                   <div className="flex items-center space-x-2 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-lg">
-                    <div className="w-5 h-5 text-yellow-600">⚠️</div>
+                    <div className="w-5 h-5 text-yellow-600">??</div>
                     <div>
                       <p className="font-medium">Duration Mismatch</p>
                       <p className="text-sm">{errors.durationMismatch}</p>
@@ -1296,7 +1357,7 @@ export default function NewJobPage() {
 
                 {errors.general && (
                   <div className="flex items-center space-x-2 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg">
-                    <div className="w-5 h-5">❌</div>
+                    <div className="w-5 h-5">?</div>
                     <span>{errors.general}</span>
                   </div>
                 )}
@@ -1309,7 +1370,7 @@ export default function NewJobPage() {
         <AnimatePresence>
           {showHowItWorks && (
             <motion.div
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -1319,60 +1380,112 @@ export default function NewJobPage() {
               aria-labelledby="modal-title"
               aria-describedby="modal-description"
             >
+              {/* Enhanced backdrop with animated gradients */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#ff0000]/10 via-transparent to-[#ff0000]/5 animate-pulse-slow" />
+              <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-[#ff0000]/5 to-transparent animate-float-slow" />
+              
               <motion.div
                 ref={modalRef}
-                className="relative w-full max-w-6xl max-h-[90vh] bg-background rounded-2xl shadow-2xl overflow-hidden"
-                initial={{ scale: 0.9, opacity: 0, y: 50 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 50 }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative w-full max-w-7xl max-h-[95vh] bg-background/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/10"
+                initial={{ scale: 0.85, opacity: 0, y: 60, rotateX: 15 }}
+                animate={{ scale: 1, opacity: 1, y: 0, rotateX: 0 }}
+                exit={{ scale: 0.85, opacity: 0, y: 60, rotateX: 15 }}
+                transition={{ 
+                  type: "spring", 
+                  damping: 20, 
+                  stiffness: 200,
+                  mass: 0.8
+                }}
                 onClick={(e) => e.stopPropagation()}
                 tabIndex={-1}
+                style={{
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
+                }}
               >
-                {/* Modal Header */}
-                <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border p-6">
-                  <div className="flex items-center justify-between">
+                {/* Enhanced Modal Header */}
+                <div className="sticky top-0 z-10 bg-gradient-to-r from-background/98 via-background/95 to-background/98 backdrop-blur-xl border-b border-white/10 p-6">
+                  {/* Shimmer effect overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                  
+                  <div className="relative flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <motion.div
-                        className="w-12 h-12 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center shadow-lg"
+                        className="relative w-14 h-14 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-2xl flex items-center justify-center shadow-2xl group"
                         animate={{ 
                           scale: [1, 1.05, 1],
-                          rotate: [0, 5, -5, 0]
+                          rotate: [0, 2, -2, 0]
                         }}
                         transition={{ 
-                          duration: 2,
+                          duration: 3,
                           repeat: Infinity,
                           ease: "easeInOut"
                         }}
+                        whileHover={{ 
+                          scale: 1.1,
+                          rotate: [0, 5, -5, 0],
+                          transition: { duration: 0.6 }
+                        }}
                       >
-                        <Scissors className="w-6 h-6 text-white" />
+                        {/* Glow effect */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-2xl blur-sm opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
+                        <Scissors className="w-7 h-7 text-white relative z-10" />
+                        
+                        {/* Shimmer overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 group-hover:animate-shimmer transition-opacity duration-300" />
                       </motion.div>
+                      
                       <div>
-                        <h2 id="modal-title" className="text-2xl font-bold text-foreground">
+                        <motion.h2 
+                          id="modal-title" 
+                          className="text-3xl font-bold text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                        >
                           How It Works
-                        </h2>
-                        <p id="modal-description" className="text-muted-foreground">
+                        </motion.h2>
+                        <motion.p 
+                          id="modal-description" 
+                          className="text-muted-foreground text-lg"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3 }}
+                        >
                           Learn how our AI-powered platform transforms your content
-                        </p>
+                        </motion.p>
                       </div>
                     </div>
                     
                     <motion.button
                       ref={closeButtonRef}
                       onClick={handleCloseModal}
-                      className="w-10 h-10 rounded-full bg-muted hover:bg-destructive/10 flex items-center justify-center transition-colors duration-200 group focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2"
-                      whileHover={{ scale: 1.1 }}
+                      className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-muted/50 to-muted/30 hover:from-destructive/20 hover:to-destructive/10 flex items-center justify-center transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2 backdrop-blur-sm border border-white/10"
+                      whileHover={{ 
+                        scale: 1.1,
+                        rotate: 90,
+                        transition: { duration: 0.3 }
+                      }}
                       whileTap={{ scale: 0.9 }}
                       aria-label="Close How It Works modal"
                     >
-                      <X className="w-5 h-5 group-hover:text-destructive transition-colors duration-200" />
+                      <X className="w-6 h-6 group-hover:text-destructive transition-colors duration-300" />
+                      
+                      {/* Hover glow effect */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-destructive/20 to-destructive/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </motion.button>
                   </div>
                 </div>
 
-                {/* Modal Content */}
-                <div className="overflow-y-auto max-h-[calc(90vh-120px)] p-6">
-                  <div className="space-y-12">
+                {/* Enhanced Modal Content with Parallax */}
+                <div className="overflow-y-auto max-h-[calc(95vh-140px)] p-8 relative">
+                  {/* Parallax background elements */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gradient-to-br from-[#ff0000]/5 to-transparent rounded-full blur-xl animate-float-slow" />
+                    <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-gradient-to-br from-[#ff0000]/3 to-transparent rounded-full blur-lg animate-pulse-slow" />
+                    <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-gradient-to-br from-transparent to-[#ff0000]/4 rounded-full blur-md animate-float-slow" />
+                  </div>
+                  
+                  <div className="relative space-y-16">
                     {howItWorksSteps.map((step, index) => {
                       const Icon = step.icon;
                       const isEven = index % 2 === 0;
@@ -1380,126 +1493,377 @@ export default function NewJobPage() {
                       return (
                         <motion.div
                           key={step.number}
-                          className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-8`}
-                          initial={{ opacity: 0, y: 30 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.8, delay: index * 0.1 }}
+                          className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 group`}
+                          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{ 
+                            duration: 0.8, 
+                            delay: index * 0.15,
+                            type: "spring",
+                            stiffness: 100
+                          }}
+                          whileHover={{ 
+                            scale: 1.02,
+                            transition: { duration: 0.3 }
+                          }}
                         >
-                          {/* Content */}
-                          <div className="flex-1">
+                          {/* Enhanced Content */}
+                          <motion.div 
+                            className="flex-1 relative group"
+                            whileHover={{ x: isEven ? 10 : -10 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            {/* Shimmer effect on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-shimmer rounded-2xl transition-opacity duration-500" />
+                            
                             <motion.div
-                              className="flex items-center space-x-4 mb-6"
-                              initial={{ opacity: 0, x: -20 }}
+                              className="flex items-center space-x-6 mb-8 relative z-10"
+                              initial={{ opacity: 0, x: isEven ? -30 : 30 }}
                               animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.6, delay: index * 0.1 + 0.2 }}
+                              transition={{ duration: 0.8, delay: index * 0.15 + 0.3 }}
                             >
-                              <div className={`w-16 h-16 bg-gradient-to-r ${step.color} flex items-center justify-center rounded-lg shadow-lg`}>
-                                <Icon className="w-8 h-8 text-white" />
-                              </div>
+                              <motion.div 
+                                className={`relative w-20 h-20 bg-gradient-to-br ${step.color} flex items-center justify-center rounded-2xl shadow-2xl group/icon`}
+                                whileHover={{ 
+                                  scale: 1.1,
+                                  rotate: [0, 5, -5, 0],
+                                  transition: { duration: 0.6 }
+                                }}
+                                animate={{
+                                  boxShadow: [
+                                    "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
+                                    "0 20px 40px -5px rgba(0, 0, 0, 0.15)",
+                                    "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
+                                  ]
+                                }}
+                                transition={{
+                                  boxShadow: {
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeInOut"
+                                  }
+                                }}
+                              >
+                                {/* Glow effect */}
+                                <div className={`absolute inset-0 bg-gradient-to-br ${step.color} rounded-2xl blur-md opacity-50 group-hover/icon:opacity-75 transition-opacity duration-300`} />
+                                
+                                <Icon className="w-10 h-10 text-white relative z-10" />
+                                
+                                {/* Shimmer overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-2xl opacity-0 group-hover/icon:opacity-100 group-hover/icon:animate-shimmer transition-opacity duration-300" />
+                                
+                                {/* Step number badge */}
+                                <div className="absolute -top-2 -right-2 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+                                  <span className="text-xs font-bold text-[#ff0000]">{step.number}</span>
+                                </div>
+                              </motion.div>
+                              
                               <div>
-                                <div className="text-sm font-medium text-[#ff0000] mb-1">Step {step.number}</div>
-                                <h3 className="text-2xl font-bold text-foreground">{step.title}</h3>
+                                <motion.div 
+                                  className="text-sm font-semibold text-[#ff0000] mb-2 tracking-wide uppercase"
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: index * 0.15 + 0.4 }}
+                                >
+                                  Step {step.number}
+                                </motion.div>
+                                <motion.h3 
+                                  className="text-3xl font-bold text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text"
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: index * 0.15 + 0.5 }}
+                                >
+                                  {step.title}
+                                </motion.h3>
                               </div>
                             </motion.div>
                             
                             <motion.p
-                              className="text-lg text-muted-foreground mb-8 font-light leading-relaxed"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.6, delay: index * 0.1 + 0.3 }}
+                              className="text-xl text-muted-foreground mb-10 font-light leading-relaxed relative"
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.8, delay: index * 0.15 + 0.6 }}
                             >
                               {step.description}
                             </motion.p>
                             
-                            <div className="space-y-6">
-                              <div>
-                                <h4 className="text-lg font-semibold text-foreground mb-4">What you&apos;ll do:</h4>
-                                <ul className="space-y-3">
+                            <div className="space-y-8">
+                              <motion.div
+                                className="relative"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: index * 0.15 + 0.7 }}
+                              >
+                                <h4 className="text-xl font-bold text-foreground mb-6 flex items-center space-x-3">
+                                  <div className="w-2 h-2 bg-[#ff0000] rounded-full animate-pulse" />
+                                  <span>What you&apos;ll do:</span>
+                                </h4>
+                                <ul className="space-y-4">
                                   {step.details.map((detail, detailIndex) => (
                                     <motion.li
                                       key={detailIndex}
-                                      className="flex items-start space-x-3"
-                                      initial={{ opacity: 0, x: -20 }}
+                                      className="flex items-start space-x-4 group/item"
+                                      initial={{ opacity: 0, x: -30 }}
                                       animate={{ opacity: 1, x: 0 }}
-                                      transition={{ duration: 0.6, delay: index * 0.1 + 0.4 + detailIndex * 0.1 }}
+                                      transition={{ 
+                                        duration: 0.6, 
+                                        delay: index * 0.15 + 0.8 + detailIndex * 0.1 
+                                      }}
+                                      whileHover={{ x: 5 }}
                                     >
-                                      <CheckCircle className="w-5 h-5 text-[#ff0000] flex-shrink-0 mt-0.5" />
-                                      <span className="text-muted-foreground">{detail}</span>
+                                      <motion.div
+                                        className="w-6 h-6 bg-gradient-to-br from-[#ff0000] to-[#cc0000] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 shadow-lg group-hover/item:scale-110 transition-transform duration-200"
+                                        whileHover={{ rotate: 360 }}
+                                        transition={{ duration: 0.5 }}
+                                      >
+                                        <CheckCircle className="w-4 h-4 text-white" />
+                                      </motion.div>
+                                      <span className="text-muted-foreground text-lg leading-relaxed group-hover/item:text-foreground transition-colors duration-200">
+                                        {detail}
+                                      </span>
                                     </motion.li>
                                   ))}
                                 </ul>
-                              </div>
+                              </motion.div>
                               
-                              <div>
-                                <h4 className="text-lg font-semibold text-foreground mb-4">Pro tips:</h4>
-                                <ul className="space-y-2">
+                              <motion.div
+                                className="relative bg-gradient-to-r from-yellow-500/5 to-orange-500/5 border border-yellow-500/20 rounded-2xl p-6"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: index * 0.15 + 0.9 }}
+                              >
+                                <h4 className="text-xl font-bold text-foreground mb-6 flex items-center space-x-3">
+                                  <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+                                  <span>Pro tips:</span>
+                                </h4>
+                                <ul className="space-y-3">
                                   {step.tips.map((tip, tipIndex) => (
                                     <motion.li
                                       key={tipIndex}
-                                      className="flex items-start space-x-3"
-                                      initial={{ opacity: 0, x: -20 }}
+                                      className="flex items-start space-x-4 group/tip"
+                                      initial={{ opacity: 0, x: -30 }}
                                       animate={{ opacity: 1, x: 0 }}
-                                      transition={{ duration: 0.6, delay: index * 0.1 + 0.5 + tipIndex * 0.1 }}
+                                      transition={{ 
+                                        duration: 0.6, 
+                                        delay: index * 0.15 + 1.0 + tipIndex * 0.1 
+                                      }}
+                                      whileHover={{ x: 5 }}
                                     >
-                                      <Star className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-1" />
-                                      <span className="text-sm text-muted-foreground">{tip}</span>
+                                      <motion.div
+                                        className="w-5 h-5 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-md group-hover/tip:scale-110 transition-transform duration-200"
+                                        whileHover={{ rotate: 360 }}
+                                        transition={{ duration: 0.5 }}
+                                      >
+                                        <Star className="w-3 h-3 text-white" />
+                                      </motion.div>
+                                      <span className="text-muted-foreground leading-relaxed group-hover/tip:text-foreground transition-colors duration-200">
+                                        {tip}
+                                      </span>
                                     </motion.li>
                                   ))}
                                 </ul>
-                              </div>
+                              </motion.div>
                             </div>
-                          </div>
+                          </motion.div>
                           
-                          {/* Visual */}
-                          <div className="flex-1 flex justify-center">
+                          {/* Enhanced Visual with 3D Effects */}
+                          <motion.div 
+                            className="flex-1 flex justify-center relative"
+                            initial={{ opacity: 0, scale: 0.8, rotateY: isEven ? 15 : -15 }}
+                            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                            transition={{ duration: 1, delay: index * 0.15 + 0.4 }}
+                          >
                             <motion.div
-                              className={`w-80 h-80 bg-gradient-to-br ${step.color} rounded-2xl flex items-center justify-center relative overflow-hidden shadow-2xl`}
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ duration: 0.8, delay: index * 0.1 + 0.3 }}
-                              whileHover={{ scale: 1.05 }}
+                              className={`relative w-96 h-96 bg-gradient-to-br ${step.color} rounded-3xl flex items-center justify-center overflow-hidden shadow-2xl group/visual`}
+                              whileHover={{ 
+                                scale: 1.08,
+                                rotateY: isEven ? -5 : 5,
+                                rotateX: 5,
+                                transition: { duration: 0.4 }
+                              }}
+                              style={{
+                                transformStyle: "preserve-3d",
+                                perspective: "1000px"
+                              }}
                             >
-                              <Icon className="w-32 h-32 text-white/80" />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                              <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
-                                <span className="text-white font-bold text-sm">{step.number}</span>
+                              {/* Animated background pattern */}
+                              <div className="absolute inset-0 opacity-20">
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 animate-pulse-slow" />
+                                <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-white/5 to-transparent animate-float-slow" />
+                              </div>
+                              
+                              {/* Main icon with enhanced effects */}
+                              <motion.div
+                                className="relative z-10"
+                                whileHover={{ 
+                                  scale: 1.1,
+                                  rotate: [0, 5, -5, 0],
+                                  transition: { duration: 0.6 }
+                                }}
+                              >
+                                <Icon className="w-40 h-40 text-white/90 drop-shadow-2xl" />
+                                
+                                {/* Glow effect behind icon */}
+                                <div className="absolute inset-0 bg-white/20 rounded-full blur-2xl scale-150 opacity-50 group-hover/visual:opacity-75 transition-opacity duration-300" />
+                              </motion.div>
+                              
+                              {/* Enhanced overlay gradients */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent" />
+                              
+                              {/* Floating step number badge */}
+                              <motion.div 
+                                className="absolute top-6 right-6 bg-white/25 backdrop-blur-md rounded-2xl px-4 py-2 shadow-xl border border-white/20"
+                                animate={{
+                                  y: [0, -5, 0],
+                                  scale: [1, 1.05, 1]
+                                }}
+                                transition={{
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                                whileHover={{ 
+                                  scale: 1.1,
+                                  y: -10,
+                                  transition: { duration: 0.3 }
+                                }}
+                              >
+                                <span className="text-white font-bold text-lg">{step.number}</span>
+                              </motion.div>
+                              
+                              {/* Shimmer effect */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover/visual:opacity-100 group-hover/visual:animate-shimmer transition-opacity duration-500" />
+                              
+                              {/* Floating particles */}
+                              <div className="absolute inset-0 pointer-events-none">
+                                {[...Array(6)].map((_, i) => (
+                                  <motion.div
+                                    key={i}
+                                    className="absolute w-2 h-2 bg-white/30 rounded-full"
+                                    style={{
+                                      left: `${20 + i * 15}%`,
+                                      top: `${30 + (i % 3) * 20}%`
+                                    }}
+                                    animate={{
+                                      y: [0, -20, 0],
+                                      opacity: [0.3, 0.8, 0.3],
+                                      scale: [0.5, 1, 0.5]
+                                    }}
+                                    transition={{
+                                      duration: 3 + i * 0.5,
+                                      repeat: Infinity,
+                                      delay: i * 0.3,
+                                      ease: "easeInOut"
+                                    }}
+                                  />
+                                ))}
                               </div>
                             </motion.div>
-                          </div>
+                          </motion.div>
                         </motion.div>
                       );
                     })}
                   </div>
 
-                  {/* CTA Section */}
+                  {/* Enhanced CTA Section */}
                   <motion.div
-                    className="max-w-4xl mx-auto text-center mt-12"
-                    initial={{ opacity: 0, y: 30 }}
+                    className="max-w-5xl mx-auto text-center mt-16 relative"
+                    initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.8 }}
+                    transition={{ duration: 1, delay: 1.2 }}
                   >
-                    <div className="bg-gradient-to-r from-[#ff0000]/10 to-[#ff0000]/5 border border-[#ff0000]/20 p-8 rounded-lg">
-                      <h3 className="text-2xl font-bold text-foreground mb-4 tracking-tight">
-                        Ready to Get Started?
-                      </h3>
+                    {/* Background effects */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#ff0000]/5 via-[#ff0000]/10 to-[#ff0000]/5 rounded-3xl blur-xl" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[#ff0000]/5 to-transparent rounded-3xl animate-pulse-slow" />
+                    
+                    <div className="relative bg-gradient-to-r from-[#ff0000]/10 via-[#ff0000]/5 to-[#ff0000]/10 border border-[#ff0000]/20 p-12 rounded-3xl backdrop-blur-sm overflow-hidden">
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
                       
-                      <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto font-light leading-relaxed">
-                        Now that you know how it works, let&apos;s create your first multilingual dub!
-                      </p>
-                      
-                      <motion.button
-                        onClick={handleCloseModal}
-                        className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                      <motion.h3 
+                        className="text-4xl font-bold text-foreground mb-6 tracking-tight relative z-10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.4 }}
                       >
-                        <Upload className="w-5 h-5" />
-                        <span>Get Started</span>
-                      </motion.button>
+                        Ready to Get Started?
+                      </motion.h3>
+                      
+                      <motion.p 
+                        className="text-xl text-muted-foreground mb-10 max-w-3xl mx-auto font-light leading-relaxed relative z-10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.5 }}
+                      >
+                        Now that you know how it works, let&apos;s create your first multilingual dub!
+                      </motion.p>
+                      
+                      <motion.div
+                        className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.6 }}
+                      >
+                        <motion.button
+                          onClick={handleCloseModal}
+                          className="group relative inline-flex items-center space-x-4 bg-gradient-to-r from-[#ff0000] to-[#cc0000] text-white px-10 py-5 text-xl font-semibold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[#ff0000]/50 focus:ring-offset-2 overflow-hidden"
+                          whileHover={{ 
+                            scale: 1.05,
+                            boxShadow: "0 25px 50px -12px rgba(255, 0, 0, 0.4)"
+                          }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {/* Button glow effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-[#ff0000] to-[#cc0000] blur-sm opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
+                          
+                          {/* Shimmer effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-shimmer transition-opacity duration-500" />
+                          
+                          <Upload className="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform duration-300" />
+                          <span className="relative z-10">Get Started</span>
+                          
+                          {/* Ripple effect on click */}
+                          <div className="absolute inset-0 bg-white/20 rounded-2xl scale-0 group-active:scale-100 transition-transform duration-200" />
+                        </motion.button>
+                        
+                        <motion.button
+                          onClick={handleCloseModal}
+                          className="group relative inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium rounded-xl hover:bg-[#ff0000] hover:text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#ff0000] focus:ring-offset-2 backdrop-blur-sm"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <span>Learn More</span>
+                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
+                        </motion.button>
+                      </motion.div>
                     </div>
                   </motion.div>
                 </div>
               </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Simple Restore Banner Button - Fixed at bottom right */}
+        <AnimatePresence>
+          {bannerDismissed && (
+            <motion.div
+              className="fixed bottom-6 right-6 z-50"
+              initial={{ opacity: 0, y: 20, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.8 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              <motion.button
+                onClick={handleRestoreBanner}
+                className="group relative inline-flex items-center space-x-2 px-4 py-3 text-sm font-medium text-white bg-[#ff0000] hover:bg-[#cc0000] rounded-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff0000]/50"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span>Show Guide</span>
+                <span className="group-hover:translate-y-1 transition-transform duration-200">?</span>
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>

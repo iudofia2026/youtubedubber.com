@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, BarChart } from 'lucide-react';
+import { ArrowLeft, Plus, BarChart, Download, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import { Navigation } from '@/components/Navigation';
 import { Breadcrumbs, breadcrumbConfigs } from '@/components/Breadcrumbs';
 import { JobHistory } from '@/components/jobs/JobHistory';
 import { Job } from '@/types';
+import { fetchJobs, deleteJob as apiDeleteJob } from '@/lib/api';
 import { useToastHelpers } from '@/components/ToastNotifications';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
@@ -33,94 +34,26 @@ function JobsPageContent() {
     }
   }, [searchParams]);
 
-  // Mock data for demonstration - in real app, this would come from API
   useEffect(() => {
     const loadJobs = async () => {
       setLoading(true);
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock job data
-        const mockJobs: Job[] = [
-          {
-            id: 'job_12345678',
-            status: 'complete',
-            progress: 100,
-            message: 'All languages completed successfully',
-            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            voiceTrackDuration: 180,
-            targetLanguages: ['es', 'fr', 'de'],
-            backgroundTrack: true,
-            completedLanguages: 3,
-            totalLanguages: 3,
-            downloadUrls: {
-              'es': { voice: '/download/es/voice', full: '/download/es/full' },
-              'fr': { voice: '/download/fr/voice', full: '/download/fr/full' },
-              'de': { voice: '/download/de/voice', full: '/download/de/full' }
-            }
-          },
-          {
-            id: 'job_87654321',
-            status: 'processing',
-            progress: 65,
-            message: 'Generating Spanish dub...',
-            createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-            voiceTrackDuration: 240,
-            targetLanguages: ['ja', 'ko', 'zh'],
-            backgroundTrack: false,
-            completedLanguages: 1,
-            totalLanguages: 3,
-            estimatedCompletion: new Date(Date.now() + 30 * 60 * 1000).toISOString()
-          },
-          {
-            id: 'job_11223344',
-            status: 'pending',
-            progress: 0,
-            message: 'Waiting in queue...',
-            createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-            voiceTrackDuration: 120,
-            targetLanguages: ['pt', 'it'],
-            backgroundTrack: true,
-            completedLanguages: 0,
-            totalLanguages: 2
-          },
-          {
-            id: 'job_55667788',
-            status: 'error',
-            progress: 0,
-            message: 'Audio file validation failed',
-            createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-            voiceTrackDuration: 90,
-            targetLanguages: ['ru', 'ar'],
-            backgroundTrack: false,
-            completedLanguages: 0,
-            totalLanguages: 2
-          }
-        ];
-        
-        setJobs(mockJobs);
-      } catch {
+        const realJobs = await fetchJobs();
+        setJobs(realJobs);
+      } catch (e) {
         showError('Failed to load jobs', 'There was an error loading your jobs. Please try again.');
       } finally {
         setLoading(false);
       }
     };
-
     loadJobs();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Remove showError from dependencies to prevent infinite re-renders
+  }, [showError]);
 
   const handleRefresh = async () => {
     setLoading(true);
     try {
-      // Simulate API refresh
-      await new Promise(resolve => setTimeout(resolve, 500));
-      // In real app, would refetch from API
+      const realJobs = await fetchJobs();
+      setJobs(realJobs);
     } catch {
       showError('Refresh failed', 'There was an error refreshing the jobs. Please try again.');
     } finally {
@@ -159,8 +92,7 @@ function JobsPageContent() {
 
   const handleDeleteJob = async (jobId: string) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await apiDeleteJob(jobId);
       setJobs(prev => prev.filter(job => job.id !== jobId));
     } catch {
       showError('Delete failed', 'There was an error deleting the job. Please try again.');
@@ -329,6 +261,40 @@ function JobsPageContent() {
           onStatusFilterChange={handleStatusFilterChange}
         />
         </main>
+        
+        {/* Creative Downloads Section */}
+        <div className="mt-16 mb-8">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 border border-blue-200/50 dark:border-blue-800/50">
+            {/* Background decoration */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-400/20 to-rose-400/20 rounded-full blur-2xl"></div>
+            
+            <div className="relative p-8 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Download className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Ready to Download?
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto">
+                Access all your completed dubbing projects and manage your downloads in one place.
+              </p>
+              
+              <Link 
+                href="/downloads"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
+                <Download className="w-5 h-5" />
+                Go to Downloads
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </ProtectedRoute>
   );

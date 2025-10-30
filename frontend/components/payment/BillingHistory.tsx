@@ -62,13 +62,13 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'text-green-600 bg-green-100';
+        return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/20';
       case 'pending':
-        return 'text-yellow-600 bg-yellow-100';
+        return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/20';
       case 'failed':
-        return 'text-red-600 bg-red-100';
+        return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20';
       default:
-        return 'text-gray-600 bg-gray-100';
+        return 'text-muted-foreground bg-accent';
     }
   };
 
@@ -86,11 +86,11 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 ${className}`}>
-      <div className="p-6 border-b border-gray-200">
+    <div className={`bg-card rounded-lg border border-border ${className}`}>
+      <div className="p-6 border-b border-border">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Billing History</h3>
-          <div className="text-sm text-gray-500">
+          <h3 className="text-lg font-semibold text-foreground">Billing History</h3>
+          <div className="text-sm text-muted-foreground">
             {filteredTransactions.length} of {transactions.length} transactions
           </div>
         </div>
@@ -98,7 +98,7 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search transactions..."
               value={searchTerm}
@@ -133,25 +133,25 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({
         </div>
       </div>
 
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-border">
         {filteredTransactions.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
-            <Filter className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+          <div className="p-8 text-center text-muted-foreground">
+            <Filter className="h-12 w-12 mx-auto mb-4 text-muted-foreground/60" />
             <p>No transactions found matching your filters</p>
           </div>
         ) : (
           filteredTransactions.map((transaction) => (
-            <div key={transaction.id} className="p-6 hover:bg-gray-50">
+            <div key={transaction.id} className="p-6 hover:bg-accent/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="text-2xl">
                     {getTypeIcon(transaction.type)}
                   </div>
                   <div>
-                    <div className="font-medium text-gray-900">
+                    <div className="font-medium text-foreground">
                       {transaction.description}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-muted-foreground">
                       {formatDate(transaction.date)} • {transaction.id}
                     </div>
                   </div>
@@ -159,11 +159,11 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({
 
                 <div className="flex items-center space-x-4">
                   <div className="text-right">
-                    <div className="font-semibold text-gray-900">
+                    <div className="font-semibold text-foreground">
                       {transaction.type === 'usage' ? `-${transaction.credits}` : `+${transaction.credits}`} credits
                     </div>
                     {transaction.amount > 0 && (
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-muted-foreground">
                         {formatAmount(transaction.amount)}
                       </div>
                     )}

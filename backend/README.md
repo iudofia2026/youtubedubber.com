@@ -2,7 +2,7 @@
 
 A FastAPI-based backend service for the YouTube Multilingual Dubber application, providing AI-powered video dubbing capabilities.
 
-## ⚡ Latest Update (Oct 25, 2024)
+## ⚡ Latest Update (Oct 26, 2025)
 
 **Environment Now Configured!** The `.env` file is pre-configured for local development with SQLite and dev mode. The backend now starts without errors and bypasses strict API key validation in development. Simply activate the venv and run `uvicorn app.main:app --reload --port 8000`!
 
@@ -17,7 +17,7 @@ A FastAPI-based backend service for the YouTube Multilingual Dubber application,
 - **Supabase Integration**: Authentication, database, and file storage fully implemented
 - **AI Services**: Deepgram (STT/TTS) and OpenAI translation fully integrated and functional
 - **Background Processing**: Complete async worker with audio mixing, storage persistence, and artifact delivery
-- **Payment System**: Full Stripe integration with credit management and transaction tracking
+- **Payment System**: Complete Stripe integration with credit management and transaction tracking
 - **Video Support**: Full MP4 video format support with automatic audio extraction using FFmpeg
 - **Docker Support**: Containerized deployment with Docker Compose
 - **Testing**: Unit tests for models/services with comprehensive coverage
@@ -82,7 +82,7 @@ backend/
 │   ├── api/
 │   │   ├── __init__.py
 │   │   ├── jobs.py          # Job management endpoints
-│   │   └── upload.py        # Upload endpoints
+│   │   └── payments.py      # Payment endpoints
 │   ├── services/
 │   │   ├── __init__.py
 │   │   ├── ai_service.py    # AI service integration
@@ -792,6 +792,7 @@ The system uses a credit-based pricing model with dynamic cost calculation:
 - `GET /api/payments/transactions` - Get transaction history
 - `POST /api/payments/calculate-job-cost` - Calculate job cost
 - `GET /api/payments/can-afford-job` - Check if user can afford job
+- `GET /api/payments/pricing-plans` - Get available pricing plans
 
 ### **Database Models**
 - `UserCredits` - User credit balance tracking with user relationship
@@ -861,6 +862,6 @@ The system uses a credit-based pricing model with dynamic cost calculation:
 
 ---
 
-**Last Updated**: October 15, 2025  
+**Last Updated**: October 26, 2025  
 **Status**: In Progress  
 **Next Milestone**: End-to-end job lifecycle implemented

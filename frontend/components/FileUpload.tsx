@@ -19,12 +19,14 @@ export function FileUpload({
   onUploadProgress,
   onUploadComplete,
   onUploadError,
+  onAutoNavigate,
   error, 
   value,
   duration,
   durationFormatted,
   isUploading = false,
-  uploadProgress
+  uploadProgress,
+  autoNavigate = false
 }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -177,6 +179,14 @@ export function FileUpload({
       onUploadComplete?.(file);
       
       success('File validated successfully', `${file.name} is ready for upload`);
+      
+      // Auto-navigate to next step if enabled
+      if (autoNavigate && onAutoNavigate) {
+        // Add a small delay to show the success message before navigating
+        setTimeout(() => {
+          onAutoNavigate();
+        }, 1000);
+      }
     } catch (error) {
       console.error('Failed to validate file:', error);
       const errorMessage = error instanceof Error ? error.message : 'There was an error validating your file. Please try again.';

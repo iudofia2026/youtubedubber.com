@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { CreditCard, Download, Eye, Plus, Settings, History, TrendingUp } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { CreditBalance, BillingHistory, PaymentForm } from '@/components/payment';
+import { getCredits, setCredits } from '@/lib/credits';
+import { fetchTransactions, createPaymentIntent } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -19,99 +21,44 @@ interface Transaction {
 }
 
 export default function BillingPage() {
-  const [userCredits, setUserCredits] = useState(150); // This would come from user context/API
+  const [userCredits, setUserCredits] = useState<number>(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<{ credits: number; price: number } | null>(null);
 
-  // Mock transaction data - in real app, this would come from API
+  // Initialize credits and load real transactions from backend
   useEffect(() => {
-    const mockTransactions: Transaction[] = [
-      {
-        id: 'txn_001',
-        date: '2024-01-15T10:30:00Z',
-        type: 'purchase',
-        description: 'Creator Pack - 50 Credits',
-        amount: 2900,
-        credits: 50,
-        status: 'completed'
-      },
-      {
-        id: 'txn_002',
-        date: '2024-01-14T15:45:00Z',
-        type: 'usage',
-        description: 'Video dubbing - Spanish',
-        amount: 0,
-        credits: -10,
-        status: 'completed'
-      },
-      {
-        id: 'txn_003',
-        date: '2024-01-13T09:20:00Z',
-        type: 'usage',
-        description: 'Video dubbing - French',
-        amount: 0,
-        credits: -10,
-        status: 'completed'
-      },
-      {
-        id: 'txn_004',
-        date: '2024-01-12T14:15:00Z',
-        type: 'purchase',
-        description: 'Professional Pack - 250 Credits',
-        amount: 9900,
-        credits: 250,
-        status: 'completed'
-      },
-      {
-        id: 'txn_005',
-        date: '2024-01-11T11:30:00Z',
-        type: 'usage',
-        description: 'Video dubbing - German',
-        amount: 0,
-        credits: -10,
-        status: 'completed'
+    setUserCredits(getCredits());
+    (async () => {
+      try {
+        const txns = await fetchTransactions();
+        const mapped: Transaction[] = txns.map((t: any) => ({
+          id: t.id,
+          date: t.created_at,
+          type: (t.amount > 0 ? 'purchase' : 'usage') as Transaction['type'],
+          description: t.description || 'Transaction',
+          amount: t.amount,
+          credits: 0,
+          status: (t.status === 'succeeded' ? 'completed' : t.status) as Transaction['status'],
+        }));
+        setTransactions(mapped);
+      } catch {
+        setTransactions([]);
       }
-    ];
-    setTransactions(mockTransactions);
+    })();
   }, []);
 
   const handlePurchase = async (credits: number, price: number) => {
     setIsLoading(true);
     try {
-      // In a real app, you would:
-      // 1. Create a payment intent on your backend
-      // 2. Process the payment with Stripe
-      // 3. Update user credits on success
-      
-      console.log(`Purchasing ${credits} credits for $${(price / 100).toFixed(2)}`);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Update user credits
-      setUserCredits(prev => prev + credits);
-      
-      // Add transaction to history
-      const newTransaction: Transaction = {
-        id: `txn_${Date.now()}`,
-        date: new Date().toISOString(),
-        type: 'purchase',
-        description: `Credit Purchase - ${credits} Credits`,
-        amount: price,
-        credits: credits,
-        status: 'completed'
-      };
-      
-      setTransactions(prev => [newTransaction, ...prev]);
-      setShowPaymentForm(false);
-      setSelectedPlan(null);
-      
-      alert(`Successfully purchased ${credits} credits!`);
+      await createPaymentIntent(price); // client secret is retrieved in PaymentForm
+      setSelectedPlan({ credits, price });
+      setShowPaymentForm(true);
+      return;
     } catch (error) {
-      console.error('Payment failed:', error);
-      alert('Payment failed. Please try again.');
+      console.error('Payment init failed:', error);
+      alert('Payment initialization failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +66,15 @@ export default function BillingPage() {
 
   const handlePaymentSuccess = (paymentIntent: unknown) => {
     console.log('Payment successful:', paymentIntent);
-    // Handle successful payment
+    if (selectedPlan) {
+      setUserCredits(prev => {
+        const next = prev + selectedPlan.credits;
+        setCredits(next);
+        return next;
+      });
+      setShowPaymentForm(false);
+      setSelectedPlan(null);
+    }
   };
 
   const handlePaymentError = (error: string) => {
@@ -231,8 +186,8 @@ export default function BillingPage() {
                       {creditPacks.map((pack, index) => (
                         <motion.div
                           key={pack.name}
-                          className={`relative bg-white rounded-lg border-2 p-6 ${
-                            pack.popular ? 'border-blue-500 shadow-lg' : 'border-gray-200'
+                          className={`relative bg-card rounded-lg border-2 p-6 ${
+                            pack.popular ? 'border-blue-500 shadow-lg' : 'border-border'
                           }`}
                           initial={{ opacity: 0, y: 30 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -248,14 +203,14 @@ export default function BillingPage() {
                           )}
                           
                           <div className="text-center mb-6">
-                            <h4 className="text-xl font-bold text-gray-900 mb-2">{pack.name}</h4>
-                            <div className="text-3xl font-bold text-gray-900 mb-2">
+                            <h4 className="text-xl font-bold text-foreground mb-2">{pack.name}</h4>
+                            <div className="text-3xl font-bold text-foreground mb-2">
                               ${(pack.price / 100).toFixed(2)}
                             </div>
-                            <div className="text-lg text-gray-600">
+                            <div className="text-lg text-muted-foreground">
                               {pack.credits.toLocaleString()} credits
                             </div>
-                            <div className="text-sm text-gray-500 mt-1">
+                            <div className="text-sm text-muted-foreground mt-1">
                               ${(pack.price / pack.credits / 100).toFixed(3)} per credit
                             </div>
                           </div>
@@ -280,9 +235,9 @@ export default function BillingPage() {
                   </div>
 
                   {/* Custom Amount */}
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Custom Amount</h4>
-                    <p className="text-gray-600 mb-4">
+                  <div className="bg-muted rounded-lg p-6">
+                    <h4 className="text-lg font-semibold text-foreground mb-4">Custom Amount</h4>
+                    <p className="text-muted-foreground mb-4">
                       Need a different amount? Contact us for custom credit packages.
                     </p>
                     <Button variant="outline" className="w-full">
@@ -300,9 +255,9 @@ export default function BillingPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
                 >
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Methods</h3>
-                    <p className="text-gray-600 mb-4">
+                  <div className="bg-card rounded-lg border border-border p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">Payment Methods</h3>
+                    <p className="text-muted-foreground mb-4">
                       Manage your saved payment methods and billing information.
                     </p>
                     <Button variant="outline">
@@ -311,9 +266,9 @@ export default function BillingPage() {
                     </Button>
                   </div>
 
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Billing Information</h3>
-                    <p className="text-gray-600 mb-4">
+                  <div className="bg-card rounded-lg border border-border p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">Billing Information</h3>
+                    <p className="text-muted-foreground mb-4">
                       Update your billing address and tax information.
                     </p>
                     <Button variant="outline">
@@ -322,9 +277,9 @@ export default function BillingPage() {
                     </Button>
                   </div>
 
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Invoices & Receipts</h3>
-                    <p className="text-gray-600 mb-4">
+                  <div className="bg-card rounded-lg border border-border p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">Invoices & Receipts</h3>
+                    <p className="text-muted-foreground mb-4">
                       Download past invoices and receipts for your records.
                     </p>
                     <Button variant="outline">
@@ -341,15 +296,15 @@ export default function BillingPage() {
 
       {/* Payment Form Modal */}
       {showPaymentForm && selectedPlan && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <motion.div
-            className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto"
+            className="bg-card rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto border border-border"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
           >
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">
+              <h3 className="text-xl font-semibold text-foreground">
                 Complete Purchase
               </h3>
               <Button
@@ -360,11 +315,11 @@ export default function BillingPage() {
                   setSelectedPlan(null);
                 }}
               >
-                ×
+                ?
               </Button>
             </div>
 
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <div className="mb-6 p-4 bg-muted rounded-lg">
               <div className="flex justify-between items-center">
                 <span className="font-medium">{selectedPlan.credits} Credits</span>
                 <span className="text-lg font-bold">
