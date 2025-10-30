@@ -171,18 +171,17 @@ The frontend is fully prepared for backend integration with the following improv
 - `ValidationError` class provides user-friendly error messages while preserving technical details
 - Supports flexible field naming (camelCase/snake_case) during API migrations
 
-### 3. Environment-Aware Error Handling ✅
-- Error details are hidden in production (`config.devMode` checks throughout `createApiError()`)
-- Development mode shows full error context; production shows sanitized messages
-- `ErrorBoundary.tsx` includes environment-aware logging (detailed in dev, minimal in prod)
-- `scripts/validate-env.js` prevents accidental dev mode deployment (run with `npm run prebuild`)
+### 3. Error Handling Status ⚠️
+- `lib/api.ts` exports `createApiError`, which always forwards backend payloads in `details` and prints console diagnostics regardless of environment.
+- `withRetry` relies on those `retryable` flags but there is no structured logging layer wrapped around fetch calls.
+- `ErrorBoundary.tsx` captures errors and trims information in production, yet there is no reporting service integration or automated way to disable verbose logs elsewhere.
 
 ### Integration Checklist
 - [ ] Backend running at `NEXT_PUBLIC_API_URL`
 - [ ] Set `NEXT_PUBLIC_DEV_MODE=false` for production
-- [ ] Run `node scripts/validate-env.js` before production builds
-- [ ] Test all API endpoints with real backend responses
-- [ ] Verify type guards handle backend response format
+- [ ] Run `node scripts/validate-env.js` (manually or via an npm hook) to ensure required env vars exist
+- [ ] Test all API endpoints with real backend responses and monitor the retry helper
+- [ ] Verify type guards handle backend response format without throwing
 
 ## Development Notes
 - The repository does not ship automated tests; rely on manual QA and ESLint.
@@ -202,6 +201,9 @@ The frontend is fully prepared for backend integration with the following improv
 - No guard rails prevent deploying with `NEXT_PUBLIC_DEV_MODE=true`; add a build-time check in `lib/config.ts` or a script.
 - There is no structured request logging, health-check component, or error-reporting integration—add them if those flows are required.
 - Automated tests for the error-handling helpers and configuration logic are still missing.
+
+## Backlog
+- [ ] (High priority, scheduled last) Instrument product analytics tailored to the dubbing workflow: track account activation and time-to-first-job submission, language-upload wizard drop-off by step, per-language processing success/failure, download completion rates, credit balance burn vs. top-up cadence, billing plan conversion, support ticket response/resolution, and retention signals (DAU/WAU stickiness, 30-day new-job churn). Standardize event schemas around jobs, uploads, credit purchases, and downloads, then integrate a warehouse-friendly pipeline (Segment or RudderStack) feeding Amplitude/Mixpanel/PostHog plus GA4 for acquisition attribution.
 
 ## Contributing & Support
 1. Create a feature branch and make your changes.
