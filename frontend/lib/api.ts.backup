@@ -1,29 +1,4 @@
-import {
-  DubbingJobData,
-  SubmitJobResponse,
-  GetJobStatusResponse,
-  LanguageProgress,
-  LANGUAGES,
-  SignedUploadUrls,
-  UploadUrlsRequest,
-  JobCreationRequest,
-  UploadProgress,
-  Job,
-  BackendLanguageProgress,
-  BackendJobResponse,
-  BackendSubmitJobResponse,
-  BackendTransaction,
-  BackendPaymentIntent,
-  BackendJobDownloadUrls,
-  DownloadHistoryItemApi,
-  isBackendLanguageProgress,
-  isBackendJobResponse,
-  isBackendSubmitJobResponse,
-  isBackendTransaction,
-  isBackendPaymentIntent,
-  isDownloadHistoryItemApi,
-  createValidationError
-} from '@/types';
+import { DubbingJobData, SubmitJobResponse, GetJobStatusResponse, LanguageProgress, LANGUAGES, SignedUploadUrls, UploadUrlsRequest, JobCreationRequest, UploadProgress, Job } from '@/types';
 
 import { config } from './config';
 
@@ -62,6 +37,52 @@ const VALID_LANGUAGE_STATUSES: ReadonlyArray<LanguageStatusValue> = [
   'error'
 ];
 
+// Backend response structure for language progress
+// Note: Backend uses camelCase (LanguageProgress schema), not snake_case
+interface BackendLanguageProgress {
+  languageCode: string;
+  languageName?: string;
+  flag?: string;
+  status?: string;
+  progress?: number;
+  message?: string;
+  estimatedTimeRemaining?: number;
+  fileSize?: number;
+  downloadUrl?: string;
+}
+
+type BackendJobDownloadUrls = Record<string, {
+  voice?: string;
+  full?: string;
+  captions?: string;
+} | undefined>;
+
+// Backend response structure for job status
+// Note: Backend uses camelCase (JobStatusResponse schema), not snake_case
+interface BackendJobResponse {
+  id?: string;
+  status?: string;
+  progress?: number;
+  message?: string;
+  languages?: BackendLanguageProgress[];
+  totalLanguages?: number;
+  completedLanguages?: number;
+  startedAt?: string;
+  estimatedCompletion?: string;
+  // Additional fields from database that may appear in some responses
+  created_at?: string;
+  updated_at?: string;
+  voice_track_duration?: number;
+  target_languages?: string[];
+  background_track_uploaded?: boolean;
+  download_urls?: BackendJobDownloadUrls;
+}
+
+interface BackendSubmitJobResponse {
+  job_id?: string;
+  id?: string;
+}
+
 interface MapJobResponseOptions {
   targetLanguages?: string[];
 }
@@ -80,57 +101,33 @@ const isValidLanguageStatus = (status: unknown): status is LanguageStatusValue =
 
 const JOB_PREVIEW_STORAGE_PREFIX = 'yt-dubber:job-preview:';
 
-/**
- * Resolves download URLs - converts relative URLs to absolute
- * Handles both absolute URLs (https://...) and relative paths (/downloads/...)
- */
 const resolveDownloadUrl = (downloadUrl?: string): string | undefined => {
-  if (!downloadUrl || typeof downloadUrl !== 'string') {
+  if (!downloadUrl) {
     return undefined;
   }
 
-  // Trim whitespace
-  const trimmed = downloadUrl.trim();
-  if (!trimmed) {
-    return undefined;
+  if (/^https?:\/\//i.test(downloadUrl)) {
+    return downloadUrl;
   }
 
-  // Already absolute URL - return as-is
-  if (/^https?:\/\//i.test(trimmed)) {
-    return trimmed;
-  }
-
-  // Relative URL - prepend API base
-  const trimmedPath = trimmed.replace(/^\/+/, '');
+  const trimmedPath = downloadUrl.replace(/^\/+/, '');
   return `${API_BASE_NORMALIZED}/${trimmedPath}`;
 };
 
-/**
- * Maps download URLs object from backend to frontend format
- * Ensures all URLs are properly resolved (relative -> absolute)
- * Validates that required URLs (voice, full) are present
- */
 const mapDownloadUrls = (downloadUrls?: BackendJobDownloadUrls): Job['downloadUrls'] | undefined => {
-  if (!downloadUrls || typeof downloadUrls !== 'object') {
+  if (!downloadUrls) {
     return undefined;
   }
 
   const entries = Object.entries(downloadUrls).reduce<Record<string, { voice: string; full: string; captions?: string }>>((acc, [languageCode, urls]) => {
-    // Skip invalid entries
-    if (!urls || typeof urls !== 'object') {
-      console.warn(`Invalid download URLs for language ${languageCode}:`, urls);
+    if (!urls) {
       return acc;
     }
 
-    // Type assertion for urls object
-    const urlsObj = urls as { voice?: string; full?: string; captions?: string };
+    const voiceUrl = resolveDownloadUrl(urls.voice);
+    const fullUrl = resolveDownloadUrl(urls.full);
 
-    const voiceUrl = resolveDownloadUrl(urlsObj.voice);
-    const fullUrl = resolveDownloadUrl(urlsObj.full);
-
-    // Both voice and full URLs are required for a valid entry
     if (!voiceUrl || !fullUrl) {
-      console.warn(`Missing required download URLs for language ${languageCode}:`, { voice: voiceUrl, full: fullUrl });
       return acc;
     }
 
@@ -139,8 +136,7 @@ const mapDownloadUrls = (downloadUrls?: BackendJobDownloadUrls): Job['downloadUr
       full: fullUrl
     };
 
-    // Captions are optional
-    const captionsUrl = resolveDownloadUrl(urlsObj.captions);
+    const captionsUrl = resolveDownloadUrl(urls.captions);
     if (captionsUrl) {
       mapped.captions = captionsUrl;
     }
@@ -157,24 +153,10 @@ const mapDownloadUrls = (downloadUrls?: BackendJobDownloadUrls): Job['downloadUr
  * Backend uses camelCase (matches LanguageProgress Pydantic schema)
  * Defensive programming: handles missing/null fields gracefully
  */
-export const mapLanguageProgress = (language: unknown): LanguageProgress => {
-  // Validate the incoming data structure
-  if (!isBackendLanguageProgress(language)) {
-    throw createValidationError(
-      'BackendLanguageProgress',
-      language,
-      'Invalid language progress data received from server'
-    );
-  }
-
-  // Extract languageCode (supports both camelCase and snake_case)
-  const languageCode = language.languageCode || language.language_code;
-  if (!languageCode) {
-    throw createValidationError(
-      'BackendLanguageProgress',
-      language,
-      'Language progress is missing language code'
-    );
+export const mapLanguageProgress = (language: BackendLanguageProgress): LanguageProgress => {
+  if (!language || !language.languageCode) {
+    console.warn('Invalid language progress data received:', language);
+    throw new Error('Language progress is missing required languageCode field');
   }
 
   // Map backend language status to frontend status with type safety
@@ -182,173 +164,90 @@ export const mapLanguageProgress = (language: unknown): LanguageProgress => {
   const status = isValidLanguageStatus(rawStatus) ? rawStatus : 'pending';
 
   // Lookup language info from LANGUAGES constant for fallback
-  const languageInfo = LANGUAGES.find(l => l.code === languageCode);
-
-  // Extract values with fallbacks (supports both camelCase and snake_case)
-  const languageName = language.languageName || language.language_name || languageInfo?.name || languageCode.toUpperCase();
-  const flag = language.flag || languageInfo?.flag || '🌐';
-  const progress = typeof language.progress === 'number' ? Math.max(0, Math.min(100, language.progress)) : 0;
-  const message = language.message || 'Processing...';
-  const estimatedTimeRemaining = language.estimatedTimeRemaining || language.estimated_time_remaining;
-  const fileSize = language.fileSize || language.file_size;
-  const downloadUrl = language.downloadUrl || language.download_url;
+  const languageInfo = LANGUAGES.find(l => l.code === language.languageCode);
 
   return {
-    languageCode,
-    languageName,
-    flag,
+    languageCode: language.languageCode,
+    languageName: language.languageName || languageInfo?.name || language.languageCode.toUpperCase(),
+    flag: language.flag || languageInfo?.flag || '🌐',
     status,
-    progress,
-    message,
-    estimatedTimeRemaining: typeof estimatedTimeRemaining === 'number' ? estimatedTimeRemaining : undefined,
-    fileSize: typeof fileSize === 'number' ? fileSize : undefined,
-    downloadUrl: resolveDownloadUrl(downloadUrl)
+    progress: typeof language.progress === 'number' ? Math.max(0, Math.min(100, language.progress)) : 0,
+    message: language.message || 'Processing...',
+    estimatedTimeRemaining: typeof language.estimatedTimeRemaining === 'number' ? language.estimatedTimeRemaining : undefined,
+    fileSize: typeof language.fileSize === 'number' ? language.fileSize : undefined,
+    downloadUrl: resolveDownloadUrl(language.downloadUrl)
   };
 };
 
-/**
- * Maps backend JobStatusResponse to frontend GetJobStatusResponse
- * Backend uses camelCase (matches JobStatusResponse Pydantic schema)
- * Handles both API responses and database records (which may have snake_case)
- */
-export const mapJobResponse = (job: unknown, options: MapJobResponseOptions = {}): GetJobStatusResponse => {
-  // Validate the incoming data structure
-  if (!isBackendJobResponse(job)) {
-    throw createValidationError(
-      'BackendJobResponse',
-      job,
-      'Invalid job response data received from server'
-    );
-  }
-
-  // Extract job ID (required field)
+export const mapJobResponse = (job: BackendJobResponse, options: MapJobResponseOptions = {}): GetJobStatusResponse => {
   const id = job.id || job.job_id;
+
   if (!id) {
-    throw createValidationError(
-      'BackendJobResponse',
-      job,
-      'Job response is missing job ID'
-    );
+    throw new Error('Job response is missing an id field.');
   }
 
-  // Map languages array with error handling for individual items
-  const languages: LanguageProgress[] = [];
-  if (Array.isArray(job.languages)) {
-    for (const lang of job.languages) {
-      try {
-        languages.push(mapLanguageProgress(lang));
-      } catch (error) {
-        console.warn('Failed to map language progress:', lang, error);
-        // Skip invalid language entries rather than failing entire job
-      }
-    }
-  }
-
-  // Calculate completed languages: prefer backend value, fallback to counting completed statuses
-  // Supports both camelCase and snake_case
-  const completedLanguages = typeof job.completedLanguages === 'number'
-    ? job.completedLanguages
-    : typeof job.completed_languages === 'number'
+  const languages = job.languages?.map(mapLanguageProgress) || [];
+  const completedLanguages = typeof job.completed_languages === 'number'
     ? job.completed_languages
     : languages.filter(language => language.status === 'complete').length;
 
-  // Calculate total languages from multiple sources with priority
-  // Supports both camelCase and snake_case
-  const totalLanguages =
-    typeof job.totalLanguages === 'number' ? job.totalLanguages :
-    typeof job.total_languages === 'number' ? job.total_languages :
-    languages.length > 0 ? languages.length :
-    options.targetLanguages?.length || 0;
+  const totalLanguages = typeof job.total_languages === 'number'
+    ? job.total_languages
+    : (job.languages?.length || options.targetLanguages?.length || 0);
 
-  // Map backend status to frontend status with validation
-  const rawStatus = job.status?.toLowerCase() || 'processing';
-  const status = isValidJobStatus(rawStatus) ? rawStatus : 'processing';
+  // Map backend status to frontend status
+  const statusMap: Record<string, GetJobStatusResponse['status']> = {
+    'pending': 'uploading',
+    'processing': 'processing',
+    'generating': 'generating',
+    'finalizing': 'finalizing',
+    'complete': 'complete',
+    'error': 'error'
+  };
 
-  // Progress should be clamped to 0-100 range
-  const progress = typeof job.progress === 'number'
-    ? Math.max(0, Math.min(100, job.progress))
-    : 0;
-
-  // Fallback chain for startedAt timestamp (supports both camelCase and snake_case)
-  const startedAt = job.startedAt || job.started_at || job.created_at || new Date().toISOString();
-
-  // estimatedCompletion supports both camelCase and snake_case
-  const estimatedCompletion = job.estimatedCompletion || job.estimated_completion;
+  const status = statusMap[job.status || 'processing'] || 'processing';
 
   return {
     id,
     status,
-    progress,
+    progress: typeof job.progress === 'number' ? job.progress : 0,
     message: job.message || 'Processing...',
     languages,
     totalLanguages,
     completedLanguages,
-    startedAt,
-    estimatedCompletion
+    startedAt: job.started_at || job.created_at || new Date().toISOString(),
+    estimatedCompletion: job.estimated_completion
   };
 };
 
-/**
- * Maps backend job response to simplified Job summary for job list/history
- * Combines data from JobStatusResponse and additional database fields
- * Used for job listings where full detail isn't needed
- */
-export const mapJobSummary = (job: unknown): Job => {
-  // Validate the incoming data structure
-  // Note: mapJobResponse will also validate, but we do it here for better error messages
-  if (!isBackendJobResponse(job)) {
-    throw createValidationError(
-      'BackendJobResponse',
-      job,
-      'Invalid job data received from server'
-    );
-  }
-
-  // Get full job status mapping first (reuses mapJobResponse logic which includes validation)
+export const mapJobSummary = (job: BackendJobResponse): Job => {
   const jobStatus = mapJobResponse(job, { targetLanguages: job.target_languages });
 
-  // Map detailed GetJobStatusResponse status to simplified Job status
-  const mapStatus = (status: string): Job['status'] => {
-    const normalized = status.toLowerCase();
-    switch (normalized) {
+  // Map JobStatus status to Job status
+  const mapStatus = (status: string): 'pending' | 'processing' | 'complete' | 'error' => {
+    switch (status) {
+      case 'uploading':
+      case 'generating':
+      case 'finalizing':
+        return 'processing';
       case 'complete':
         return 'complete';
       case 'error':
         return 'error';
-      case 'uploading':
-      case 'processing':
-      case 'generating':
-      case 'finalizing':
-        return 'processing';
-      case 'pending':
       default:
         return 'pending';
     }
   };
-
-  // Extract target languages from multiple possible sources
-  const targetLanguages =
-    job.target_languages ||
-    job.languages?.map(lang => {
-      // Support both camelCase and snake_case
-      const langRecord = lang as Record<string, unknown>;
-      return langRecord.languageCode || langRecord.language_code;
-    }).filter(Boolean) ||
-    [];
-
-  // Timestamps with fallback chain (supports both camelCase and snake_case)
-  const createdAt = job.created_at || job.startedAt || job.started_at || new Date().toISOString();
-  const updatedAt = job.updated_at || job.created_at || job.startedAt || job.started_at || new Date().toISOString();
 
   return {
     id: jobStatus.id,
     status: mapStatus(jobStatus.status),
     progress: jobStatus.progress,
     message: jobStatus.message,
-    createdAt,
-    updatedAt,
-    voiceTrackDuration: typeof job.voice_track_duration === 'number' ? job.voice_track_duration : 0,
-    targetLanguages,
+    createdAt: job.created_at || job.started_at || new Date().toISOString(),
+    updatedAt: job.updated_at || job.created_at || job.started_at || new Date().toISOString(),
+    voiceTrackDuration: job.voice_track_duration ?? 0,
+    targetLanguages: job.target_languages || job.languages?.map(language => language.language_code) || [],
     backgroundTrack: job.background_track_uploaded ?? false,
     completedLanguages: jobStatus.completedLanguages,
     totalLanguages: jobStatus.totalLanguages,
@@ -438,24 +337,11 @@ const getMockJobStatus = (jobId: string, targetLanguages: string[]): GetJobStatu
   return mapMockJobToStatus(job, targetLanguages);
 };
 
-const mapSubmitJobResponse = (data: unknown): SubmitJobResponse => {
-  // Validate the incoming data structure
-  if (!isBackendSubmitJobResponse(data)) {
-    throw createValidationError(
-      'BackendSubmitJobResponse',
-      data,
-      'Invalid job submission response received from server'
-    );
-  }
-
+const mapSubmitJobResponse = (data: BackendSubmitJobResponse): SubmitJobResponse => {
   const jobId = data.job_id || data.id;
 
   if (!jobId) {
-    throw createValidationError(
-      'BackendSubmitJobResponse',
-      data,
-      'Job submission response missing job ID'
-    );
+    throw new Error('Job submission response missing job_id field.');
   }
 
   return { jobId };
@@ -499,7 +385,7 @@ export const createApiError = (error: unknown, response?: Response): ApiError =>
     return {
       type: 'network',
       message: 'Network error - please check your connection',
-      details: config.devMode ? errorDetails : undefined,
+      details: errorDetails,
       retryable: true
     };
   }
@@ -521,7 +407,7 @@ export const createApiError = (error: unknown, response?: Response): ApiError =>
           return {
             type: 'validation',
             message: `Audio tracks must be the same length. Voice: ${errorData.voice_duration}s, Background: ${errorData.background_duration}s`,
-            details: config.devMode ? errorData : undefined,
+            details: errorData,
             statusCode: 400,
             retryable: false
           };
@@ -529,7 +415,7 @@ export const createApiError = (error: unknown, response?: Response): ApiError =>
         return {
           type: 'validation',
           message: errorData.message || 'Invalid request data',
-          details: config.devMode ? errorData : undefined,
+          details: errorData,
           statusCode: 400,
           retryable: false
         };
@@ -537,7 +423,7 @@ export const createApiError = (error: unknown, response?: Response): ApiError =>
         return {
           type: 'auth',
           message: 'Authentication required - please sign in',
-          details: config.devMode ? errorData : undefined,
+          details: errorData,
           statusCode: 401,
           retryable: false
         };
@@ -545,7 +431,7 @@ export const createApiError = (error: unknown, response?: Response): ApiError =>
         return {
           type: 'auth',
           message: 'Access denied - insufficient permissions',
-          details: config.devMode ? errorData : undefined,
+          details: errorData,
           statusCode: 403,
           retryable: false
         };
@@ -553,7 +439,7 @@ export const createApiError = (error: unknown, response?: Response): ApiError =>
         return {
           type: 'not_found',
           message: 'Resource not found',
-          details: config.devMode ? errorData : undefined,
+          details: errorData,
           statusCode: 404,
           retryable: false
         };
@@ -561,7 +447,7 @@ export const createApiError = (error: unknown, response?: Response): ApiError =>
         return {
           type: 'rate_limit',
           message: 'Too many requests - please wait before trying again',
-          details: config.devMode ? errorData : undefined,
+          details: errorData,
           statusCode: 429,
           retryable: true
         };
@@ -572,7 +458,7 @@ export const createApiError = (error: unknown, response?: Response): ApiError =>
         return {
           type: 'server',
           message: 'Server error - please try again later',
-          details: config.devMode ? errorData : undefined,
+          details: errorData,
           statusCode: response.status,
           retryable: true
         };
@@ -580,7 +466,7 @@ export const createApiError = (error: unknown, response?: Response): ApiError =>
         return {
           type: 'unknown',
           message: errorData.message || 'An unexpected error occurred',
-          details: config.devMode ? errorData : undefined,
+          details: errorData,
           statusCode: response.status,
           retryable: response.status >= 500
         };
@@ -894,7 +780,7 @@ export const notifyUploadComplete = async (request: JobCreationRequest): Promise
       throw apiError;
     }
 
-    let jobData: unknown;
+    let jobData: BackendSubmitJobResponse;
     try {
       jobData = await response.json();
       console.log('Job creation success response:', jobData);
@@ -903,55 +789,44 @@ export const notifyUploadComplete = async (request: JobCreationRequest): Promise
       throw new Error('Backend did not provide a valid JSON response');
     }
 
-    // mapSubmitJobResponse will validate the data
     return mapSubmitJobResponse(jobData);
   });
 };
 
-/**
- * Complete dubbing job submission flow:
- * 1. Request signed upload URLs from backend
- * 2. Upload files directly to storage using signed URLs
- * 3. Notify backend that uploads are complete to trigger processing
- */
 export const submitDubbingJob = async (
   data: DubbingJobData,
   onProgress?: (progress: UploadProgress) => void
 ): Promise<SubmitJobResponse> => {
   try {
+    // Generate a client-side job id (backend may replace/accept it)
+    const jobId = `job_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+
     // 1) Request signed URLs for uploads
     onProgress?.({ progress: 5, status: 'uploading', message: 'Requesting upload URLs...' });
 
-    // Backend UploadUrlsRequest schema expects: languages, voice_track_name, background_track_name
     const uploadUrls = await requestSignedUploadUrls({
-      languages: data.targetLanguages,
-      voice_track_name: data.voiceTrack.name,
-      background_track_name: data.backgroundTrack?.name
+      job_id: jobId,
+      voice_filename: data.voiceTrack.name,
+      background_filename: data.backgroundTrack?.name,
+      content_types: {
+        voice: data.voiceTrack.type,
+        background: data.backgroundTrack?.type,
+      },
     });
-
-    // Extract upload URLs from response
-    // Backend returns: { job_id: string, upload_urls: { voice_track: string, background_track?: string } }
-    const voiceUploadUrl = uploadUrls.upload_urls.voice_track;
-    const backgroundUploadUrl = uploadUrls.upload_urls.background_track;
-
-    if (!voiceUploadUrl) {
-      throw new Error('Backend did not provide voice track upload URL');
-    }
 
     // 2) Upload files to storage
     onProgress?.({ progress: 15, status: 'uploading', message: 'Uploading voice track...' });
-    await uploadFileToStorage(data.voiceTrack, voiceUploadUrl, (p) => onProgress?.(p));
+    await uploadFileToStorage(data.voiceTrack, uploadUrls.voice_url, (p) => onProgress?.(p));
 
-    if (data.backgroundTrack && backgroundUploadUrl) {
+    if (data.backgroundTrack && uploadUrls.background_url) {
       onProgress?.({ progress: 60, status: 'uploading', message: 'Uploading background track...' });
-      await uploadFileToStorage(data.backgroundTrack, backgroundUploadUrl, (p) => onProgress?.(p));
+      await uploadFileToStorage(data.backgroundTrack, uploadUrls.background_url, (p) => onProgress?.(p));
     }
 
     // 3) Notify backend to create/process job
-    // Backend JobCreationRequest expects: job_id, voice_track_uploaded, background_track_uploaded, languages
     onProgress?.({ progress: 85, status: 'processing', message: 'Creating job...' });
     const result = await notifyUploadComplete({
-      job_id: uploadUrls.job_id,
+      job_id: jobId,
       voice_track_uploaded: true,
       background_track_uploaded: !!data.backgroundTrack,
       languages: data.targetLanguages,
@@ -978,29 +853,8 @@ export const fetchJobs = async (): Promise<Job[]> => {
       throw apiError;
     }
     const data = await response.json();
-
-    // Validate response is an array
-    if (!Array.isArray(data)) {
-      throw createValidationError(
-        'JobArray',
-        data,
-        'Invalid jobs data received from server'
-      );
-    }
-
-    // Validate and map jobs
-    const validJobs: Job[] = [];
-    for (const item of data) {
-      try {
-        // mapJobSummary will validate the item
-        validJobs.push(mapJobSummary(item));
-      } catch (error) {
-        console.warn('Invalid job data received, skipping:', item, error);
-        // Skip invalid items rather than failing entire request
-      }
-    }
-
-    return validJobs;
+    const jobs: Job[] = Array.isArray(data) ? data.map((j: unknown) => mapJobSummary(j as any)) : [];
+    return jobs;
   });
 };
 
@@ -1036,28 +890,7 @@ export const fetchTransactions = async (): Promise<Transaction[]> => {
       throw apiError;
     }
     const data = await response.json();
-
-    // Validate response is an array
-    if (!Array.isArray(data)) {
-      throw createValidationError(
-        'TransactionArray',
-        data,
-        'Invalid transactions data received from server'
-      );
-    }
-
-    // Validate and filter transactions
-    const validTransactions: Transaction[] = [];
-    for (const item of data) {
-      if (isBackendTransaction(item)) {
-        validTransactions.push(item as Transaction);
-      } else {
-        console.warn('Invalid transaction data received:', item);
-        // Skip invalid items rather than failing entire request
-      }
-    }
-
-    return validTransactions;
+    return Array.isArray(data) ? data as Transaction[] : [];
   });
 };
 
@@ -1075,26 +908,7 @@ export const createPaymentIntent = async (amount: number): Promise<{ clientSecre
       throw apiError;
     }
     const data = await response.json();
-
-    // Validate payment intent response
-    if (!isBackendPaymentIntent(data)) {
-      throw createValidationError(
-        'BackendPaymentIntent',
-        data,
-        'Invalid payment intent response received from server'
-      );
-    }
-
-    const clientSecret = data.client_secret || data.clientSecret;
-    if (!clientSecret) {
-      throw createValidationError(
-        'BackendPaymentIntent',
-        data,
-        'Payment intent response missing client secret'
-      );
-    }
-
-    return { clientSecret };
+    return { clientSecret: data.client_secret || data.clientSecret };
   });
 };
 
@@ -1113,8 +927,7 @@ export const getJobStatus = async (jobId: string, targetLanguages: string[] = []
         throw apiError;
       }
 
-      const jobData = await response.json();
-      // mapJobResponse will validate the data
+      const jobData: BackendJobResponse = await response.json();
       return mapJobResponse(jobData, { targetLanguages });
     });
   } catch (error) {
@@ -1322,6 +1135,21 @@ export const downloadMultipleFiles = async (
 };
 
 // Downloads APIs
+export interface DownloadHistoryItemApi {
+  id: string;
+  job_id: string;
+  job_title?: string;
+  language_code: string;
+  language_name?: string;
+  file_type: 'voice' | 'full' | 'captions';
+  file_name: string;
+  file_size?: number;
+  downloaded_at: string;
+  expires_at?: string;
+  is_expired?: boolean;
+  download_url?: string;
+}
+
 export const fetchDownloads = async (): Promise<{
   id: string;
   jobId: string;
@@ -1344,43 +1172,21 @@ export const fetchDownloads = async (): Promise<{
       const apiError = createApiError(errorData, response);
       throw apiError;
     }
-    const data = await response.json();
-
-    // Validate response is an array
-    if (!Array.isArray(data)) {
-      throw createValidationError(
-        'DownloadHistoryArray',
-        data,
-        'Invalid downloads data received from server'
-      );
-    }
-
-    // Validate and map download items
-    const validDownloads = [];
-    for (const item of data) {
-      if (!isDownloadHistoryItemApi(item)) {
-        console.warn('Invalid download history item received:', item);
-        // Skip invalid items rather than failing entire request
-        continue;
-      }
-
-      validDownloads.push({
-        id: item.id,
-        jobId: item.job_id,
-        jobTitle: item.job_title || 'Job',
-        languageCode: item.language_code,
-        languageName: item.language_name || item.language_code.toUpperCase(),
-        fileType: item.file_type,
-        fileName: item.file_name,
-        fileSize: item.file_size,
-        downloadedAt: item.downloaded_at,
-        expiresAt: item.expires_at,
-        isExpired: item.is_expired ?? (item.expires_at ? new Date(item.expires_at) < new Date() : false),
-        downloadUrl: resolveDownloadUrl(item.download_url),
-      });
-    }
-
-    return validDownloads;
+    const data: DownloadHistoryItemApi[] = await response.json();
+    return (Array.isArray(data) ? data : []).map((d) => ({
+      id: d.id,
+      jobId: d.job_id,
+      jobTitle: d.job_title || 'Job',
+      languageCode: d.language_code,
+      languageName: d.language_name || d.language_code.toUpperCase(),
+      fileType: d.file_type,
+      fileName: d.file_name,
+      fileSize: d.file_size,
+      downloadedAt: d.downloaded_at,
+      expiresAt: d.expires_at,
+      isExpired: d.is_expired ?? (d.expires_at ? new Date(d.expires_at) < new Date() : false),
+      downloadUrl: resolveDownloadUrl(d.download_url),
+    }));
   });
 };
 
