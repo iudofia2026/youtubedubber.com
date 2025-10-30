@@ -17,6 +17,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [currentStatus, setCurrentStatus] = useState<string>('');
+  const [userCredits, setUserCredits] = useState<number | null>(null);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(null);
   const pathname = usePathname();
@@ -31,6 +32,18 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       setCurrentStatus(urlParams.get('status') || '');
+      // Load credits from localStorage for quick surface in menu
+      const storedCredits = window.localStorage.getItem('user-credits');
+      setUserCredits(storedCredits ? parseInt(storedCredits, 10) : 0);
+      const handleStorage = (e: StorageEvent) => {
+        if (e.key === 'user-credits') {
+          setUserCredits(e.newValue ? parseInt(e.newValue, 10) : 0);
+        }
+      };
+      window.addEventListener('storage', handleStorage);
+      return () => {
+        window.removeEventListener('storage', handleStorage);
+      };
     }
   }, []);
 
@@ -312,6 +325,24 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
                       transition={{ duration: 0.2 }}
                       className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
                     >
+                      {/* Quick credits overview */}
+                      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-xs uppercase tracking-wide text-muted-foreground">Credits</p>
+                            <p className="text-2xl font-semibold text-foreground mt-1">
+                              {userCredits !== null ? userCredits.toLocaleString() : '?'}
+                            </p>
+                          </div>
+                          <Link
+                            href="/billing"
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium bg-[#ff0000] text-white rounded-md hover:bg-[#cc0000] transition-colors"
+                            onClick={closeUserMenu}
+                          >
+                            Manage credits
+                          </Link>
+                        </div>
+                      </div>
                       <UserProfile onClose={closeUserMenu} />
                     </motion.div>
                   )}
