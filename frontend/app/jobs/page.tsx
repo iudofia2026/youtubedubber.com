@@ -57,12 +57,7 @@ function JobsPageContent() {
     };
   }, []);
 
-  // If user has no jobs, redirect to create their first job
-  useEffect(() => {
-    if (!loading && jobs.length === 0) {
-      router.push('/new');
-    }
-  }, [loading, jobs.length, router]);
+  // Show empty state instead of redirecting when no jobs
 
   const handleRefresh = async () => {
     setLoading(true);
@@ -265,16 +260,38 @@ function JobsPageContent() {
           </div>
         </motion.div>
 
-        {/* Job History Component */}
-        <JobHistory
-          jobs={jobs}
-          loading={loading}
-          onRefresh={handleRefresh}
-          onViewJob={handleViewJob}
-          onDownloadJob={handleDownloadJob}
-          onDeleteJob={handleDeleteJob}
-          onStatusFilterChange={handleStatusFilterChange}
-        />
+        {/* Empty state when no jobs */}
+        {!loading && jobs.length === 0 ? (
+          <motion.div
+            className="text-center py-24 border border-dashed border-border rounded-2xl bg-muted/20"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-[#ff0000]/10 flex items-center justify-center">
+              <Plus className="w-7 h-7 text-[#ff0000]" />
+            </div>
+            <h2 className="text-2xl font-semibold mb-2">No jobs yet</h2>
+            <p className="text-muted-foreground mb-6">Create your first dubbing job to get started.</p>
+            <Link
+              href="/new"
+              className="inline-flex items-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#ff0000] to-[#cc0000] hover:from-[#cc0000] hover:to-[#aa0000] rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Create New Job</span>
+            </Link>
+          </motion.div>
+        ) : (
+          <JobHistory
+            jobs={jobs}
+            loading={loading}
+            onRefresh={handleRefresh}
+            onViewJob={handleViewJob}
+            onDownloadJob={handleDownloadJob}
+            onDeleteJob={handleDeleteJob}
+            onStatusFilterChange={handleStatusFilterChange}
+          />
+        )}
         </main>
         
         {/* Creative Downloads Section */}
