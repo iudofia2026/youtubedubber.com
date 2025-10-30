@@ -191,13 +191,51 @@ class JobProcessor:
                 translated_text, language_code
             )
 
-            # TODO: Add audio mixing with background track if present
-            # If job.background_track_url exists:
-            #   1. Download background track
-            #   2. Save speech_audio to temp file
-            #   3. Use ai_service.mix_audio_tracks() to combine them
-            #   4. Upload mixed audio instead of speech_audio alone
-            # This would provide a complete dubbed experience with music/ambient audio
+            # Mix with background track if present
+            final_audio = speech_audio
+            if job.background_track_url:
+                try:
+                    await self.job_service.update_language_task_status(
+                        task_id, LanguageTaskStatus.PROCESSING, 85, "Mixing with background audio...", db=db
+                    )
+
+                    # Download background track
+                    background_path = await self.download_background_track(job)
+
+                    if background_path:
+                        # Save speech audio to temp file
+                        speech_temp = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+                        speech_temp.write(speech_audio)
+                        speech_temp.close()
+
+                        # Create output file for mixed audio
+                        mixed_temp = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+                        mixed_temp.close()
+
+                        # Mix the audio tracks
+                        mixed_path = await self.ai_service.mix_audio_tracks(
+                            voice_track_path=speech_temp.name,
+                            background_track_path=background_path,
+                            output_path=mixed_temp.name
+                        )
+
+                        # Read mixed audio
+                        with open(mixed_path, 'rb') as f:
+                            final_audio = f.read()
+
+                        # Clean up temp files
+                        os.remove(speech_temp.name)
+                        os.remove(background_path)
+                        os.remove(mixed_temp.name)
+
+                        logger.info(f"Successfully mixed voice with background audio")
+                    else:
+                        logger.warning("Failed to download background track, using voice-only audio")
+
+                except Exception as e:
+                    logger.error(f"Error mixing audio tracks: {e}")
+                    logger.warning("Using voice-only audio due to mixing error")
+                    final_audio = speech_audio
 
             await self.job_service.update_language_task_status(
                 task_id, LanguageTaskStatus.PROCESSING, 90, "Uploading generated audio...", db=db
@@ -213,7 +251,7 @@ class JobProcessor:
             logger.info(f"Uploading generated audio to: {audio_path}")
             public_url = await self.storage_service.upload_file(
                 file_path=audio_path,
-                file_data=speech_audio,
+                file_data=final_audio,
                 content_type="audio/mpeg"
             )
 
@@ -264,6 +302,32 @@ class JobProcessor:
 
         except Exception as e:
             logger.error(f"Error downloading voice track: {e}", exc_info=True)
+            return None
+
+    async def download_background_track(self, job: DubbingJob) -> str:
+        """Download background track from storage to temporary file"""
+        try:
+            if not job.background_track_url:
+                raise Exception("No background track URL found")
+
+            logger.info(f"Downloading background track from: {job.background_track_url}")
+
+            # Download file from Supabase Storage
+            file_data = await self.storage_service.download_file(job.background_track_url)
+
+            # Determine file extension from URL
+            file_ext = os.path.splitext(job.background_track_url)[1] or ".mp3"
+
+            # Save to temporary file
+            temp_file = tempfile.NamedTemporaryFile(suffix=file_ext, delete=False)
+            temp_file.write(file_data)
+            temp_file.close()
+
+            logger.info(f"Downloaded background track to: {temp_file.name}")
+            return temp_file.name
+
+        except Exception as e:
+            logger.error(f"Error downloading background track: {e}", exc_info=True)
             return None
     
     async def extract_audio_from_video(self, video_path: str) -> str:

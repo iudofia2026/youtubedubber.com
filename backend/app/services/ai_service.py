@@ -28,14 +28,15 @@ class AIService:
         self,
         audio_file_path: str,
         language: str = "en"
-    ) -> str:
+    ) -> Dict[str, any]:
         """
-        Transcribe audio using Deepgram v5 - simplified version
+        Transcribe audio using Deepgram v5
+        Returns dict with transcript, confidence, and duration
         """
         try:
             with open(audio_file_path, "rb") as audio_file:
                 buffer_data = audio_file.read()
-            
+
             # Deepgram v5 API with simplified parameters to avoid Pydantic issues
             response = self.deepgram.listen.v1.media.transcribe_file(
                 request=buffer_data,
@@ -44,13 +45,22 @@ class AIService:
                 smart_format=True,
                 punctuate=True
             )
-            
-            # Extract just the transcript text
-            transcript = response.results.channels[0].alternatives[0].transcript
-            
-            logger.info(f"Transcribed audio: {len(transcript)} characters")
-            return transcript
-            
+
+            # Extract transcript and metadata
+            channel = response.results.channels[0]
+            alternative = channel.alternatives[0]
+            transcript = alternative.transcript
+            confidence = alternative.confidence if hasattr(alternative, 'confidence') else 0.0
+            duration = response.results.metadata.duration if hasattr(response.results, 'metadata') else 0.0
+
+            logger.info(f"Transcribed audio: {len(transcript)} characters, confidence: {confidence:.2f}")
+
+            return {
+                "transcript": transcript,
+                "confidence": confidence,
+                "duration": duration
+            }
+
         except Exception as e:
             logger.error(f"Error transcribing audio: {e}")
             raise Exception("Failed to transcribe audio")
