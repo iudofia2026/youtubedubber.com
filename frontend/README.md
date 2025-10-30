@@ -196,6 +196,78 @@ The frontend is fully prepared for backend integration with the following improv
 - There is no dedicated profile or settings page beyond Supabase metadata.
 - Credit balances are tracked locally and not yet synchronized with backend state.
 - Several marketing claims (e.g., retention windows, premium tiers) are static copy until the backend delivers matching capabilities.
+
+## Critical Review, Optimizations, and Production Readiness
+
+This section calls out the most important gaps and concrete actions to get the frontend "production-grade" with a focus on effectiveness, efficiency, and safety.
+
+### Realtime Job Updates (replace or augment polling)
+- Implement a WS/SSE client using `NEXT_PUBLIC_WS_URL` that emits per-job updates `{ id, status, progress, languages[] }`.
+- Integrate updates into `IndividualLanguageProgress`, job detail, and history screens. Fallback to `pollJobStatus` when WS is unavailable.
+- Backoff and auto-reconnect; gate logs in development only.
+
+### Credits: Server-Source of Truth
+- Replace local-only credits in `lib/credits.ts` with backend-synced balance. Reconcile on app start and after successful checkout.
+- Ensure purchase flows refresh balance immediately and render deterministic success states.
+
+### Payments Flow Hardening (Stripe)
+- Guard `/billing` behind auth; display clear UI when `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` is missing.
+- Handle Stripe load/retry gracefully and show receipts. Persist transactions and refresh credits upon completion.
+
+### Authentication and Headers
+- Centralize auth token acquisition in `AuthProvider`; avoid dynamic imports from `getAuthHeaders` on hot paths.
+- Ensure 401s consistently redirect to `/auth/signin` and that dev-mode tokens cannot leak to production (`NEXT_PUBLIC_DEV_MODE=false`).
+
+### Logging, Observability, and Error Reporting
+- Current code logs API config and token decisions in all environments; sanitize and gate behind `isDevelopment`.
+- Wire `components/ErrorBoundary.tsx` to a reporter (Sentry/LogRocket) and remove the TODO. Standardize toast surfaces for `ApiError` with actionable recovery options.
+
+### File Upload UX and Robustness
+- Strengthen `FileUpload` pre-submit validation (size/MIME, voice/background length checks) and provide cancel/retry.
+- Persist “job preview” across refreshes (sessionStorage path exists; verify end-to-end flow).
+
+### Downloads UX Completeness
+- Disable per-language actions until URLs are valid; add tooltips for pending/expired items.
+- Wire a “Download all” action using `downloadMultipleFiles` with progress toasts and completion summary.
+
+### Performance and Accessibility
+- Audit LCP/CLS and reduce initial JS on landing via targeted code-splitting (lazy-load heavy motion sections and payment modules).
+- Replace swipe-only affordances with accessible keyboard actions and visible focus states across jobs/downloads lists.
+
+### SEO, Analytics, and Compliance
+- Add route-level metadata (OpenGraph/Twitter), sitemap and robots. Respect DNT and add consent for analytics.
+- If enabled, use `NEXT_PUBLIC_GA_TRACKING_ID` gated initialization with opt-in controls.
+
+### CI/CD and Env Guardrails
+- Add CI for build/lint and basic end-to-end smoke (auth → create job → status → download → purchase).
+- Prevent deploys with `NEXT_PUBLIC_DEV_MODE=true` via a build-time check or script (`scripts/validate-env.js`).
+
+### Security Notes
+- Avoid logging tokens or PII; ensure `ApiError.details` redacts sensitive fields before surfacing to UI/logs.
+- Validate and clamp numeric fields from backend (already done for job progress); extend rigor to all user-facing numerics.
+
+## Realtime Integration Guide (when backend is ready)
+1. Set `NEXT_PUBLIC_WS_URL` to the backend WS/SSE endpoint.
+2. Client subscribes to messages per job: `{ id, status, progress, languages:[{languageCode,status,progress,downloadUrl}] }`.
+3. Merge incoming language updates into component state; update progress bars and enable downloads on readiness.
+4. Fallback: if WS drops, continue with `pollJobStatus` using exponential backoff.
+
+## Release Checklist
+- Backend reachable at `NEXT_PUBLIC_API_URL` and WS/SSE schema agreed.
+- `NEXT_PUBLIC_DEV_MODE=false`, Stripe key present for billing, Supabase credentials configured (or dev bypass explicitly on).
+- Verbose logs gated; error reporting wired; env validation passes.
+- Smoke e2e scenarios pass (create job → watch status → download → purchase).
+
+## Backlog (Prioritized)
+- [ ] Realtime job updates (WS/SSE) with fallback to polling.
+- [ ] Backend-synced credits with deterministic post-checkout refresh.
+- [ ] Stripe flow retries/receipts and authenticated `/billing` route guard.
+- [ ] Centralized auth headers; remove production dev-token path.
+- [ ] Gate logs, add reporter integration, unify error toasts.
+- [ ] Upload validation/cancel/retry and session restore.
+- [ ] Download UX: disable until ready, tooltips, “Download all”.
+- [ ] Performance/a11y pass and route metadata + sitemap.
+- [ ] CI build/lint + smoke e2e; env guardrails for dev mode.
 - API logging lacks sanitization: `lib/api.ts` prints configuration details and auth-token decisions in all environments.
 - `createApiError` surfaces backend payloads in `details`; tighten messages for production before exposing users to them.
 - No guard rails prevent deploying with `NEXT_PUBLIC_DEV_MODE=true`; add a build-time check in `lib/config.ts` or a script.
