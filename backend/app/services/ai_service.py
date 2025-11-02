@@ -186,6 +186,57 @@ class AIService:
             logger.error(f"Error translating chunked text: {e}")
             raise Exception("Failed to translate chunked text")
     
+    async def _generate_speech_openai(
+        self,
+        text: str,
+        language: str
+    ) -> bytes:
+        """
+        Generate speech using OpenAI TTS (better quality for Chinese)
+        """
+        try:
+            # Map language codes to OpenAI voice models
+            # OpenAI TTS supports Chinese with excellent quality
+            # Available voices: alloy, echo, fable, onyx, nova, shimmer
+            # For Chinese, use a neutral voice that works well
+            voice_name = "nova"  # Clear, neutral voice that works well for Chinese
+            
+            logger.info(f"Using OpenAI TTS for Chinese: {language}, voice: {voice_name}")
+            
+            # OpenAI TTS API
+            response = await self.openai_client.audio.speech.create(
+                model="tts-1",  # Use tts-1 for faster generation, or tts-1-hd for higher quality
+                voice=voice_name,
+                input=text,
+                response_format="mp3"
+            )
+            
+            # Get audio data - OpenAI returns content directly
+            audio_data = response.content
+            
+            # Save to downloads directory
+            import os
+            from datetime import datetime
+            
+            downloads_path = "downloads"
+            os.makedirs(downloads_path, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"ytdubber_{language}_{timestamp}.mp3"
+            file_path = os.path.join(downloads_path, filename)
+            
+            try:
+                with open(file_path, 'wb') as f:
+                    f.write(audio_data)
+                logger.info(f"?? Generated Chinese audio saved to downloads: {filename}")
+            except Exception as e:
+                logger.warning(f"Could not save to downloads: {e}")
+            
+            return audio_data
+            
+        except Exception as e:
+            logger.error(f"Error generating speech with OpenAI TTS: {e}", exc_info=True)
+            raise Exception(f"Failed to generate speech with OpenAI: {str(e)}")
+    
     async def generate_speech(
         self,
         text: str,
@@ -193,9 +244,13 @@ class AIService:
         voice: str = None
     ) -> bytes:
         """
-        Generate speech using Deepgram TTS
+        Generate speech using Deepgram TTS or OpenAI TTS (for better Chinese quality)
         """
         try:
+            # Use OpenAI TTS for Chinese - much better quality than Deepgram
+            if language in ["zh", "zh-CN", "zh-TW"]:
+                return await self._generate_speech_openai(text, language)
+            
             # Map language codes to Deepgram voices (using available Aura models)
             voice_mapping = {
                 "en": "aura-asteria-en",      # English - Asteria (female, conversational)
@@ -203,7 +258,6 @@ class AIService:
                 "fr": "aura-asteria-en",      # French - fallback to English (no French model available)
                 "de": "aura-asteria-en",      # German - fallback to English (no German model available)
                 "ja": "aura-asteria-en",      # Japanese - fallback to English (no Japanese model available)
-                "zh": "aura-asteria-en",      # Chinese - fallback to English (no Chinese model available)
                 "ko": "aura-asteria-en",      # Korean - fallback to English (no Korean model available)
                 "pt": "aura-asteria-en",      # Portuguese - fallback to English (no Portuguese model available)
                 "it": "aura-asteria-en",      # Italian - fallback to English (no Italian model available)
@@ -239,7 +293,7 @@ class AIService:
             try:
                 with open(file_path, 'wb') as f:
                     f.write(audio_data)
-                logger.info(f"🎵 Generated audio saved to downloads: {filename}")
+                logger.info(f"?? Generated audio saved to downloads: {filename}")
             except Exception as e:
                 logger.warning(f"Could not save to downloads: {e}")
                 

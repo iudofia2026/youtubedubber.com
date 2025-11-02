@@ -37,10 +37,10 @@ class ContentTypes(BaseModel):
 
 class UploadUrlsRequest(BaseModel):
     """Request schema for generating signed upload URLs"""
-    job_id: str = Field(..., description="Client-generated job identifier")
-    voice_filename: str = Field(..., description="Name of the voice track file")
-    background_filename: Optional[str] = Field(None, description="Name of the background track file")
-    content_types: ContentTypes = Field(..., description="MIME types of the files")
+    languages: List[str] = Field(..., description="List of target language codes")
+    voice_track_name: str = Field(..., description="Name of the voice track file")
+    background_track_name: Optional[str] = Field(None, description="Name of the background track file")
+    content_types: Optional[ContentTypes] = Field(None, description="MIME types of the files (optional, will be inferred from filenames)")
 
 
 class JobCreationRequest(BaseModel):
@@ -56,18 +56,29 @@ class JobCreationRequest(BaseModel):
 
 
 # Response schemas (matching frontend types)
+class UploadUrlsNested(BaseModel):
+    """Nested upload URLs for voice and background tracks"""
+    voice_track: str = Field(..., description="Signed URL for voice track upload")
+    background_track: Optional[str] = Field(None, description="Signed URL for background track upload")
+
+
 class SignedUploadUrls(BaseModel):
-    """Response schema for signed upload URLs"""
+    """Response schema for signed upload URLs - matches frontend expectations"""
     job_id: str = Field(..., description="Unique job identifier")
-    voice_url: str = Field(..., description="Signed URL for voice track upload")
-    background_url: Optional[str] = Field(None, description="Signed URL for background track upload")
+    upload_urls: UploadUrlsNested = Field(..., description="Upload URLs for tracks")
+    voice_track_path: str = Field(..., description="Storage path for voice track")
+    background_track_path: Optional[str] = Field(None, description="Storage path for background track")
 
     class Config:
         json_schema_extra = {
             "example": {
                 "job_id": "job_123456789",
-                "voice_url": "https://storage.supabase.co/...",
-                "background_url": "https://storage.supabase.co/..."
+                "upload_urls": {
+                    "voice_track": "https://storage.supabase.co/...",
+                    "background_track": "https://storage.supabase.co/..."
+                },
+                "voice_track_path": "uploads/user_123/job_123/voice_track_audio.mp3",
+                "background_track_path": "uploads/user_123/job_123/background_track_music.mp3"
             }
         }
 
@@ -270,3 +281,140 @@ class JobCostCalculation(BaseModel):
     languages: List[str] = Field(..., description="Target languages")
     duration: int = Field(..., description="Voice track duration in seconds")
     breakdown: Dict[str, Any] = Field(..., description="Cost breakdown details")
+
+
+# User Profile schemas
+class UserStatsResponse(BaseModel):
+    """User statistics response"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "totalJobs": 15,
+                "completedJobs": 12,
+                "processingJobs": 2,
+                "failedJobs": 1,
+                "totalLanguages": 5,
+                "totalMinutesProcessed": 120,
+                "accountAge": 45,
+                "lastActivity": "2025-01-15T10:30:00Z"
+            }
+        }
+    )
+
+    totalJobs: int = Field(0, description="Total number of jobs created")
+    completedJobs: int = Field(0, description="Number of completed jobs")
+    processingJobs: int = Field(0, description="Number of jobs currently processing")
+    failedJobs: int = Field(0, description="Number of failed jobs")
+    totalLanguages: int = Field(0, description="Total number of languages dubbed to")
+    totalMinutesProcessed: int = Field(0, description="Total minutes of audio processed")
+    accountAge: int = Field(0, description="Account age in days")
+    lastActivity: Optional[str] = Field(None, description="Last activity timestamp (ISO format)")
+
+
+class UserActivityItem(BaseModel):
+    """Single user activity item"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "id": "activity_123",
+                "type": "job_completed",
+                "description": "Dubbed video to Spanish, French",
+                "timestamp": "2025-01-15T10:30:00Z",
+                "metadata": {"job_id": "job_456", "languages": ["es", "fr"]}
+            }
+        }
+    )
+
+    id: str = Field(..., description="Activity ID")
+    type: str = Field(..., description="Activity type (job_created, job_completed, credit_purchase, etc.)")
+    description: str = Field(..., description="Human-readable description")
+    timestamp: str = Field(..., description="Activity timestamp (ISO format)")
+    metadata: Optional[Dict[str, Any]] = Field(None, description="Additional activity data")
+
+
+class UserActivityResponse(BaseModel):
+    """User activity history response"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "activities": [],
+                "total": 50,
+                "hasMore": True
+            }
+        }
+    )
+
+    activities: List[UserActivityItem] = Field(..., description="List of recent activities")
+    total: int = Field(..., description="Total number of activities")
+    hasMore: bool = Field(False, description="Whether more activities are available")
+
+
+class UserProfileUpdateRequest(BaseModel):
+    """Request schema for updating user profile"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "fullName": "John Doe",
+                "avatarUrl": "https://example.com/avatar.jpg",
+                "timezone": "America/New_York",
+                "languagePreference": "en"
+            }
+        }
+    )
+
+    fullName: Optional[str] = Field(None, min_length=1, max_length=100, description="User's full name")
+    avatarUrl: Optional[str] = Field(None, max_length=500, description="Avatar image URL")
+    timezone: Optional[str] = Field(None, description="User timezone (e.g., 'America/New_York')")
+    languagePreference: Optional[str] = Field(None, min_length=2, max_length=5, description="Preferred UI language code")
+
+
+class UserProfileResponse(BaseModel):
+    """Complete user profile response with statistics"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "id": "user_123",
+                "email": "john@example.com",
+                "fullName": "John Doe",
+                "avatarUrl": "https://example.com/avatar.jpg",
+                "timezone": "America/New_York",
+                "languagePreference": "en",
+                "createdAt": "2024-12-01T00:00:00Z",
+                "updatedAt": "2025-01-15T10:30:00Z",
+                "creditBalance": 100,
+                "stats": {
+                    "totalJobs": 15,
+                    "completedJobs": 12,
+                    "processingJobs": 2,
+                    "failedJobs": 1,
+                    "totalLanguages": 5,
+                    "totalMinutesProcessed": 120,
+                    "accountAge": 45,
+                    "lastActivity": "2025-01-15T10:30:00Z"
+                }
+            }
+        }
+    )
+
+    # Basic user info
+    id: str = Field(..., description="User ID")
+    email: str = Field(..., description="User email address")
+    fullName: Optional[str] = Field(None, description="User's full name")
+    avatarUrl: Optional[str] = Field(None, description="Avatar image URL")
+    timezone: Optional[str] = Field(None, description="User timezone")
+    languagePreference: Optional[str] = Field(None, description="Preferred UI language")
+
+    # Account info
+    createdAt: str = Field(..., description="Account creation timestamp (ISO format)")
+    updatedAt: Optional[str] = Field(None, description="Last update timestamp (ISO format)")
+
+    # Credit balance
+    creditBalance: int = Field(0, description="Current credit balance")
+
+    # Statistics
+    stats: UserStatsResponse = Field(..., description="User statistics")

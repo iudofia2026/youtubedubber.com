@@ -12,6 +12,8 @@ from app.services.supabase_job_service import SupabaseJobService
 from app.services.supabase_db_service import SupabaseDBService
 from app.services.ai_service import AIService
 from app.services.storage_service import StorageService
+from app.auth import SupabaseStorageService
+from app.config import settings
 from app.schemas import LanguageTaskStatus
 import uuid
 
@@ -26,6 +28,8 @@ class SupabaseJobProcessor:
         self.db_service = SupabaseDBService()
         self.ai_service = AIService()
         self.storage_service = StorageService()
+        self.supabase_storage = SupabaseStorageService()
+        self.bucket = settings.storage_bucket
         self.running = False
         self.poll_interval = 5  # Check every 5 seconds
     
@@ -134,13 +138,16 @@ class SupabaseJobProcessor:
         try:
             # Update task status to processing
             await self.update_language_task_status(task_id, "processing", 10, "Starting processing...")
-            
-            # Find the uploaded voice track file
-            voice_track_path = self.find_uploaded_file(job_id, "voice")
+
+            # Download the voice track from Supabase Storage
+            if not job.get('voice_track_url'):
+                raise Exception("Voice track URL not found in job data")
+
+            voice_track_path = await self.download_file_from_storage(job['voice_track_url'], "voice")
             if not voice_track_path:
-                raise Exception("Voice track file not found")
-            
-            logger.info(f"Found voice track: {voice_track_path}")
+                raise Exception("Failed to download voice track from storage")
+
+            logger.info(f"Downloaded voice track to: {voice_track_path}")
             
             # Log file processing
             upload_log_path = Path("uploads.log")
@@ -192,7 +199,10 @@ class SupabaseJobProcessor:
 
             # Mix with background audio if present
             final_audio = speech_audio
-            background_track_path = self.find_uploaded_file(job_id, "background")
+            background_track_path = None
+
+            if job.get('background_track_url'):
+                background_track_path = await self.download_file_from_storage(job['background_track_url'], "background")
 
             if background_track_path:
                 try:
@@ -232,31 +242,45 @@ class SupabaseJobProcessor:
                 logger.info("No background track found, using voice-only audio")
 
             # Update task status
-            await self.update_language_task_status(task_id, "processing", 90, "Saving audio...")
+            await self.update_language_task_status(task_id, "processing", 90, "Uploading audio to storage...")
 
-            # Save audio to downloads directory for frontend access
-            downloads_path = Path("downloads")
-            downloads_path.mkdir(exist_ok=True)
+            # Upload final audio to Supabase Storage
             from datetime import datetime
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"dubbed_audio_{job_id}_{language_code}_{timestamp}.mp3"
-            file_path = downloads_path / filename
+            output_filename = f"dubbed_audio_{job_id}_{language_code}_{timestamp}.mp3"
+            output_path = f"outputs/{job['user_id']}/{job_id}/{output_filename}"
 
-            with open(file_path, "wb") as f:
-                f.write(final_audio)
+            try:
+                # Upload to Supabase Storage
+                public_url = await self.supabase_storage.upload_file(
+                    bucket=self.bucket,
+                    file_path=output_path,
+                    file_data=final_audio,
+                    content_type="audio/mpeg"
+                )
 
-            logger.info(f"Audio saved to downloads: {file_path}")
+                logger.info(f"Uploaded audio to Supabase Storage: {public_url}")
 
-            # Update task status to complete with download URL
-            download_url = f"/download/{filename}"
-            await self.update_language_task_status(
-                task_id,
-                "complete",
-                100,
-                f"Audio generated successfully. Download: {download_url}",
-                download_url=download_url,
-                file_size=len(final_audio)
-            )
+                # Generate signed download URL (valid for 7 days)
+                download_url = await self.supabase_storage.generate_signed_download_url(
+                    bucket=self.bucket,
+                    file_path=output_path,
+                    expires_in=604800  # 7 days
+                )
+
+                # Update task status to complete with download URL
+                await self.update_language_task_status(
+                    task_id,
+                    "complete",
+                    100,
+                    f"Audio generated successfully",
+                    download_url=download_url,
+                    file_size=len(final_audio)
+                )
+
+            except Exception as e:
+                logger.error(f"Error uploading audio to storage: {e}")
+                raise Exception(f"Failed to upload audio to storage: {str(e)}")
             
             logger.info(f"Completed language task {task_id} for {language_code}")
             
@@ -264,23 +288,60 @@ class SupabaseJobProcessor:
             logger.error(f"Error processing language task {task_id}: {e}")
             await self.update_language_task_status(task_id, "error", 0, f"Processing failed: {str(e)}")
     
-    def find_uploaded_file(self, job_id, file_type):
-        """Find the uploaded file for a job"""
-        uploads_dir = Path("uploads")
-        
-        # Look for files matching the pattern
-        if file_type == "voice":
-            pattern = f"voice_{job_id}*"
-        else:
-            pattern = f"background_{job_id}*"
-            
-        for file_path in uploads_dir.rglob(pattern):
-            if file_path.is_file():
-                logger.info(f"Found {file_type} file: {file_path}")
-                return str(file_path)
-        
-        logger.warning(f"No {file_type} file found for job {job_id} with pattern {pattern}")
-        return None
+    async def download_file_from_storage(self, file_path, file_type):
+        """Download file from Supabase Storage or read from local filesystem in dev mode"""
+        try:
+            if not file_path:
+                logger.warning(f"No {file_type} file path provided")
+                return None
+
+            # Check if we're in development mode (file path starts with "uploads/" or is a local path)
+            is_local_file = file_path.startswith("uploads/") or os.path.exists(file_path)
+
+            if is_local_file:
+                # Development mode - read from local filesystem
+                logger.info(f"Reading {file_type} file from local filesystem: {file_path}")
+
+                # Check if file exists
+                local_path = Path(file_path)
+                if not local_path.exists():
+                    raise Exception(f"Local file not found: {file_path}")
+
+                # Read the local file
+                with open(local_path, 'rb') as f:
+                    file_data = f.read()
+
+                # Determine file extension
+                file_ext = os.path.splitext(file_path)[1] or ".mp3"
+
+                # Save to temporary file for processing
+                temp_file = tempfile.NamedTemporaryFile(suffix=file_ext, delete=False)
+                temp_file.write(file_data)
+                temp_file.close()
+
+                logger.info(f"Read {file_type} file from local filesystem to: {temp_file.name}")
+                return temp_file.name
+            else:
+                # Production mode - download from Supabase Storage
+                logger.info(f"Downloading {file_type} file from Supabase Storage: {file_path}")
+
+                # Download file from Supabase Storage
+                file_data = await self.supabase_storage.download_file(self.bucket, file_path)
+
+                # Determine file extension
+                file_ext = os.path.splitext(file_path)[1] or ".mp3"
+
+                # Save to temporary file
+                temp_file = tempfile.NamedTemporaryFile(suffix=file_ext, delete=False)
+                temp_file.write(file_data)
+                temp_file.close()
+
+                logger.info(f"Downloaded {file_type} file from storage to: {temp_file.name}")
+                return temp_file.name
+
+        except Exception as e:
+            logger.error(f"Error downloading {file_type} file from storage: {e}")
+            return None
     
     async def update_language_task_status(self, task_id, status, progress, message, download_url=None, file_size=None):
         """Update language task status in Supabase"""

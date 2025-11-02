@@ -58,7 +58,9 @@ class SupabaseJobService:
                 'status': JobStatus.PROCESSING,
                 'progress': 0,
                 'message': "Job created, starting processing...",
-                'target_languages': job_data.languages
+                'target_languages': job_data.languages,
+                'voice_track_url': job_data.voice_track_url,
+                'background_track_url': job_data.background_track_url
             }
             
             job = self.db_service.create_job(job_data_dict)

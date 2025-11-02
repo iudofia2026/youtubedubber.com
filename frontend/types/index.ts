@@ -375,20 +375,20 @@ export const isBackendLanguageProgress = (data: unknown): data is BackendLanguag
   if (!hasLanguageCode) return false;
 
   // Optional fields - validate type if present (camelCase)
-  if (data.languageName !== undefined && !isString(data.languageName)) return false;
-  if (data.flag !== undefined && !isString(data.flag)) return false;
-  if (data.status !== undefined && !isString(data.status)) return false;
-  if (data.progress !== undefined && !isNumber(data.progress)) return false;
-  if (data.message !== undefined && !isString(data.message)) return false;
-  if (data.estimatedTimeRemaining !== undefined && !isNumber(data.estimatedTimeRemaining)) return false;
-  if (data.fileSize !== undefined && !isNumber(data.fileSize)) return false;
-  if (data.downloadUrl !== undefined && !isString(data.downloadUrl)) return false;
+  if (data.languageName !== undefined && data.languageName !== null && !isString(data.languageName)) return false;
+  if (data.flag !== undefined && data.flag !== null && !isString(data.flag)) return false;
+  if (data.status !== undefined && data.status !== null && !isString(data.status)) return false;
+  if (data.progress !== undefined && data.progress !== null && !isNumber(data.progress)) return false;
+  if (data.message !== undefined && data.message !== null && !isString(data.message)) return false;
+  if (data.estimatedTimeRemaining !== undefined && data.estimatedTimeRemaining !== null && !isNumber(data.estimatedTimeRemaining)) return false;
+  if (data.fileSize !== undefined && data.fileSize !== null && !isNumber(data.fileSize)) return false;
+  if (data.downloadUrl !== undefined && data.downloadUrl !== null && !isString(data.downloadUrl)) return false;
 
   // Optional fields - validate type if present (snake_case)
-  if (data.language_name !== undefined && !isString(data.language_name)) return false;
-  if (data.estimated_time_remaining !== undefined && !isNumber(data.estimated_time_remaining)) return false;
-  if (data.file_size !== undefined && !isNumber(data.file_size)) return false;
-  if (data.download_url !== undefined && !isString(data.download_url)) return false;
+  if (data.language_name !== undefined && data.language_name !== null && !isString(data.language_name)) return false;
+  if (data.estimated_time_remaining !== undefined && data.estimated_time_remaining !== null && !isNumber(data.estimated_time_remaining)) return false;
+  if (data.file_size !== undefined && data.file_size !== null && !isNumber(data.file_size)) return false;
+  if (data.download_url !== undefined && data.download_url !== null && !isString(data.download_url)) return false;
 
   return true;
 };
@@ -405,9 +405,9 @@ export const isBackendJobDownloadUrls = (data: unknown): data is BackendJobDownl
     if (value === undefined || value === null) continue;
     if (!isRecord(value)) return false;
 
-    if (value.voice !== undefined && !isString(value.voice)) return false;
-    if (value.full !== undefined && !isString(value.full)) return false;
-    if (value.captions !== undefined && !isString(value.captions)) return false;
+    if (value.voice !== undefined && value.voice !== null && !isString(value.voice)) return false;
+    if (value.full !== undefined && value.full !== null && !isString(value.full)) return false;
+    if (value.captions !== undefined && value.captions !== null && !isString(value.captions)) return false;
   }
 
   return true;
@@ -426,28 +426,28 @@ export const isBackendJobResponse = (data: unknown): data is BackendJobResponse 
   if (!hasId) return false;
 
   // Common fields
-  if (data.status !== undefined && !isString(data.status)) return false;
-  if (data.progress !== undefined && !isNumber(data.progress)) return false;
-  if (data.message !== undefined && !isString(data.message)) return false;
+  if (data.status !== undefined && data.status !== null && !isString(data.status)) return false;
+  if (data.progress !== undefined && data.progress !== null && !isNumber(data.progress)) return false;
+  if (data.message !== undefined && data.message !== null && !isString(data.message)) return false;
 
   // camelCase fields (Pydantic schema)
-  if (data.totalLanguages !== undefined && !isNumber(data.totalLanguages)) return false;
-  if (data.completedLanguages !== undefined && !isNumber(data.completedLanguages)) return false;
-  if (data.startedAt !== undefined && !isString(data.startedAt)) return false;
-  if (data.estimatedCompletion !== undefined && !isString(data.estimatedCompletion)) return false;
+  if (data.totalLanguages !== undefined && data.totalLanguages !== null && !isNumber(data.totalLanguages)) return false;
+  if (data.completedLanguages !== undefined && data.completedLanguages !== null && !isNumber(data.completedLanguages)) return false;
+  if (data.startedAt !== undefined && data.startedAt !== null && !isString(data.startedAt)) return false;
+  if (data.estimatedCompletion !== undefined && data.estimatedCompletion !== null && !isString(data.estimatedCompletion)) return false;
 
   // snake_case fields (database/legacy)
-  if (data.total_languages !== undefined && !isNumber(data.total_languages)) return false;
-  if (data.completed_languages !== undefined && !isNumber(data.completed_languages)) return false;
-  if (data.started_at !== undefined && !isString(data.started_at)) return false;
-  if (data.created_at !== undefined && !isString(data.created_at)) return false;
-  if (data.updated_at !== undefined && !isString(data.updated_at)) return false;
-  if (data.estimated_completion !== undefined && !isString(data.estimated_completion)) return false;
-  if (data.voice_track_duration !== undefined && !isNumber(data.voice_track_duration)) return false;
-  if (data.background_track_uploaded !== undefined && typeof data.background_track_uploaded !== 'boolean') return false;
+  if (data.total_languages !== undefined && data.total_languages !== null && !isNumber(data.total_languages)) return false;
+  if (data.completed_languages !== undefined && data.completed_languages !== null && !isNumber(data.completed_languages)) return false;
+  if (data.started_at !== undefined && data.started_at !== null && !isString(data.started_at)) return false;
+  if (data.created_at !== undefined && data.created_at !== null && !isString(data.created_at)) return false;
+  if (data.updated_at !== undefined && data.updated_at !== null && !isString(data.updated_at)) return false;
+  if (data.estimated_completion !== undefined && data.estimated_completion !== null && !isString(data.estimated_completion)) return false;
+  if (data.voice_track_duration !== undefined && data.voice_track_duration !== null && !isNumber(data.voice_track_duration)) return false;
+  if (data.background_track_uploaded !== undefined && data.background_track_uploaded !== null && typeof data.background_track_uploaded !== 'boolean') return false;
 
   // Validate arrays
-  if (data.languages !== undefined) {
+  if (data.languages !== undefined && data.languages !== null) {
     if (!isArray(data.languages)) return false;
     // Validate each language item
     for (const lang of data.languages) {
@@ -455,7 +455,7 @@ export const isBackendJobResponse = (data: unknown): data is BackendJobResponse 
     }
   }
 
-  if (data.target_languages !== undefined) {
+  if (data.target_languages !== undefined && data.target_languages !== null) {
     if (!isArray(data.target_languages)) return false;
     for (const lang of data.target_languages) {
       if (!isString(lang)) return false;
@@ -463,7 +463,7 @@ export const isBackendJobResponse = (data: unknown): data is BackendJobResponse 
   }
 
   // Validate download_urls structure
-  if (data.download_urls !== undefined && !isBackendJobDownloadUrls(data.download_urls)) {
+  if (data.download_urls !== undefined && data.download_urls !== null && !isBackendJobDownloadUrls(data.download_urls)) {
     return false;
   }
 
@@ -497,7 +497,7 @@ export const isBackendTransaction = (data: unknown): data is BackendTransaction 
   if (!isString(data.created_at)) return false;
 
   // Optional field
-  if (data.description !== undefined && !isString(data.description)) return false;
+  if (data.description !== undefined && data.description !== null && !isString(data.description)) return false;
 
   return true;
 };
@@ -533,12 +533,12 @@ export const isDownloadHistoryItemApi = (data: unknown): data is DownloadHistory
   if (!['voice', 'full', 'captions'].includes(data.file_type)) return false;
 
   // Optional fields
-  if (data.job_title !== undefined && !isString(data.job_title)) return false;
-  if (data.language_name !== undefined && !isString(data.language_name)) return false;
-  if (data.file_size !== undefined && !isNumber(data.file_size)) return false;
-  if (data.expires_at !== undefined && !isString(data.expires_at)) return false;
-  if (data.is_expired !== undefined && typeof data.is_expired !== 'boolean') return false;
-  if (data.download_url !== undefined && !isString(data.download_url)) return false;
+  if (data.job_title !== undefined && data.job_title !== null && !isString(data.job_title)) return false;
+  if (data.language_name !== undefined && data.language_name !== null && !isString(data.language_name)) return false;
+  if (data.file_size !== undefined && data.file_size !== null && !isNumber(data.file_size)) return false;
+  if (data.expires_at !== undefined && data.expires_at !== null && !isString(data.expires_at)) return false;
+  if (data.is_expired !== undefined && data.is_expired !== null && typeof data.is_expired !== 'boolean') return false;
+  if (data.download_url !== undefined && data.download_url !== null && !isString(data.download_url)) return false;
 
   return true;
 };

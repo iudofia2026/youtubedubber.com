@@ -31,52 +31,57 @@ class StorageService:
         try:
             # Generate unique job ID
             job_id = f"job_{uuid.uuid4().hex[:12]}"
-            
+
             # Create file paths
             voice_track_path = f"uploads/{user_id}/{job_id}/voice_track_{voice_track_name}"
             background_track_path = None
-            
+
             if background_track_name:
                 background_track_path = f"uploads/{user_id}/{job_id}/background_track_{background_track_name}"
-            
-            # For development, use a simple mock endpoint that actually works
-            # This simulates the upload process without requiring real Supabase setup
-            voice_url = f"http://localhost:8000/api/jobs/mock-upload/{voice_track_path}"
-            background_url = None
 
-            if background_track_path:
-                background_url = f"http://localhost:8000/api/jobs/mock-upload/{background_track_path}"
-
-            logger.info(f"Development mode: Generated mock upload URLs for job {job_id}")
-            return SignedUploadUrls(
-                job_id=job_id,
-                voice_url=voice_url,
-                background_url=background_url
-            )
-            
-            # Production mode - use real Supabase
-            # Voice track URL
-            voice_url = await self.supabase_storage.generate_signed_upload_url(
-                bucket=self.bucket,
-                file_path=voice_track_path,
-                expires_in=3600  # 1 hour
-            )
-
-            # Background track URL (if provided)
-            background_url = None
-            if background_track_path:
-                background_url = await self.supabase_storage.generate_signed_upload_url(
+            # Try Supabase Storage first, fallback to local uploads in development
+            try:
+                # Voice track URL
+                voice_url = await self.supabase_storage.generate_signed_upload_url(
                     bucket=self.bucket,
-                    file_path=background_track_path,
-                    expires_in=3600
+                    file_path=voice_track_path,
+                    expires_in=3600  # 1 hour
                 )
 
+                # Background track URL (if provided)
+                background_url = None
+                if background_track_path:
+                    background_url = await self.supabase_storage.generate_signed_upload_url(
+                        bucket=self.bucket,
+                        file_path=background_track_path,
+                        expires_in=3600
+                    )
+
+                logger.info(f"Generated Supabase Storage upload URLs for job {job_id}")
+
+            except Exception as supabase_error:
+                logger.warning(f"Supabase Storage not available ({supabase_error}), using local upload URLs")
+
+                # Fallback to local uploads for development
+                voice_url = f"http://localhost:8000/api/jobs/mock-upload/{voice_track_path}"
+                background_url = None
+                if background_track_path:
+                    background_url = f"http://localhost:8000/api/jobs/mock-upload/{background_track_path}"
+
+                logger.info(f"Generated local mock upload URLs for job {job_id}")
+
+            from app.schemas import UploadUrlsNested
+
             return SignedUploadUrls(
                 job_id=job_id,
-                voice_url=voice_url,
-                background_url=background_url
+                upload_urls=UploadUrlsNested(
+                    voice_track=voice_url,
+                    background_track=background_url
+                ),
+                voice_track_path=voice_track_path,
+                background_track_path=background_track_path
             )
-            
+
         except Exception as e:
             logger.error(f"Error generating upload URLs: {e}")
             raise Exception("Failed to generate upload URLs")

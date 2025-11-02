@@ -212,14 +212,24 @@ export const mapLanguageProgress = (language: unknown): LanguageProgress => {
  * Handles both API responses and database records (which may have snake_case)
  */
 export const mapJobResponse = (job: unknown, options: MapJobResponseOptions = {}): GetJobStatusResponse => {
+  // Debug: Log validation attempt
+  console.log('🔍 Validating job response:', JSON.stringify(job, null, 2));
+
   // Validate the incoming data structure
   if (!isBackendJobResponse(job)) {
+    console.error('❌ Validation failed for job response:', job);
+    console.error('Job type:', typeof job);
+    console.error('Is object:', typeof job === 'object' && job !== null);
+    console.error('Has id:', job && (typeof job === 'object') && ('id' in job || 'job_id' in job));
+
     throw createValidationError(
       'BackendJobResponse',
       job,
       'Invalid job response data received from server'
     );
   }
+
+  console.log('✅ Job response passed validation');
 
   // Extract job ID (required field)
   const id = job.id || job.job_id;
@@ -948,13 +958,15 @@ export const submitDubbingJob = async (
     }
 
     // 3) Notify backend to create/process job
-    // Backend JobCreationRequest expects: job_id, voice_track_uploaded, background_track_uploaded, languages
+    // Backend JobCreationRequest expects: job_id, voice_track_uploaded, background_track_uploaded, languages, voice_track_url, background_track_url
     onProgress?.({ progress: 85, status: 'processing', message: 'Creating job...' });
     const result = await notifyUploadComplete({
       job_id: uploadUrls.job_id,
       voice_track_uploaded: true,
       background_track_uploaded: !!data.backgroundTrack,
       languages: data.targetLanguages,
+      voice_track_url: uploadUrls.voice_track_path,
+      background_track_url: uploadUrls.background_track_path,
     });
 
     onProgress?.({ progress: 100, status: 'complete', message: 'Job created successfully!' });
@@ -1114,6 +1126,12 @@ export const getJobStatus = async (jobId: string, targetLanguages: string[] = []
       }
 
       const jobData = await response.json();
+
+      // Debug: Log the raw job data received from backend
+      console.log('🔍 Raw job data from backend:', JSON.stringify(jobData, null, 2));
+      console.log('🔍 Job data type:', typeof jobData);
+      console.log('🔍 Is array?', Array.isArray(jobData));
+
       // mapJobResponse will validate the data
       return mapJobResponse(jobData, { targetLanguages });
     });
@@ -1469,7 +1487,7 @@ export const removeFromDownloadHistory = (itemId: string): void => {
  */
 export const clearExpiredDownloads = (): void => {
   if (typeof window === 'undefined') return;
-  
+
   try {
     const history = getDownloadHistory();
     const now = new Date();
@@ -1481,4 +1499,180 @@ export const clearExpiredDownloads = (): void => {
   } catch (error) {
     console.error('Failed to clear expired downloads:', error);
   }
+};
+
+// User Profile APIs
+
+/**
+ * User statistics interface matching backend UserStatsResponse schema
+ */
+export interface UserStats {
+  totalJobs: number;
+  completedJobs: number;
+  processingJobs: number;
+  failedJobs: number;
+  totalLanguages: number;
+  totalMinutesProcessed: number;
+  accountAge: number;
+  lastActivity?: string;
+}
+
+/**
+ * User profile interface matching backend UserProfileResponse schema
+ */
+export interface UserProfile {
+  id: string;
+  email: string;
+  fullName?: string;
+  avatarUrl?: string;
+  timezone?: string;
+  languagePreference?: string;
+  createdAt: string;
+  updatedAt?: string;
+  creditBalance: number;
+  stats: UserStats;
+}
+
+/**
+ * User profile update request interface matching backend UserProfileUpdateRequest schema
+ */
+export interface UserProfileUpdate {
+  fullName?: string;
+  avatarUrl?: string;
+  timezone?: string;
+  languagePreference?: string;
+}
+
+/**
+ * Type guard for UserProfile response
+ */
+const isUserProfile = (value: unknown): value is UserProfile => {
+  if (!isRecord(value)) return false;
+
+  const profile = value as Record<string, unknown>;
+  return (
+    typeof profile.id === 'string' &&
+    typeof profile.email === 'string' &&
+    typeof profile.createdAt === 'string' &&
+    typeof profile.creditBalance === 'number' &&
+    isRecord(profile.stats)
+  );
+};
+
+/**
+ * Type guard for UserStats response
+ */
+const isUserStats = (value: unknown): value is UserStats => {
+  if (!isRecord(value)) return false;
+
+  const stats = value as Record<string, unknown>;
+  return (
+    typeof stats.totalJobs === 'number' &&
+    typeof stats.completedJobs === 'number' &&
+    typeof stats.processingJobs === 'number' &&
+    typeof stats.failedJobs === 'number' &&
+    typeof stats.totalLanguages === 'number' &&
+    typeof stats.totalMinutesProcessed === 'number' &&
+    typeof stats.accountAge === 'number'
+  );
+};
+
+/**
+ * Fetch complete user profile with statistics
+ * GET /api/users/me
+ */
+export const fetchUserProfile = async (): Promise<UserProfile> => {
+  return withRetry(async () => {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE}/api/users/me`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const apiError = createApiError(errorData, response);
+      throw apiError;
+    }
+
+    const data = await response.json();
+
+    // Validate response structure
+    if (!isUserProfile(data)) {
+      throw createValidationError(
+        'UserProfile',
+        data,
+        'Invalid user profile data received from server'
+      );
+    }
+
+    return data;
+  });
+};
+
+/**
+ * Update user profile
+ * PUT /api/users/me
+ */
+export const updateUserProfile = async (updates: UserProfileUpdate): Promise<UserProfile> => {
+  return withRetry(async () => {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE}/api/users/me`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const apiError = createApiError(errorData, response);
+      throw apiError;
+    }
+
+    const data = await response.json();
+
+    // Validate response structure
+    if (!isUserProfile(data)) {
+      throw createValidationError(
+        'UserProfile',
+        data,
+        'Invalid user profile data received from server'
+      );
+    }
+
+    return data;
+  });
+};
+
+/**
+ * Fetch user statistics only
+ * GET /api/users/me/stats
+ */
+export const fetchUserStats = async (): Promise<UserStats> => {
+  return withRetry(async () => {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE}/api/users/me/stats`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const apiError = createApiError(errorData, response);
+      throw apiError;
+    }
+
+    const data = await response.json();
+
+    // Validate response structure
+    if (!isUserStats(data)) {
+      throw createValidationError(
+        'UserStats',
+        data,
+        'Invalid user stats data received from server'
+      );
+    }
+
+    return data;
+  });
 };

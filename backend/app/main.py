@@ -45,6 +45,7 @@ app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(RateLimitHeadersMiddleware)
 
 # CORS middleware configuration
+logger.info(f"CORS Origins: {settings.get_cors_origins()}")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.get_cors_origins(),
@@ -265,6 +266,37 @@ async def test_supabase_job():
         return {
             "status": "error",
             "message": f"Supabase job creation test failed: {str(e)}"
+        }
+
+
+@app.get("/worker/health")
+async def worker_health():
+    """
+    Check if background worker is processing jobs
+    Note: This checks if there are pending jobs in the queue
+    """
+    try:
+        from app.services.supabase_db_service import SupabaseDBService
+
+        db_service = SupabaseDBService()
+
+        # Get jobs with processing status
+        processing_jobs = db_service.get_jobs_by_status("processing")
+
+        # Get some recent jobs to see worker activity
+        jobs_count = len(processing_jobs) if processing_jobs else 0
+
+        return {
+            "status": "healthy",
+            "message": "Worker system is operational",
+            "processing_jobs": jobs_count,
+            "note": "Worker runs as separate process. Check logs for worker activity."
+        }
+    except Exception as e:
+        return {
+            "status": "unknown",
+            "message": f"Unable to check worker status: {str(e)}",
+            "note": "Ensure worker is started with: python start_worker.py"
         }
 
 

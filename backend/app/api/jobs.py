@@ -25,24 +25,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.options("/")
-async def options_jobs():
-    """Handle CORS preflight requests for job endpoints"""
-    return {"message": "OK"}
-
-
-@router.options("/{job_id}")
-async def options_get_job():
-    """Handle CORS preflight requests for job status"""
-    return {"message": "OK"}
-
-
-@router.options("/upload-urls")
-async def options_upload_urls():
-    """Handle CORS preflight requests for upload URLs endpoint"""
-    return {"message": "OK"}
-
-
 @router.post("/", response_model=SubmitJobResponse)
 async def create_job(
     request: JobCreationRequest,
@@ -183,40 +165,44 @@ async def list_user_jobs(
         )
 
 
+def get_storage_service() -> StorageService:
+    """Dependency to get StorageService instance"""
+    return StorageService()
+
+
 @router.post("/upload-urls", response_model=SignedUploadUrls)
 async def request_upload_urls(
     request: UploadUrlsRequest,
     current_user: UserResponse = Depends(get_current_user),
-    storage_service: StorageService = Depends(StorageService)
+    storage_service: StorageService = Depends(get_storage_service)
 ):
     """
     Generate signed URLs for file uploads
     This endpoint matches the frontend API contract exactly
     """
     try:
-        logger.info(f"Generating upload URLs for user {current_user.id}, job_id: {request.job_id}")
+        logger.info(f"Generating upload URLs for user {current_user.id}, languages: {request.languages}")
 
         # Skip validation in development mode for easier testing
         if not settings.debug:
             # Production mode - validate input data
             from app.utils.validation import validate_filename
-            validated_voice_filename = validate_filename(request.voice_filename, "voice_filename")
-            validated_background_filename = validate_filename(request.background_filename, "background_filename") if request.background_filename else None
+            validated_voice_filename = validate_filename(request.voice_track_name, "voice_track_name")
+            validated_background_filename = validate_filename(request.background_track_name, "background_track_name") if request.background_track_name else None
 
             # Update request with validated data
-            request.voice_filename = validated_voice_filename
-            request.background_filename = validated_background_filename
+            request.voice_track_name = validated_voice_filename
+            request.background_track_name = validated_background_filename
         else:
             # Development mode - just log the filenames
-            logger.info(f"Development mode: Skipping validation for filenames: {request.voice_filename}, {request.background_filename}")
+            logger.info(f"Development mode: Skipping validation for filenames: {request.voice_track_name}, {request.background_track_name}")
 
         # Generate signed URLs
-        # Note: We pass empty languages list since languages are provided later when creating the job
         signed_urls = await storage_service.generate_upload_urls(
             user_id=current_user.id,
-            languages=[],  # Languages will be provided in the job creation request
-            voice_track_name=request.voice_filename,
-            background_track_name=request.background_filename
+            languages=request.languages,
+            voice_track_name=request.voice_track_name,
+            background_track_name=request.background_track_name
         )
 
         logger.info(f"Generated upload URLs for job {signed_urls.job_id}")
@@ -228,7 +214,7 @@ async def request_upload_urls(
             error_type="upload_url_generation_failed",
             message="Failed to generate upload URLs",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            details={"user_id": current_user.id, "job_id": request.job_id},
+            details={"user_id": current_user.id},
             original_error=e
         )
 
@@ -343,8 +329,10 @@ async def mock_file_upload(
         file_content = await request.body()
 
         # Create the full path in the backend uploads directory
+        # Remove leading "uploads/" from file_path if present to avoid duplication
+        clean_path = file_path.replace("uploads/", "", 1) if file_path.startswith("uploads/") else file_path
         upload_dir = Path("backend/uploads") if Path("backend").exists() else Path("uploads")
-        full_path = upload_dir / file_path
+        full_path = upload_dir / clean_path
 
         # Ensure the directory exists
         full_path.parent.mkdir(parents=True, exist_ok=True)
