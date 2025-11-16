@@ -288,7 +288,7 @@ class JobService:
         """
         try:
             return db.query(DubbingJob).filter(
-                DubbingJob.status == JobStatus.PROCESSING
+                DubbingJob.status == JobStatus.PENDING
             ).all()
         except Exception as e:
             logger.error(f"Error getting pending jobs: {e}")

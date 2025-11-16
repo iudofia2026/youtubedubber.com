@@ -4,9 +4,10 @@ Job management API endpoints
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from app.schemas import (
     JobCreationRequest, JobStatusResponse, SubmitJobResponse,
-    BackendErrorResponse, JobStatus, UploadUrlsRequest, SignedUploadUrls
+    BackendErrorResponse, JobStatus, UploadUrlsRequest, SignedUploadUrls,
+    LanguageProgress, LanguageTaskStatus
 )
-from app.services.supabase_job_service import SupabaseJobService
+from app.services.local_job_service import LocalJobService
 from app.services.storage_service import StorageService
 from app.auth import get_current_user, UserResponse
 from app.database import get_db
@@ -19,6 +20,7 @@ from sqlalchemy.orm import Session
 from pathlib import Path
 import logging
 import aiofiles
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -45,12 +47,15 @@ async def create_job(
         
         logger.info(f"Creating job {request.job_id} for user {current_user.id}")
         
-        job_service = SupabaseJobService()
-        
+        job_service = LocalJobService()
+
         # Create the job
         job_status = await job_service.create_job(
+            job_id=request.job_id,
             user_id=current_user.id,
-            job_data=request
+            voice_track_url=request.voice_track_url,
+            background_track_url=request.background_track_url,
+            target_languages=request.languages
         )
         
         logger.info(f"Created job {request.job_id} successfully")
@@ -90,15 +95,44 @@ async def get_job_status(
 
         logger.info(f"Getting status for job {validated_job_id} for user {current_user.id}")
 
-        # Get real job status from Supabase
-        job_service = SupabaseJobService()
-        
+        # Get job status from local database
+        job_service = LocalJobService()
+
         # Get job status
-        job_status = await job_service.get_job_status(
+        job_data = await job_service.get_job(
             job_id=validated_job_id,
             user_id=current_user.id
         )
-        
+
+        # Convert to expected response format
+        # Create language progress entries
+        language_progress = []
+        for lang in job_data.get("target_languages", ["en"]):
+            language_progress.append(LanguageProgress(
+                languageCode=lang,
+                languageName=lang.upper(),  # Simple language name
+                flag="🏳️",  # Default flag
+                status=LanguageTaskStatus.PENDING if job_data["status"] == "pending" else LanguageTaskStatus.COMPLETE,
+                progress=job_data.get("progress", 0),
+                message=f"Processing {lang}",
+                estimatedTimeRemaining=None,
+                fileSize=None,
+                downloadUrl=None
+            ))
+
+        # Create a minimal valid response that matches the schema
+        job_status = JobStatusResponse(
+            id=job_data["id"],
+            status=job_data["status"],
+            progress=job_data.get("progress", 0),
+            message=job_data.get("message", "Job is being processed"),
+            languages=language_progress,
+            totalLanguages=len(job_data.get("target_languages", ["en"])),
+            completedLanguages=1 if job_data["status"] == "completed" else 0,
+            startedAt=job_data.get("created_at", datetime.utcnow().isoformat()),
+            estimatedCompletion=None
+        )
+
         return job_status
         
     except Exception as e:

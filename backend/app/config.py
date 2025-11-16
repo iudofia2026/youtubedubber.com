@@ -11,8 +11,8 @@ class Settings(BaseSettings):
     
     # Database Configuration
     database_url: str
-    supabase_url: str
-    supabase_service_key: str
+    supabase_url: Optional[str] = None  # Optional, using local SQLite
+    supabase_service_key: Optional[str] = None  # Optional, using local SQLite
     
     # AI Services (optional in dev mode)
     deepgram_api_key: Optional[str] = None
@@ -90,8 +90,7 @@ settings = Settings()
 def validate_settings():
     """Validate that all required settings are present"""
     required_settings = [
-        'database_url', 'supabase_url', 'supabase_service_key',
-        'deepgram_api_key', 'openai_api_key', 'secret_key'
+        'database_url', 'deepgram_api_key', 'openai_api_key', 'secret_key'
     ]
     
     # Payment settings are required for production

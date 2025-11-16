@@ -109,6 +109,14 @@ class StorageService:
         Download a file from storage
         """
         try:
+            # Handle local file URLs
+            if file_path.startswith("file://"):
+                import aiofiles
+                local_path = file_path[7:]  # Remove "file://" prefix
+                async with aiofiles.open(local_path, 'rb') as f:
+                    return await f.read()
+
+            # Handle Supabase storage
             return await self.supabase_storage.download_file(
                 bucket=self.bucket,
                 file_path=file_path
