@@ -118,7 +118,7 @@ npm run dev
 
 ### Backend
 - **Framework**: FastAPI (Python 3.11+)
-- **Database**: PostgreSQL 15+ (SQLite for local dev)
+- **Database**: PostgreSQL 15+ via Supabase
 - **ORM**: SQLAlchemy with Alembic migrations
 - **Auth**: Supabase Auth + JWT verification
 - **Storage**: Supabase Storage
@@ -127,7 +127,7 @@ npm run dev
   - Deepgram (Speech-to-Text, Text-to-Speech)
   - OpenAI (Translation)
 - **Audio**: FFmpeg, Librosa, NumPy, SciPy
-- **Deployment**: Docker + Railway/Render
+- **Deployment**: Railway/Render
 
 ### Infrastructure
 - **Database**: PostgreSQL via Supabase
@@ -190,7 +190,6 @@ youtubedubber.com/
 │   ├── tests/                # Unit and integration tests
 │   ├── .env.example          # Environment template (copy to .env)
 │   ├── requirements.txt      # Python dependencies
-│   ├── Dockerfile            # Container image
 │   └── README.md            # Backend documentation
 │
 └── README.md                 # This file
