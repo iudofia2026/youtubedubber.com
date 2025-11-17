@@ -13,15 +13,16 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire application
-COPY . .
+# Copy the application code
+COPY start.py .
+COPY backend/ ./backend/
 
 # Set environment variables
 ENV PYTHONPATH=/app/backend
 ENV PYTHONUNBUFFERED=1
 
-# Expose port
-EXPOSE $PORT
+# Railway will set PORT automatically
+EXPOSE 8000
 
 # Start the application
 CMD ["python", "start.py"]

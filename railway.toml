@@ -1,7 +1,8 @@
 [build]
-builder = "DOCKERFILE"
+builder = "dockerfile"
 
 [deploy]
+startCommand = "python start.py"
 restartPolicyType = "on_failure"
 
 [environments.production.variables]

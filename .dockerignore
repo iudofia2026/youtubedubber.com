@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Frontend (deployed separately on Vercel)
+frontend/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+venv/
+backend/venv/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
+
+# Build artifacts
+.next/
+node_modules/
+
+# Environment files (secrets handled by Railway)
+.env
+.env.*
