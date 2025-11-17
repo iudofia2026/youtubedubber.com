@@ -85,6 +85,8 @@ export interface JobCreationRequest {
   voice_track_uploaded: boolean;
   background_track_uploaded: boolean;
   languages: string[];
+  voice_track_url?: string;
+  background_track_url?: string;
 }
 
 export interface LanguageProgress {
