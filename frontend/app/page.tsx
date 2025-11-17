@@ -55,7 +55,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              <span className="flex flex-col xs:inline-flex xs:flex-row items-center text-[#ff0000] gap-2 xs:gap-0">
+              <span className="flex flex-col sm:inline-flex sm:flex-row items-center text-[#ff0000] gap-2 sm:gap-0">
                 <span>YouTube</span>
                 <YTdubberIcon size={60} className="mx-2 sm:mx-3 sm:w-24 sm:h-24 w-16 h-16 xs:w-20 xs:h-20" />
                 <span>Dubber</span>
