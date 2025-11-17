@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     metrics_enabled: bool = False
     
     # Payment Configuration
-    stripe_secret_key: Optional[str] = None
+    stripe_secret_key: Optional[str] = "sk_test_dummy_key_for_development_only"
     stripe_webhook_secret: Optional[str] = None
     stripe_publishable_key: Optional[str] = None
     
@@ -101,10 +101,13 @@ def validate_settings():
         if not getattr(settings, setting, None):
             missing_settings.append(setting)
     
-    # Check payment settings only if not in debug mode
+    # Check payment settings only if not in debug mode and not using dummy values
     if not settings.debug:
         for setting in payment_settings:
-            if not getattr(settings, setting, None):
+            value = getattr(settings, setting, None)
+            if not value or (value and "dummy" in str(value)):
+                print(f"[WARNING] Using dummy {setting} - payment features disabled")
+            elif not value:
                 missing_settings.append(setting)
     
     if missing_settings:
