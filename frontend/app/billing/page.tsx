@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, Download, Eye, Plus, Settings, History, TrendingUp } from 'lucide-react';
+import { CreditCard, Download, Plus, Settings, History } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { CreditBalance, BillingHistory, PaymentForm } from '@/components/payment';
 import { getCredits, setCredits } from '@/lib/credits';
@@ -33,7 +33,13 @@ export default function BillingPage() {
     (async () => {
       try {
         const txns = await fetchTransactions();
-        const mapped: Transaction[] = txns.map((t: any) => ({
+        const mapped: Transaction[] = txns.map((t: {
+          id: string;
+          created_at: string;
+          amount: number;
+          description?: string;
+          status: string;
+        }) => ({
           id: t.id,
           date: t.created_at,
           type: (t.amount > 0 ? 'purchase' : 'usage') as Transaction['type'],
@@ -49,6 +55,7 @@ export default function BillingPage() {
     })();
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handlePurchase = async (credits: number, price: number) => {
     setIsLoading(true);
     try {
