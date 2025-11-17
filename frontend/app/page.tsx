@@ -50,20 +50,20 @@ export default function Home() {
           >
           <div className="text-center relative z-10">
             <motion.h1
-              className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight"
+              className="text-3xl xs:text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              <span className="inline-flex items-center text-[#ff0000]">
-                YouTube
-                <YTdubberIcon size={80} className="mx-2 sm:mx-3 sm:w-24 sm:h-24 w-20 h-20" />
-                Dubber
+              <span className="flex flex-col xs:inline-flex xs:flex-row items-center text-[#ff0000] gap-2 xs:gap-0">
+                <span>YouTube</span>
+                <YTdubberIcon size={60} className="mx-2 sm:mx-3 sm:w-24 sm:h-24 w-16 h-16 xs:w-20 xs:h-20" />
+                <span>Dubber</span>
               </span>
             </motion.h1>
             
             <motion.p
-              className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto font-light"
+              className="text-lg xs:text-xl sm:text-2xl text-muted-foreground mb-6 xs:mb-8 max-w-3xl mx-auto font-light px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
@@ -71,55 +71,55 @@ export default function Home() {
               Transform your content with{" "}
               <span className="text-[#ff0000] font-medium">multilingual dubbing</span>
             </motion.p>
-            
+
             <motion.p
-              className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto font-light leading-relaxed"
+              className="text-base xs:text-lg text-muted-foreground mb-8 xs:mb-12 max-w-2xl mx-auto font-light leading-relaxed px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
             >
-              Upload your voice and background audio tracks, select your target language, 
+              Upload your voice and background audio tracks, select your target language,
               and let us create professional-quality multilingual dubs for your content
             </motion.p>
             
             <motion.div
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
             >
-              <Link href="/new">
+              <Link href="/new" className="w-full sm:w-auto">
                 <motion.button
-                  className="inline-flex items-center space-x-3 bg-[#ff0000] text-white px-8 py-4 text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200"
+                  className="w-full sm:w-auto inline-flex items-center justify-center space-x-3 bg-[#ff0000] text-white px-6 xs:px-8 py-3 xs:py-4 text-base xs:text-lg font-medium hover:bg-[#cc0000] transition-colors duration-200 rounded-lg min-h-[48px]"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <span>Start Dubbing</span>
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-4 h-4 xs:w-5 xs:h-5" />
                 </motion.button>
               </Link>
               
               {!user && (
-                <Link href="/how-it-works">
+                <Link href="/how-it-works" className="w-full sm:w-auto">
                   <motion.button
-                    className="inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
+                    className="w-full sm:w-auto inline-flex items-center justify-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-6 xs:px-8 py-3 xs:py-4 text-base xs:text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200 rounded-lg min-h-[48px]"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <span>How it Works</span>
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="w-4 h-4 xs:w-5 xs:h-5" />
                   </motion.button>
                 </Link>
               )}
-              
+
               {user && (
-                <Link href="/jobs">
+                <Link href="/jobs" className="w-full sm:w-auto">
                   <motion.button
-                    className="inline-flex items-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-8 py-4 text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200"
+                    className="w-full sm:w-auto inline-flex items-center justify-center space-x-3 border-2 border-[#ff0000] text-[#ff0000] px-6 xs:px-8 py-3 xs:py-4 text-base xs:text-lg font-medium hover:bg-[#ff0000] hover:text-white transition-colors duration-200 rounded-lg min-h-[48px]"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <BarChart3 className="w-5 h-5" />
+                    <BarChart3 className="w-4 h-4 xs:w-5 xs:h-5" />
                     <span>View Jobs</span>
                   </motion.button>
                 </Link>

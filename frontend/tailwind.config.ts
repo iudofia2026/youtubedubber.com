@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '375px', // Extra small breakpoint for very small phones
+      },
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',

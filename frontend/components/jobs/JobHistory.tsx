@@ -261,22 +261,22 @@ export function JobHistory({
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Job History</h1>
+          <h1 className="text-xl xs:text-2xl font-bold text-gray-900 dark:text-white">Job History</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
             {filteredJobs.length} of {jobs.length} jobs
           </p>
         </div>
-        
-        <div className="flex items-center space-x-3">
-          {/* View Toggle */}
-          <div className="flex items-center bg-muted rounded-lg p-1">
+
+        <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-3">
+          {/* View Toggle - Hidden on mobile, auto-select grid */}
+          <div className="hidden sm:flex items-center bg-muted rounded-lg p-1">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => handleViewModeChange('grid')}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 min-h-[44px]"
             >
               <Grid3X3 className="w-4 h-4" />
               <span>Grid</span>
@@ -285,29 +285,31 @@ export function JobHistory({
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => handleViewModeChange('list')}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 min-h-[44px]"
             >
               <List className="w-4 h-4" />
               <span>List</span>
             </Button>
           </div>
 
-          <Button
-            variant="outline"
-            onClick={onRefresh}
-            className="flex items-center space-x-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            <span>Refresh</span>
-          </Button>
-          
-          <Button
-            onClick={() => window.location.href = '/new'}
-            className="flex items-center space-x-2 bg-red-600 hover:bg-red-700"
-          >
-            <Plus className="w-4 h-4" />
-            <span>New Job</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={onRefresh}
+              className="flex-1 xs:flex-none flex items-center justify-center space-x-2 min-h-[48px]"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Refresh</span>
+            </Button>
+
+            <Button
+              onClick={() => window.location.href = '/new'}
+              className="flex-1 xs:flex-none flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-700 min-h-[48px]"
+            >
+              <Plus className="w-4 h-4" />
+              <span>New Job</span>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -333,7 +335,7 @@ export function JobHistory({
         />
       ) : (
         <motion.div
-          className={viewMode === 'grid' ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3" : "space-y-4"}
+          className={viewMode === 'grid' ? "grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "space-y-4"}
           layout
         >
           <AnimatePresence mode="wait">

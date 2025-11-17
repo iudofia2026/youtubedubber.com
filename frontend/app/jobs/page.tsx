@@ -235,23 +235,23 @@ function JobsPageContent() {
               </div>
             </div>
             
-            <motion.div 
-              className="flex items-center space-x-3"
+            <motion.div
+              className="flex flex-col xs:flex-row items-stretch xs:items-center gap-3 w-full xs:w-auto"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
               <Link
                 href="/"
-                className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="inline-flex items-center justify-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 min-h-[48px] border border-muted"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
                 <span>Back to Home</span>
               </Link>
-              
+
               <Link
                 href="/new"
-                className="inline-flex items-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#ff0000] to-[#cc0000] hover:from-[#cc0000] hover:to-[#aa0000] rounded-xl transition-all duration-200 group shadow-lg hover:shadow-xl"
+                className="inline-flex items-center justify-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#ff0000] to-[#cc0000] hover:from-[#cc0000] hover:to-[#aa0000] rounded-xl transition-all duration-200 group shadow-lg hover:shadow-xl min-h-[48px]"
               >
                 <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200" />
                 <span>New Job</span>
