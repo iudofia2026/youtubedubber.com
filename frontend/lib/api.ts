@@ -965,8 +965,8 @@ export const submitDubbingJob = async (
       voice_track_uploaded: true,
       background_track_uploaded: !!data.backgroundTrack,
       languages: data.targetLanguages,
-      voice_track_url: uploadUrls.voice_track_path,
-      background_track_url: uploadUrls.background_track_path,
+      voice_track_url: uploadUrls.upload_urls.voice_track,
+      background_track_url: uploadUrls.upload_urls.background_track,
     });
 
     onProgress?.({ progress: 100, status: 'complete', message: 'Job created successfully!' });
