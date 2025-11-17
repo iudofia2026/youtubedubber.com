@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     app_name: str = "YT Dubber API"
     debug: bool = False
     secret_key: str
-    cors_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:3000,https://youtubedubber-com.vercel.app"
     
     # Storage Configuration
     storage_bucket: str = "yt-dubber-uploads"
