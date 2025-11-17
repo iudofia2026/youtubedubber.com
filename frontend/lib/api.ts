@@ -337,12 +337,12 @@ export const mapJobSummary = (job: unknown): Job => {
   };
 
   // Extract target languages from multiple possible sources
-  const targetLanguages =
+  const targetLanguages: string[] =
     job.target_languages ||
     job.languages?.map(lang => {
       // Support both camelCase and snake_case
       const langRecord = lang as Record<string, unknown>;
-      return langRecord.languageCode || langRecord.language_code;
+      return (langRecord.languageCode || langRecord.language_code) as string;
     }).filter(Boolean) ||
     [];
 
