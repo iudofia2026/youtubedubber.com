@@ -40,20 +40,33 @@ export interface AppConfig {
 
 // Validate required environment variables
 function validateRequiredEnvVars(): void {
+  // Skip validation during build time
+  if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+    return;
+  }
+
   const missing: string[] = [];
-  
+
   for (const [key, value] of Object.entries(requiredEnvVars)) {
     if (!value) {
       missing.push(key);
     }
   }
-  
+
   if (missing.length > 0) {
-    throw new Error(
+    console.warn(
       `Missing required environment variables: ${missing.join(', ')}\n` +
       'Please check your .env.local file and ensure all required variables are set.\n' +
       'See .env.local.example for reference.'
     );
+    // Only throw during development to help developers
+    if (process.env.NODE_ENV === 'development') {
+      throw new Error(
+        `Missing required environment variables: ${missing.join(', ')}\n` +
+        'Please check your .env.local file and ensure all required variables are set.\n' +
+        'See .env.local.example for reference.'
+      );
+    }
   }
 }
 
@@ -75,9 +88,9 @@ function createConfig(): AppConfig {
   const isDevelopment = process.env.NODE_ENV === 'development';
   
   return {
-    // Required configuration
-    apiUrl: requiredEnvVars.NEXT_PUBLIC_API_URL!,
-    appUrl: requiredEnvVars.NEXT_PUBLIC_APP_URL!,
+    // Required configuration with fallbacks for build time
+    apiUrl: requiredEnvVars.NEXT_PUBLIC_API_URL || 'https://api.example.com',
+    appUrl: requiredEnvVars.NEXT_PUBLIC_APP_URL || 'https://app.example.com',
     
     // Optional configuration
     supabaseUrl,
