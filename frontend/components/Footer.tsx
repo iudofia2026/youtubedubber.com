@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { YTdubberIcon } from '@/components/YTdubberIcon';
+import { ThemeToggleNav } from '@/components/ThemeToggleNav';
 import { FileText, Shield, Mail, Github, Twitter } from 'lucide-react';
 
 export function Footer() {
@@ -199,6 +200,10 @@ export function Footer() {
                 <Mail className="w-3 h-3" />
                 <span>Support</span>
               </a>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <span>Theme:</span>
+                <ThemeToggleNav />
+              </div>
             </div>
           </div>
         </motion.div>
