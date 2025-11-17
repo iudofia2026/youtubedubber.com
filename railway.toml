@@ -1,5 +1,7 @@
+[build]
+builder = "DOCKERFILE"
+
 [deploy]
-startCommand = "python start.py"
 restartPolicyType = "on_failure"
 
 [environments.production.variables]
