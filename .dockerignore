@@ -20,20 +20,34 @@ __pycache__/
 # Virtual environments
 venv/
 backend/venv/
+backend_hidden/venv/
 
-# IDE
+# IDE and development files
 .vscode/
 .idea/
 .DS_Store
+*.swp
+*.swo
+.pytest_cache/
 
 # Temporary files
 *.tmp
 *.log
+*.backup
 
 # Build artifacts
 .next/
 node_modules/
+dist/
+build/
 
-# Environment files (secrets handled by Railway)
+# Environment files (secrets handled by deployment platform)
 .env
 .env.*
+
+# Railway and deployment files
+railway.toml
+Procfile.bak
+runtime.txt.bak
+.deployment-trigger
+requirements-full.txt

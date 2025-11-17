@@ -17,13 +17,8 @@ alembic==1.16.5
 # Authentication & Security
 pyjwt==2.10.1
 
-# Supabase
-supabase==2.22.0
-supabase-auth==2.22.0
-supabase-functions==2.22.0
-supabase-realtime==2.22.0
-supabase-storage3==2.22.0
-supabase-postgrest==2.22.0
+# Supabase - Use main package only for simplicity
+supabase>=2.0.0,<3.0.0
 
 # Payment
 stripe>=7.0.0
