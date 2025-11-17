@@ -1,9 +1,7 @@
-[build]
-builder = "NIXPACKS"
-
 [deploy]
 startCommand = "python start.py"
 restartPolicyType = "on_failure"
 
 [environments.production.variables]
 ENVIRONMENT = "production"
+PYTHONPATH = "backend"
