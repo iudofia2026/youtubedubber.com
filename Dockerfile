@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
 COPY start.py.bak start.py
-COPY backend/ ./backend/
+COPY backend_hidden/ ./backend/
 
 # Set environment variables
 ENV PYTHONPATH=/app/backend
