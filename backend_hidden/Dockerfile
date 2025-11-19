@@ -1,5 +1,5 @@
-# Multi-stage build for smaller production image
-FROM python:3.11-slim as builder
+# Use Python 3.11 slim image
+FROM python:3.11-slim
 
 # Suppress debconf warnings
 ENV DEBIAN_FRONTEND=noninteractive
@@ -7,49 +7,32 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Set working directory
 WORKDIR /app
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    --no-install-recommends \
-    gcc \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
-
-# Copy and install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
-
-# Production stage
-FROM python:3.11-slim as production
-
-# Suppress debconf warnings
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install runtime dependencies only
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     ffmpeg \
-    libpq5 \
+    gcc \
+    libpq-dev \
     curl \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Copy installed packages from builder
-COPY --from=builder /root/.local /root/.local
+# Copy requirements first for better Docker layer caching
+COPY requirements.txt .
 
-# Set working directory
-WORKDIR /app
+# Upgrade pip and install dependencies globally (not --user)
+RUN pip install --upgrade pip --no-cache-dir && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
 
-# Add Python user install to PATH
-ENV PATH=/root/.local/bin:$PATH
-ENV PYTHONPATH=/app
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+# Set environment variables
+ENV PYTHONPATH=/app \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
 
-# Create non-root user
+# Create non-root user but keep packages accessible
 RUN useradd --create-home --shell /bin/bash app && \
     chown -R app:app /app
 USER app

@@ -1,14 +1,14 @@
 services:
-  # Backend FastAPI Service
+  # Backend FastAPI Service (Virginia)
   - type: web
-    name: youtubedubber-backend
+    name: youtubedubber-api
     runtime: docker
     repo: https://github.com/iudofia2026/youtubedubber.com.git
     rootDir: ./backend_hidden
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
     plan: starter
-    region: oregon
+    region: virginia
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -25,7 +25,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://youtubedubber.onrender.com,https://youtubedubber-backend.onrender.com
+        value: https://youtubedubber.com,https://youtubedubber-api.onrender.com
       - key: PYTHONPATH
         value: /app
       - key: PYTHONUNBUFFERED
@@ -41,9 +41,9 @@ services:
       - key: MAX_CONCURRENT_JOBS
         value: 3
 
-  # Frontend Next.js Service
+  # Frontend Next.js Service (Virginia)
   - type: web
-    name: youtubedubber-frontend
+    name: youtubedubber-web
     runtime: node
     repo: https://github.com/iudofia2026/youtubedubber.com.git
     rootDir: ./frontend
@@ -51,12 +51,17 @@ services:
     startCommand: "npm start"
     healthCheckPath: /
     plan: starter
-    region: oregon
+    region: virginia
+    domains:
+      - name: youtubedubber.com
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        value: https://youtubedubber-backend.onrender.com
+        fromService:
+          type: web
+          name: youtubedubber-api
+          property: url
       - key: NEXT_PUBLIC_APP_URL
-        value: https://youtubedubber.onrender.com
+        value: https://youtubedubber.com
       - key: NEXT_PUBLIC_SUPABASE_URL
         sync: false
       - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -66,9 +71,9 @@ services:
       - key: NODE_VERSION
         value: 18
 
-# PostgreSQL Database - Render databases are defined separately
+# PostgreSQL Database (Virginia)
 databases:
   - name: youtubedubber-db
     plan: free
-    region: oregon
+    region: virginia
     databaseName: youtubedubber
