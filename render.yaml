@@ -1,19 +1,27 @@
+databases:
+  - name: youtubedubber-db
+    databaseName: youtubedubber_db
+    user: youtubedubber_db_user
+    plan: free
+    region: virginia
+
 services:
-  # Backend FastAPI Service (Virginia)
+  # Backend FastAPI Service
   - type: web
-    name: youtubedubber-api-v2
+    name: youtubedubber-backend
     runtime: docker
     repo: https://github.com/iudofia2026/youtubedubber.com.git
     rootDir: ./backend_hidden
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
-    healthCheckGracePeriod: 60
     plan: starter
     region: virginia
     envVars:
-      # Database connection (will be configured manually)
+      # Database connection
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: youtubedubber-db
+          property: connectionString
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_SERVICE_KEY
@@ -27,7 +35,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://youtubedubber.com,https://youtubedubber-api-v2.onrender.com
+        value: https://youtubedubber.com,https://youtubedubber-backend.onrender.com
       - key: PYTHONPATH
         value: /app
       - key: PYTHONUNBUFFERED
@@ -48,24 +56,26 @@ services:
       - key: PORT
         value: 10000
 
-  # Frontend Next.js Service (Virginia)
+  # Frontend Next.js Service
   - type: web
-    name: youtubedubber-web-v2
+    name: youtubedubber-frontend
     runtime: node
     repo: https://github.com/iudofia2026/youtubedubber.com.git
     rootDir: ./frontend
     buildCommand: "npm install && npm run build"
     startCommand: "npm start"
     healthCheckPath: /
-    healthCheckGracePeriod: 60
     plan: starter
     region: virginia
     domains:
       - name: youtubedubber.com
     envVars:
-      # API URL (hardcoded for now)
+      # API URL
       - key: NEXT_PUBLIC_API_URL
-        value: https://youtubedubber-api-v2.onrender.com
+        fromService:
+          type: web
+          name: youtubedubber-backend
+          property: host
       # App URL
       - key: NEXT_PUBLIC_APP_URL
         value: https://youtubedubber.com

@@ -47,7 +47,6 @@ def create_limiter() -> Limiter:
 
     if redis:
         # Use Redis for distributed rate limiting
-        from slowapi.util import get_remote_address
         return Limiter(
             key_func=get_remote_address,
             default_limits=["1000/hour", "100/minute"],
