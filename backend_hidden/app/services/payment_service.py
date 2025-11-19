@@ -14,6 +14,12 @@ from app.schemas import (
     PaymentIntentRequest, PaymentConfirmationRequest,
     CreditTransactionResponse, JobCostCalculation
 )
+from app.utils.audit_logger import (
+    get_audit_logger,
+    AuditEventType,
+    AuditSeverity
+)
+from app.services.supabase_db_service import SupabaseDBService
 
 # Initialize Stripe
 stripe.api_key = settings.stripe_secret_key
@@ -61,23 +67,26 @@ class PaymentService:
     def __init__(self, db: Session):
         self.db = db
     
-    def create_payment_intent(self, request: PaymentIntentRequest) -> Dict[str, Any]:
+    def create_payment_intent(self, request: PaymentIntentRequest, ip_address: Optional[str] = None) -> Dict[str, Any]:
         """
         Create a Stripe payment intent for credit purchase
-        
+
         Args:
             request: Payment intent request with plan and user_id
-            
+            ip_address: Client IP address for audit logging
+
         Returns:
             Dict containing client_secret, payment_intent_id, and amount
         """
+        audit_logger = get_audit_logger(db_service=SupabaseDBService())
+
         try:
             # Validate plan
             if request.plan not in PRICING_PLANS:
                 raise ValueError(f"Invalid plan: {request.plan}")
-            
+
             plan_config = PRICING_PLANS[request.plan]
-            
+
             # Create Stripe payment intent
             intent = stripe.PaymentIntent.create(
                 amount=plan_config["price_cents"],
@@ -91,46 +100,98 @@ class PaymentService:
                     "enabled": True,
                 },
             )
-            
+
+            # Log payment initiation
+            audit_logger.log_payment_event(
+                event_type=AuditEventType.PAYMENT_INITIATED,
+                user_id=request.user_id,
+                amount=plan_config["price_cents"],
+                payment_intent_id=intent.id,
+                status="initiated",
+                ip_address=ip_address
+            )
+
             return {
                 "client_secret": intent.client_secret,
                 "payment_intent_id": intent.id,
                 "amount": plan_config["price_cents"]
             }
-            
+
         except stripe.error.StripeError as e:
+            # Log payment failure
+            audit_logger.log_payment_event(
+                event_type=AuditEventType.PAYMENT_FAILURE,
+                user_id=request.user_id,
+                amount=0,
+                status="failed",
+                error=str(e),
+                ip_address=ip_address
+            )
             raise Exception(f"Stripe error: {str(e)}")
         except Exception as e:
+            # Log payment failure
+            audit_logger.log_payment_event(
+                event_type=AuditEventType.PAYMENT_FAILURE,
+                user_id=request.user_id,
+                amount=0,
+                status="failed",
+                error=str(e),
+                ip_address=ip_address
+            )
             raise Exception(f"Payment intent creation failed: {str(e)}")
     
-    def confirm_payment(self, request: PaymentConfirmationRequest) -> Dict[str, Any]:
+    def confirm_payment(self, request: PaymentConfirmationRequest, ip_address: Optional[str] = None) -> Dict[str, Any]:
         """
         Confirm a Stripe payment and add credits to user account
-        
+
         Args:
             request: Payment confirmation request with payment_intent_id and user_id
-            
+            ip_address: Client IP address for audit logging
+
         Returns:
             Dict containing success status, credits_added, and new_balance
         """
+        audit_logger = get_audit_logger(db_service=SupabaseDBService())
+
         try:
             # Retrieve payment intent from Stripe
             intent = stripe.PaymentIntent.retrieve(request.payment_intent_id)
-            
+
             # Verify payment was successful
             if intent.status != "succeeded":
+                # Log payment failure
+                audit_logger.log_payment_event(
+                    event_type=AuditEventType.PAYMENT_FAILURE,
+                    user_id=request.user_id,
+                    amount=intent.amount,
+                    payment_intent_id=request.payment_intent_id,
+                    status="failed",
+                    error=f"Payment status: {intent.status}",
+                    ip_address=ip_address
+                )
                 return {
                     "success": False,
                     "error": f"Payment not successful. Status: {intent.status}"
                 }
-            
+
             # Verify user_id matches
             if intent.metadata.get("user_id") != request.user_id:
+                # Log suspicious activity
+                audit_logger.log_suspicious_activity(
+                    user_id=request.user_id,
+                    ip_address=ip_address,
+                    activity_type="payment_user_mismatch",
+                    details={
+                        "payment_intent_id": request.payment_intent_id,
+                        "expected_user": intent.metadata.get("user_id"),
+                        "provided_user": request.user_id
+                    }
+                )
                 return {
                     "success": False,
                     "error": "Payment intent user mismatch"
                 }
-            
+
             # Get plan configuration
             plan = intent.metadata.get("plan")
             if plan not in PRICING_PLANS:
@@ -138,9 +199,9 @@ class PaymentService:
                     "success": False,
                     "error": "Invalid plan in payment intent"
                 }
-            
+
             credits_to_add = PRICING_PLANS[plan]["credits"]
-            
+
             # Check if this payment has already been processed
             existing_transaction = self.db.query(CreditTransaction).filter(
                 and_(
@@ -148,13 +209,13 @@ class PaymentService:
                     CreditTransaction.user_id == request.user_id
                 )
             ).first()
-            
+
             if existing_transaction:
                 return {
                     "success": False,
                     "error": "Payment already processed"
                 }
-            
+
             # Add credits to user account
             result = self._add_credits(
                 user_id=request.user_id,
@@ -168,19 +229,65 @@ class PaymentService:
                     "stripe_currency": intent.currency
                 }
             )
-            
+
+            # Log successful payment and credit addition
+            audit_logger.log_payment_event(
+                event_type=AuditEventType.PAYMENT_SUCCESS,
+                user_id=request.user_id,
+                amount=intent.amount,
+                payment_intent_id=request.payment_intent_id,
+                status="success",
+                ip_address=ip_address
+            )
+
+            audit_logger.log_event(
+                event_type=AuditEventType.CREDIT_ADDED,
+                user_id=request.user_id,
+                resource_type="credits",
+                status="success",
+                severity=AuditSeverity.INFO,
+                message=f"Credits added: {credits_to_add}",
+                metadata={
+                    "credits_added": credits_to_add,
+                    "new_balance": result["new_balance"],
+                    "plan": plan,
+                    "payment_intent_id": request.payment_intent_id
+                },
+                ip_address=ip_address
+            )
+
             return {
                 "success": True,
                 "credits_added": credits_to_add,
                 "new_balance": result["new_balance"]
             }
-            
+
         except stripe.error.StripeError as e:
+            # Log payment failure
+            audit_logger.log_payment_event(
+                event_type=AuditEventType.PAYMENT_FAILURE,
+                user_id=request.user_id,
+                amount=0,
+                payment_intent_id=request.payment_intent_id,
+                status="failed",
+                error=str(e),
+                ip_address=ip_address
+            )
             return {
                 "success": False,
                 "error": f"Stripe error: {str(e)}"
             }
         except Exception as e:
+            # Log payment failure
+            audit_logger.log_payment_event(
+                event_type=AuditEventType.PAYMENT_FAILURE,
+                user_id=request.user_id,
+                amount=0,
+                payment_intent_id=request.payment_intent_id,
+                status="failed",
+                error=str(e),
+                ip_address=ip_address
+            )
             return {
                 "success": False,
                 "error": f"Payment confirmation failed: {str(e)}"
@@ -276,29 +383,31 @@ class PaymentService:
                       description: str = "", metadata: Optional[Dict] = None) -> Dict[str, Any]:
         """
         Deduct credits from user account and create transaction record
-        
+
         Args:
             user_id: User ID
             amount: Credits to deduct (positive integer)
             transaction_type: Type of transaction
             description: Transaction description
             metadata: Additional transaction metadata
-            
+
         Returns:
             Dict containing success status and new_balance
         """
+        audit_logger = get_audit_logger(db_service=SupabaseDBService())
+
         try:
             # Get user credits
             user_credits = self.db.query(UserCredits).filter(
                 UserCredits.user_id == user_id
             ).first()
-            
+
             if not user_credits:
                 return {
                     "success": False,
                     "error": "User has no credit account"
                 }
-            
+
             # Check if user has sufficient credits
             if user_credits.balance < amount:
                 return {
@@ -307,11 +416,11 @@ class PaymentService:
                     "current_balance": user_credits.balance,
                     "required": amount
                 }
-            
+
             # Update balance
             user_credits.balance -= amount
             user_credits.updated_at = datetime.utcnow()
-            
+
             # Create transaction record (negative amount for deduction)
             transaction = CreditTransaction(
                 id=f"txn_{uuid.uuid4().hex[:16]}",
@@ -321,15 +430,31 @@ class PaymentService:
                 description=description,
                 transaction_metadata=metadata or {}
             )
-            
+
             self.db.add(transaction)
             self.db.commit()
-            
+
+            # Log credit consumption
+            audit_logger.log_event(
+                event_type=AuditEventType.CREDIT_CONSUMED,
+                user_id=user_id,
+                resource_type="credits",
+                status="success",
+                severity=AuditSeverity.INFO,
+                message=f"Credits consumed: {amount}",
+                metadata={
+                    "credits_consumed": amount,
+                    "new_balance": user_credits.balance,
+                    "transaction_type": transaction_type,
+                    "description": description
+                }
+            )
+
             return {
                 "success": True,
                 "new_balance": user_credits.balance
             }
-            
+
         except Exception as e:
             self.db.rollback()
             return {

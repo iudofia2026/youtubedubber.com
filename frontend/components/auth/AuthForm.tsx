@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Loader2, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Captcha, CaptchaRef } from '@/components/ui/captcha';
 import { signUpSchema, signInSchema, resetPasswordSchema, type SignUpFormData, type SignInFormData, type ResetPasswordFormData } from '@/lib/auth-schemas';
 import { useAuth } from '@/lib/auth-context';
 
@@ -22,7 +23,11 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<CaptchaRef>(null);
   const { signIn, signUp, resetPassword } = useAuth();
+
+  const isCaptchaEnabled = !!process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY;
 
   const signInForm = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
@@ -30,6 +35,7 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
       email: '',
       password: '',
       rememberMe: false,
+      captchaToken: '',
     },
   });
 
@@ -41,6 +47,7 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
       confirmPassword: '',
       fullName: '',
       acceptTerms: false,
+      captchaToken: '',
     },
   });
 
@@ -51,12 +58,47 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
     },
   });
 
+  const handleCaptchaVerify = (token: string) => {
+    setCaptchaToken(token);
+  };
+
+  const handleCaptchaError = (error: Error) => {
+    console.error('CAPTCHA error:', error);
+    setCaptchaToken(null);
+  };
+
+  const handleCaptchaExpire = () => {
+    setCaptchaToken(null);
+    captchaRef.current?.reset();
+  };
+
+  // Reset captcha when switching modes
+  useEffect(() => {
+    setCaptchaToken(null);
+    captchaRef.current?.reset();
+  }, [mode]);
+
   const handleSignIn = async (data: SignInFormData) => {
+    // Check captcha if enabled
+    if (isCaptchaEnabled && !captchaToken) {
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const { error } = await signIn(data.email, data.password);
+      // Include captcha token in form data if available
+      const formDataWithCaptcha = {
+        ...data,
+        captchaToken: captchaToken || undefined,
+      };
+
+      const { error } = await signIn(formDataWithCaptcha.email, formDataWithCaptcha.password);
       if (!error) {
         onSuccess?.();
+      } else {
+        // Reset captcha on error
+        setCaptchaToken(null);
+        captchaRef.current?.reset();
       }
     } finally {
       setIsLoading(false);
@@ -64,11 +106,26 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
   };
 
   const handleSignUp = async (data: SignUpFormData) => {
+    // Check captcha if enabled
+    if (isCaptchaEnabled && !captchaToken) {
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const { error } = await signUp(data.email, data.password, data.fullName);
+      // Include captcha token in form data if available
+      const formDataWithCaptcha = {
+        ...data,
+        captchaToken: captchaToken || undefined,
+      };
+
+      const { error } = await signUp(formDataWithCaptcha.email, formDataWithCaptcha.password, formDataWithCaptcha.fullName);
       if (!error) {
         onSuccess?.();
+      } else {
+        // Reset captcha on error
+        setCaptchaToken(null);
+        captchaRef.current?.reset();
       }
     } finally {
       setIsLoading(false);
@@ -184,15 +241,26 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
                 </motion.button>
               </div>
 
+              {isCaptchaEnabled && (
+                <div className="flex justify-center">
+                  <Captcha
+                    ref={captchaRef}
+                    onVerify={handleCaptchaVerify}
+                    onError={handleCaptchaError}
+                    onExpire={handleCaptchaExpire}
+                  />
+                </div>
+              )}
+
               <motion.button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || (isCaptchaEnabled && !captchaToken)}
                 className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-medium py-4 px-6 rounded-lg transition-colors duration-200 touch-manipulation min-h-[44px] flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onTouchEnd={(e) => {
                   e.preventDefault();
-                  if (!isLoading) {
+                  if (!isLoading && (!isCaptchaEnabled || captchaToken)) {
                     // Haptic feedback
                     if (navigator.vibrate) {
                       navigator.vibrate(50);
@@ -209,6 +277,12 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
                   </>
                 )}
               </motion.button>
+              {isCaptchaEnabled && !captchaToken && (
+                <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-2">
+                  <Shield className="w-3 h-3" />
+                  Please complete the security verification
+                </p>
+              )}
             </form>
 
             <div className="text-center">
@@ -373,15 +447,26 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
                 <p className="text-sm text-destructive">{signUpForm.formState.errors.acceptTerms.message}</p>
               )}
 
+              {isCaptchaEnabled && (
+                <div className="flex justify-center">
+                  <Captcha
+                    ref={captchaRef}
+                    onVerify={handleCaptchaVerify}
+                    onError={handleCaptchaError}
+                    onExpire={handleCaptchaExpire}
+                  />
+                </div>
+              )}
+
               <motion.button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || (isCaptchaEnabled && !captchaToken)}
                 className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-medium py-4 px-6 rounded-lg transition-colors duration-200 touch-manipulation min-h-[44px] flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onTouchEnd={(e) => {
                   e.preventDefault();
-                  if (!isLoading) {
+                  if (!isLoading && (!isCaptchaEnabled || captchaToken)) {
                     // Haptic feedback
                     if (navigator.vibrate) {
                       navigator.vibrate(50);
@@ -398,6 +483,12 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
                   </>
                 )}
               </motion.button>
+              {isCaptchaEnabled && !captchaToken && (
+                <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-2">
+                  <Shield className="w-3 h-3" />
+                  Please complete the security verification
+                </p>
+              )}
             </form>
 
             <div className="text-center">

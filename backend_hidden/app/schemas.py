@@ -137,6 +137,7 @@ class UserResponse(BaseModel):
     email: str = Field(..., description="User email")
     created_at: datetime = Field(..., description="User creation timestamp")
     updated_at: Optional[datetime] = Field(None, description="User last update timestamp")
+    email_verified: bool = Field(default=False, description="Whether the user's email has been verified")
 
 
 class DubbingJobCreate(BaseModel):
@@ -418,3 +419,131 @@ class UserProfileResponse(BaseModel):
 
     # Statistics
     stats: UserStatsResponse = Field(..., description="User statistics")
+
+
+# Account Deletion schemas
+class AccountDeletionRequest(BaseModel):
+    """Request schema for account deletion initiation"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "confirmationText": "DELETE MY ACCOUNT",
+                "reason": "No longer need the service",
+                "feedback": "The service worked well, but I don't need it anymore."
+            }
+        }
+    )
+
+    confirmationText: str = Field(..., description="User must type 'DELETE MY ACCOUNT' to confirm")
+    reason: Optional[str] = Field(None, max_length=500, description="Reason for account deletion (optional)")
+    feedback: Optional[str] = Field(None, max_length=1000, description="User feedback (optional)")
+
+
+class AccountDeletionConfirmationRequest(BaseModel):
+    """Request schema for final account deletion confirmation"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "deletionToken": "del_abc123xyz789",
+                "finalConfirmation": True
+            }
+        }
+    )
+
+    deletionToken: str = Field(..., description="Deletion token from initiation step")
+    finalConfirmation: bool = Field(..., description="Final confirmation (must be true)")
+
+
+class AccountDeletionInitiationResponse(BaseModel):
+    """Response schema for account deletion initiation"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "deletionToken": "del_abc123xyz789",
+                "message": "Account deletion initiated. Please confirm within 10 minutes.",
+                "expiresAt": "2025-01-15T10:40:00Z",
+                "dataToBeDeleted": {
+                    "jobs": 15,
+                    "languageTasks": 45,
+                    "artifacts": 150,
+                    "creditTransactions": 10,
+                    "storageFiles": 200
+                }
+            }
+        }
+    )
+
+    deletionToken: str = Field(..., description="Token for final confirmation")
+    message: str = Field(..., description="Confirmation message")
+    expiresAt: str = Field(..., description="Token expiration time (ISO format)")
+    dataToBeDeleted: Dict[str, int] = Field(..., description="Summary of data that will be deleted")
+
+
+class AccountDeletionResponse(BaseModel):
+    """Response schema for completed account deletion"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "success": True,
+                "message": "Account and all associated data have been permanently deleted.",
+                "deletedAt": "2025-01-15T10:35:00Z",
+                "dataDeleted": {
+                    "user": True,
+                    "jobs": 15,
+                    "languageTasks": 45,
+                    "artifacts": 150,
+                    "creditTransactions": 10,
+                    "storageFiles": 200,
+                    "auditLogCreated": True
+                }
+            }
+        }
+    )
+
+    success: bool = Field(..., description="Deletion success status")
+    message: str = Field(..., description="Deletion confirmation message")
+    deletedAt: str = Field(..., description="Deletion timestamp (ISO format)")
+    dataDeleted: Dict[str, Any] = Field(..., description="Summary of deleted data")
+
+
+class AccountDeletionAuditLog(BaseModel):
+    """Audit log entry for account deletion (for compliance)"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "id": "audit_123",
+                "userId": "user_456",
+                "userEmail": "user@example.com",
+                "deletionInitiatedAt": "2025-01-15T10:30:00Z",
+                "deletionCompletedAt": "2025-01-15T10:35:00Z",
+                "reason": "No longer need the service",
+                "dataDeletedSummary": {
+                    "jobs": 15,
+                    "languageTasks": 45,
+                    "artifacts": 150,
+                    "creditTransactions": 10,
+                    "storageFiles": 200
+                },
+                "initiatedByUser": True,
+                "ipAddress": "192.168.1.1",
+                "userAgent": "Mozilla/5.0..."
+            }
+        }
+    )
+
+    id: str = Field(..., description="Audit log ID")
+    userId: str = Field(..., description="Deleted user ID")
+    userEmail: str = Field(..., description="Deleted user email (for records)")
+    deletionInitiatedAt: str = Field(..., description="Deletion initiation timestamp")
+    deletionCompletedAt: str = Field(..., description="Deletion completion timestamp")
+    reason: Optional[str] = Field(None, description="Deletion reason provided by user")
+    feedback: Optional[str] = Field(None, description="User feedback")
+    dataDeletedSummary: Dict[str, int] = Field(..., description="Summary of deleted data")
+    initiatedByUser: bool = Field(True, description="Whether deletion was user-initiated")
+    ipAddress: Optional[str] = Field(None, description="IP address of deletion request")
+    userAgent: Optional[str] = Field(None, description="User agent of deletion request")

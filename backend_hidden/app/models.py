@@ -137,7 +137,7 @@ class UserCredits(Base):
 class CreditTransaction(Base):
     """Credit transaction history"""
     __tablename__ = "credit_transactions"
-    
+
     id = Column(String, primary_key=True, index=True)
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     amount = Column(Integer, nullable=False)  # Credits added/subtracted (positive/negative)
@@ -145,8 +145,73 @@ class CreditTransaction(Base):
     stripe_payment_intent_id = Column(String, index=True)  # Stripe payment intent ID for purchases
     description = Column(Text)  # Human-readable description
     transaction_metadata = Column(JSON)  # Additional transaction data
-    
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    
+
     # Relationships
     user = relationship("User")
+
+
+class AccountDeletionToken(Base):
+    """Temporary tokens for account deletion confirmation"""
+    __tablename__ = "account_deletion_tokens"
+
+    token = Column(String, primary_key=True, index=True)
+    user_id = Column(String, nullable=False, index=True)
+    user_email = Column(String, nullable=False)
+    reason = Column(Text)
+    feedback = Column(Text)
+    ip_address = Column(String)
+    user_agent = Column(Text)
+    expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class AccountDeletionAuditLogModel(Base):
+    """Audit log for account deletions (GDPR compliance)"""
+    __tablename__ = "account_deletion_audit_logs"
+
+    id = Column(String, primary_key=True, index=True)
+    user_id = Column(String, nullable=False, index=True)
+    user_email = Column(String, nullable=False)
+    deletion_initiated_at = Column(DateTime(timezone=True), nullable=False)
+    deletion_completed_at = Column(DateTime(timezone=True), nullable=False)
+    reason = Column(Text)
+    feedback = Column(Text)
+    data_deleted_summary = Column(JSON, nullable=False)
+    initiated_by_user = Column(Boolean, default=True, nullable=False)
+    ip_address = Column(String)
+    user_agent = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class AuditLog(Base):
+    """Comprehensive audit log for security and compliance tracking"""
+    __tablename__ = "audit_logs"
+
+    id = Column(String, primary_key=True, index=True)
+
+    # Event identification
+    event_type = Column(String, nullable=False, index=True)  # login_success, login_failure, account_created, etc.
+    status = Column(String, nullable=False, index=True)  # success, failure, blocked, etc.
+    severity = Column(String, nullable=False, index=True)  # info, warning, error, critical
+
+    # User context (nullable for failed auth attempts)
+    user_id = Column(String, index=True)  # User who performed the action
+    email = Column(String, index=True)  # User email
+
+    # Request context
+    ip_address = Column(String, index=True)  # Client IP address
+    user_agent = Column(Text)  # Client user agent
+
+    # Resource context
+    resource_type = Column(String, index=True)  # Type of resource (user, job, payment, etc.)
+    resource_id = Column(String, index=True)  # ID of the affected resource
+
+    # Event details
+    message = Column(Text)  # Human-readable message
+    metadata = Column(JSON)  # Additional structured data
+    error = Column(Text)  # Error message if applicable
+
+    # Timestamp
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)

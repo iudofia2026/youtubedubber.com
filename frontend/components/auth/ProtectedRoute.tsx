@@ -3,6 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { LoadingSpinner } from '@/components/LoadingStates';
+import { EmailVerificationPrompt } from '@/components/auth/EmailVerificationPrompt';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -11,14 +12,16 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
   requireAuth?: boolean;
+  requireEmailVerification?: boolean;
   redirectTo?: string;
 }
 
-export function ProtectedRoute({ 
-  children, 
-  fallback, 
-  requireAuth = true, 
-  redirectTo = '/auth/signin' 
+export function ProtectedRoute({
+  children,
+  fallback,
+  requireAuth = true,
+  requireEmailVerification = true,
+  redirectTo = '/auth/signin'
 }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
 
@@ -152,6 +155,21 @@ export function ProtectedRoute({
         </motion.div>
       </div>
     );
+  }
+
+  // Check email verification if required
+  if (requireAuth && user && requireEmailVerification) {
+    // Skip email verification check in dev mode
+    const isDevMode = process.env.NEXT_PUBLIC_DEV_MODE === 'true' || user.id === 'dev-user-123';
+
+    if (!isDevMode) {
+      // Check if email is verified
+      const isEmailVerified = user.email_confirmed_at !== null && user.email_confirmed_at !== undefined;
+
+      if (!isEmailVerified) {
+        return <EmailVerificationPrompt userEmail={user.email} />;
+      }
+    }
   }
 
   // If user is logged in but shouldn't be (e.g., on auth pages)

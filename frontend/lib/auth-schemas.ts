@@ -20,6 +20,9 @@ export const signUpSchema = z.object({
   acceptTerms: z
     .boolean()
     .refine((val) => val === true, 'You must accept the terms and conditions'),
+  captchaToken: z
+    .string()
+    .optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -34,6 +37,9 @@ export const signInSchema = z.object({
     .string()
     .min(1, 'Password is required'),
   rememberMe: z.boolean().optional(),
+  captchaToken: z
+    .string()
+    .optional(),
 });
 
 export const resetPasswordSchema = z.object({

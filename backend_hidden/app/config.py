@@ -36,10 +36,21 @@ class Settings(BaseSettings):
     
     # Security Configuration
     rate_limit_enabled: bool = True
-    rate_limit_storage_url: Optional[str] = None
+    rate_limit_storage_url: Optional[str] = None  # Redis URL for rate limiting (e.g., redis://localhost:6379)
+    redis_url: Optional[str] = None  # Alias for rate_limit_storage_url
     log_level: str = "INFO"
     secure_cookies: bool = False
     https_only: bool = False
+
+    # CAPTCHA Configuration
+    hcaptcha_secret_key: Optional[str] = None  # hCaptcha secret key for bot protection
+
+    # Rate Limiting Thresholds
+    auth_rate_limit_per_minute: int = 10
+    auth_rate_limit_per_hour: int = 50
+    signup_rate_limit_per_hour: int = 5
+    password_reset_rate_limit_per_hour: int = 3
+    brute_force_threshold: int = 10  # Failed attempts before blocking
     
     # Monitoring Configuration
     sentry_dsn: Optional[str] = None
