@@ -52,6 +52,8 @@ services:
     healthCheckPath: /
     plan: starter
     region: oregon
+    domains:
+      - name: youtubedubber.onrender.com
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://youtubedubber-backend.onrender.com
