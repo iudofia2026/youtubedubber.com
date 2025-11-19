@@ -117,7 +117,7 @@ export function EmailVerificationPrompt({ userEmail, onClose }: EmailVerificatio
 
             <p className="text-sm text-muted-foreground">
               Click the verification link in your email to activate your account.
-              If you don't see the email, check your spam folder.
+              If you don&apos;t see the email, check your spam folder.
             </p>
           </motion.div>
 

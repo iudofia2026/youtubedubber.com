@@ -10,7 +10,6 @@ import {
   FileText,
   CreditCard,
   CheckCircle,
-  XCircle,
   Loader2,
   AlertCircle
 } from 'lucide-react';
@@ -107,8 +106,9 @@ export function AccountDeletionDialog({
       setDeletionToken(data.deletionToken);
       setDataSummary(data.dataToBeDeleted || {});
       setStep('preview');
-    } catch (err: any) {
-      setError(err.message || 'Failed to initiate account deletion');
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message || 'Failed to initiate account deletion');
     } finally {
       setIsLoading(false);
     }
@@ -143,8 +143,9 @@ export function AccountDeletionDialog({
       setTimeout(() => {
         onComplete();
       }, 2000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to complete account deletion');
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message || 'Failed to complete account deletion');
       setStep('preview'); // Go back to preview on error
     } finally {
       setIsLoading(false);
@@ -339,7 +340,7 @@ export function AccountDeletionDialog({
                 <Alert>
                   <Shield className="h-4 w-4" />
                   <AlertDescription>
-                    You have 10 minutes to complete this deletion. After that, you'll need to start
+                    You have 10 minutes to complete this deletion. After that, you&apos;ll need to start
                     over.
                   </AlertDescription>
                 </Alert>
@@ -385,7 +386,7 @@ export function AccountDeletionDialog({
                     This is your last chance to cancel.
                   </p>
                   <p>
-                    Once you click "Delete My Account Forever", all your data will be permanently
+                    Once you click &quot;Delete My Account Forever&quot;, all your data will be permanently
                     deleted and cannot be recovered.
                   </p>
                   <p className="text-sm text-muted-foreground">
