@@ -1,9 +1,7 @@
 databases:
-  - name: youtubedubber-db
-    databaseName: youtubedubber_db
-    user: youtubedubber_db_user
-    plan: free
-    region: virginia
+  - fromService:
+      type: postgres
+      name: youtubedubber-db
 
 services:
   # Backend FastAPI Service
@@ -14,18 +12,22 @@ services:
     rootDir: ./backend_hidden
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
+    healthCheckGracePeriod: 90
     plan: starter
     region: virginia
     envVars:
-      # Database connection - Use Render PostgreSQL
+      # Database connection - Connect to existing database
       - key: DATABASE_URL
-        fromDatabase:
+        fromService:
+          type: postgres
           name: youtubedubber-db
           property: connectionString
       # Disable Supabase (using Render PostgreSQL instead)
       - key: USE_SUPABASE
         value: "false"
-      # AI Services
+      - key: DEBUG
+        value: "false"
+      # AI Services (configure after deployment)
       - key: DEEPGRAM_API_KEY
         sync: false
       - key: OPENAI_API_KEY
@@ -64,6 +66,7 @@ services:
     buildCommand: "npm install && npm run build"
     startCommand: "npm start"
     healthCheckPath: /
+    healthCheckGracePeriod: 60
     plan: starter
     region: virginia
     domains:
@@ -75,11 +78,7 @@ services:
       # App URL
       - key: NEXT_PUBLIC_APP_URL
         value: https://youtubedubber.com
-      # Supabase Config
-      - key: NEXT_PUBLIC_SUPABASE_URL
-        sync: false
-      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
-        sync: false
+      # Development Config
       - key: NEXT_PUBLIC_DEV_MODE
         value: "false"
       # Node Config
