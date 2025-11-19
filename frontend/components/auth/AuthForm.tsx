@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Loader2, Shield } from 'lucide-react';
@@ -427,10 +427,22 @@ export function AuthForm({ mode, onModeChange, onSuccess }: AuthFormProps) {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Checkbox
-                  id="acceptTerms"
-                  {...signUpForm.register('acceptTerms')}
-                  className="touch-manipulation min-h-[44px] min-w-[44px] mt-1"
+                <Controller
+                  control={signUpForm.control}
+                  name="acceptTerms"
+                  render={({ field }) => (
+                    <Checkbox
+                      id="acceptTerms"
+                      checked={field.value === true}
+                      onCheckedChange={(checked) => {
+                        // Ensure we pass a boolean value, never 'indeterminate'
+                        field.onChange(checked === true);
+                      }}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                      className="touch-manipulation min-h-[44px] min-w-[44px] mt-1"
+                    />
+                  )}
                 />
                 <Label htmlFor="acceptTerms" className="text-sm touch-manipulation min-h-[44px] flex items-start pt-1">
                   I agree to the{' '}
