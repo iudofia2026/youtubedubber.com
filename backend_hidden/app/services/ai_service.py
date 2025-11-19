@@ -27,42 +27,72 @@ class AIService:
     async def transcribe_audio(
         self,
         audio_file_path: str,
-        language: str = "en"
+        language: str = "en",
+        diarize: bool = False
     ) -> Dict[str, any]:
         """
-        Transcribe audio using Deepgram v5
-        Returns dict with transcript, confidence, and duration
+        Transcribe audio using Deepgram.
+        If diarize is True, identifies different speakers.
+        Returns a dictionary containing the full transcript, confidence, duration,
+        and a list of utterance objects if diarization is enabled.
         """
         try:
             with open(audio_file_path, "rb") as audio_file:
                 buffer_data = audio_file.read()
 
-            # Deepgram v5 API with simplified parameters to avoid Pydantic issues
+            request_params = {
+                "model": "nova-2",
+                "language": language,
+                "smart_format": True,
+                "punctuate": True,
+                "paragraphs": True,
+                "numerals": True
+            }
+            if diarize:
+                request_params["diarize"] = True
+                request_params["utterances"] = True
+
             response = self.deepgram.listen.v1.media.transcribe_file(
                 request=buffer_data,
-                model="nova-2",
-                language=language,
-                smart_format=True,
-                punctuate=True
+                **request_params
             )
 
-            # Extract transcript and metadata
-            channel = response.results.channels[0]
+            # Extract basic metadata
+            results = response.results
+            channel = results.channels[0]
             alternative = channel.alternatives[0]
             transcript = alternative.transcript
-            confidence = alternative.confidence if hasattr(alternative, 'confidence') else 0.0
-            duration = response.results.metadata.duration if hasattr(response.results, 'metadata') else 0.0
+            confidence = alternative.confidence
+            duration = response.model_dump().get("metadata", {}).get("duration")
 
-            logger.info(f"Transcribed audio: {len(transcript)} characters, confidence: {confidence:.2f}")
-
-            return {
+            result = {
                 "transcript": transcript,
                 "confidence": confidence,
-                "duration": duration
+                "duration": duration,
+                "utterances": []
             }
 
+            if diarize:
+                # If diarization is enabled, parse the utterances
+                if results.utterances:
+                    for utterance in results.utterances:
+                        result["utterances"].append({
+                            "start": utterance.start,
+                            "end": utterance.end,
+                            "text": utterance.transcript,
+                            "speaker": utterance.speaker,
+                            "confidence": utterance.confidence,
+                        })
+                    logger.info(f"Diarized audio with {len(result['utterances'])} utterances.")
+                else:
+                    logger.warning("Diarization was enabled, but no utterances were returned.")
+
+            logger.info(f"Transcribed audio: {len(transcript)} chars, confidence: {confidence:.2f}")
+
+            return result
+
         except Exception as e:
-            logger.error(f"Error transcribing audio: {e}")
+            logger.error(f"Error transcribing audio: {e}", exc_info=True)
             raise Exception("Failed to transcribe audio")
     
     async def translate_text(
