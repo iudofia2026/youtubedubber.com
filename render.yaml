@@ -69,15 +69,10 @@ services:
       - key: NODE_VERSION
         value: 18
 
-  # PostgreSQL Database
-  - type: pserv
-    name: youtubedubber-db
-    plan: free
-    region: oregon
-    databaseName: youtubedubber
-    user: postgres
-
+# PostgreSQL Database - Render databases are defined separately
 databases:
   - name: youtubedubber-db
     plan: free
     region: oregon
+    databaseName: youtubedubber
+    user: postgres
