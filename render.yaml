@@ -1,10 +1,3 @@
-databases:
-  - name: youtubedubber-db
-    databaseName: youtubedubber_db
-    user: youtubedubber_db_user
-    plan: free
-    region: virginia
-
 services:
   # Backend FastAPI Service
   - type: web
@@ -17,11 +10,9 @@ services:
     plan: starter
     region: virginia
     envVars:
-      # Database connection
+      # Database connection (configure manually in Render dashboard)
       - key: DATABASE_URL
-        fromDatabase:
-          name: youtubedubber-db
-          property: connectionString
+        sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_SERVICE_KEY
@@ -72,10 +63,7 @@ services:
     envVars:
       # API URL
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: youtubedubber-backend
-          property: host
+        value: https://youtubedubber-backend.onrender.com
       # App URL
       - key: NEXT_PUBLIC_APP_URL
         value: https://youtubedubber.com
