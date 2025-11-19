@@ -6,6 +6,7 @@ starlette==0.48.0
 pydantic==2.12.0
 pydantic-settings==2.11.0
 pydantic-core==2.41.1
+email-validator==2.0.0
 
 # Database and migrations
 SQLAlchemy==2.0.44
