@@ -1,17 +1,17 @@
 services:
   # Backend FastAPI Service (Virginia)
   - type: web
-    name: youtubedubber-api
+    name: youtubedubber-api-v2
     runtime: docker
     repo: https://github.com/iudofia2026/youtubedubber.com.git
     rootDir: ./backend_hidden
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
-    healthCheckGracePeriod: 30
+    healthCheckGracePeriod: 60
     plan: starter
     region: virginia
     envVars:
-      # Database connection (with fallback)
+      # Database connection (will be configured manually)
       - key: DATABASE_URL
         sync: false
       - key: SUPABASE_URL
@@ -27,7 +27,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://youtubedubber.com,https://youtubedubber-api.onrender.com
+        value: https://youtubedubber.com,https://youtubedubber-api-v2.onrender.com
       - key: PYTHONPATH
         value: /app
       - key: PYTHONUNBUFFERED
@@ -50,24 +50,22 @@ services:
 
   # Frontend Next.js Service (Virginia)
   - type: web
-    name: youtubedubber-web
+    name: youtubedubber-web-v2
     runtime: node
     repo: https://github.com/iudofia2026/youtubedubber.com.git
     rootDir: ./frontend
     buildCommand: "npm install && npm run build"
     startCommand: "npm start"
     healthCheckPath: /
+    healthCheckGracePeriod: 60
     plan: starter
     region: virginia
     domains:
       - name: youtubedubber.com
     envVars:
-      # API URL with service reference
+      # API URL (hardcoded for now)
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: youtubedubber-api
-          property: url
+        value: https://youtubedubber-api-v2.onrender.com
       # App URL
       - key: NEXT_PUBLIC_APP_URL
         value: https://youtubedubber.com
@@ -81,10 +79,3 @@ services:
       # Node Config
       - key: NODE_VERSION
         value: 18
-
-# PostgreSQL Database (Virginia)
-databases:
-  - name: youtubedubber-db
-    plan: free
-    region: virginia
-    databaseName: youtubedubber
