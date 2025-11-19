@@ -1,3 +1,10 @@
+databases:
+  - name: youtubedubber-db
+    databaseName: youtubedubber_db
+    user: youtubedubber_db_user
+    plan: free
+    region: virginia
+
 services:
   # Backend FastAPI Service
   - type: web
@@ -10,13 +17,14 @@ services:
     plan: starter
     region: virginia
     envVars:
-      # Database connection (configure manually in Render dashboard)
+      # Database connection - Use Render PostgreSQL
       - key: DATABASE_URL
-        sync: false
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_KEY
-        sync: false
+        fromDatabase:
+          name: youtubedubber-db
+          property: connectionString
+      # Disable Supabase (using Render PostgreSQL instead)
+      - key: USE_SUPABASE
+        value: "false"
       # AI Services
       - key: DEEPGRAM_API_KEY
         sync: false
