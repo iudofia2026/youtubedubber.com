@@ -24,6 +24,7 @@ limits==4.2
 # AI and external services
 openai==2.3.0
 deepgram-sdk==5.0.0
+google-generativeai==0.8.5
 
 # Supabase
 supabase==2.22.0
