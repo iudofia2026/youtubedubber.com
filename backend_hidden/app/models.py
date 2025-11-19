@@ -210,7 +210,7 @@ class AuditLog(Base):
 
     # Event details
     message = Column(Text)  # Human-readable message
-    metadata = Column(JSON)  # Additional structured data
+    event_data = Column(JSON)  # Additional structured data
     error = Column(Text)  # Error message if applicable
 
     # Timestamp
