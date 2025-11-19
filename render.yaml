@@ -1,24 +1,33 @@
+databases:
+  - fromService:
+      type: postgres
+      name: youtubedubber-db
+
 services:
-  # Backend FastAPI Service (Virginia)
+  # Backend FastAPI Service
   - type: web
-    name: youtubedubber-api
+    name: youtubedubber-backend
     runtime: docker
     repo: https://github.com/iudofia2026/youtubedubber.com.git
     rootDir: ./backend_hidden
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
-    healthCheckGracePeriod: 30
+    healthCheckGracePeriod: 90
     plan: starter
     region: virginia
     envVars:
-      # Database connection (with fallback)
+      # Database connection - Connect to existing database
       - key: DATABASE_URL
-        sync: false
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_KEY
-        sync: false
-      # AI Services
+        fromService:
+          type: postgres
+          name: youtubedubber-db
+          property: connectionString
+      # Disable Supabase (using Render PostgreSQL instead)
+      - key: USE_SUPABASE
+        value: "false"
+      - key: DEBUG
+        value: "false"
+      # AI Services (configure after deployment)
       - key: DEEPGRAM_API_KEY
         sync: false
       - key: OPENAI_API_KEY
@@ -27,7 +36,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://youtubedubber.com,https://youtubedubber-api.onrender.com
+        value: https://youtubedubber.com,https://youtubedubber-backend.onrender.com
       - key: PYTHONPATH
         value: /app
       - key: PYTHONUNBUFFERED
@@ -48,43 +57,30 @@ services:
       - key: PORT
         value: 10000
 
-  # Frontend Next.js Service (Virginia)
+  # Frontend Next.js Service
   - type: web
-    name: youtubedubber-web
+    name: youtubedubber-frontend
     runtime: node
     repo: https://github.com/iudofia2026/youtubedubber.com.git
     rootDir: ./frontend
     buildCommand: "npm install && npm run build"
     startCommand: "npm start"
     healthCheckPath: /
+    healthCheckGracePeriod: 60
     plan: starter
     region: virginia
     domains:
       - name: youtubedubber.com
     envVars:
-      # API URL with service reference
+      # API URL
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: youtubedubber-api
-          property: url
+        value: https://youtubedubber-backend.onrender.com
       # App URL
       - key: NEXT_PUBLIC_APP_URL
         value: https://youtubedubber.com
-      # Supabase Config
-      - key: NEXT_PUBLIC_SUPABASE_URL
-        sync: false
-      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
-        sync: false
+      # Development Config
       - key: NEXT_PUBLIC_DEV_MODE
         value: "false"
       # Node Config
       - key: NODE_VERSION
         value: 18
-
-# PostgreSQL Database (Virginia)
-databases:
-  - name: youtubedubber-db
-    plan: free
-    region: virginia
-    databaseName: youtubedubber
