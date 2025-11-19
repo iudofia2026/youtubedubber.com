@@ -1,0 +1,438 @@
+INFO:     Will watch for changes in these directories: ['/Users/briandibassinga/Github-Projects/youtubedubber.com/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [62678] using StatReload
+2025-11-01 21:49:56,293 - app.main - INFO - CORS Origins: ['http://localhost:3000', 'http://localhost:3001', 'http://10.0.0.149:3000', 'http://10.0.0.149:3001']
+INFO:     Started server process [62681]
+INFO:     Waiting for application startup.
+2025-11-01 21:49:56,299 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 21:49:56,299 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 21:49:56,299 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+INFO:     127.0.0.1:61988 - "OPTIONS /api/jobs/upload-urls HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'app/main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 21:50:22,880 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [62681]
+2025-11-01 21:50:23,248 - app.main - INFO - CORS Origins: ['http://localhost:3000', 'http://localhost:3001', 'http://10.0.0.149:3000', 'http://10.0.0.149:3001']
+INFO:     Started server process [62822]
+INFO:     Waiting for application startup.
+2025-11-01 21:50:23,253 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 21:50:23,253 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 21:50:23,253 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+INFO:     127.0.0.1:62135 - "OPTIONS /api/jobs/upload-urls HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62422 - "OPTIONS /api/jobs/upload-urls HTTP/1.1" 200 OK
+2025-11-01 21:51:17,645 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-11-01 21:51:17,646 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1762048277.646278,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "zh"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-11-01 21:51:17,646 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-11-01 21:51:17,647 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-11-01 21:51:17,680 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1762048277.6800551,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 34.33,
+  "client_ip": "127.0.0.1"
+}
+2025-11-01 21:51:17,680 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.034s)
+2025-11-01 21:51:17,680 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:62422 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+2025-11-01 21:51:18,684 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-11-01 21:51:18,684 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1762048278.684881,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "zh"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-11-01 21:51:18,684 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-11-01 21:51:18,685 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-11-01 21:51:18,685 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1762048278.6856692,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 1.13,
+  "client_ip": "127.0.0.1"
+}
+2025-11-01 21:51:18,685 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.001s)
+2025-11-01 21:51:18,686 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:62422 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+2025-11-01 21:51:20,692 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-11-01 21:51:20,692 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1762048280.692829,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "zh"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-11-01 21:51:20,692 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-11-01 21:51:20,693 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-11-01 21:51:20,693 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1762048280.693571,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 1.09,
+  "client_ip": "127.0.0.1"
+}
+2025-11-01 21:51:20,693 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.001s)
+2025-11-01 21:51:20,693 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:62422 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+2025-11-01 21:51:24,698 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-11-01 21:51:24,699 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1762048284.699084,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "zh"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-11-01 21:51:24,699 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-11-01 21:51:24,699 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-11-01 21:51:24,699 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1762048284.699957,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 1.27,
+  "client_ip": "127.0.0.1"
+}
+2025-11-01 21:51:24,700 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.001s)
+2025-11-01 21:51:24,700 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:62422 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+WARNING:  StatReload detected changes in 'app/schemas.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 21:52:46,041 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [62822]
+2025-11-01 21:52:46,570 - app.main - INFO - CORS Origins: ['http://localhost:3000', 'http://localhost:3001', 'http://10.0.0.149:3000', 'http://10.0.0.149:3001']
+INFO:     Started server process [63195]
+INFO:     Waiting for application startup.
+2025-11-01 21:52:46,575 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 21:52:46,575 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 21:52:46,575 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+2025-11-01 21:53:34,987 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-11-01 21:53:34,989 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1762048414.9891388,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "es"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-11-01 21:53:34,989 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-11-01 21:53:34,990 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-11-01 21:53:35,023 - app.api.jobs - INFO - Generating upload URLs for user dev-user-123, languages: ['es']
+2025-11-01 21:53:35,023 - app.api.jobs - INFO - Development mode: Skipping validation for filenames: VOICE-ONLY.mp4, SFX-ONLY.mp4
+2025-11-01 21:53:35,026 - app.auth - ERROR - Error generating signed upload URL: create_signed_upload_url() takes 2 positional arguments but 3 were given
+2025-11-01 21:53:35,026 - app.services.storage_service - WARNING - Supabase Storage not available (Failed to generate upload URL), using local upload URLs
+2025-11-01 21:53:35,026 - app.services.storage_service - INFO - Generated local mock upload URLs for job job_42fc21acb85e
+2025-11-01 21:53:35,026 - app.api.jobs - INFO - Generated upload URLs for job job_42fc21acb85e
+2025-11-01 21:53:35,027 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1762048415.0275671,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 200,
+  "response_headers": {
+    "content-length": "281",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (281 bytes)",
+  "process_time_ms": 38.99,
+  "client_ip": "127.0.0.1"
+}
+2025-11-01 21:53:35,027 - app.middleware.api_logging - INFO - ✅ POST /api/jobs/upload-urls -> 200 (0.039s)
+INFO:     127.0.0.1:63216 - "POST /api/jobs/upload-urls HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49903 - "OPTIONS /api/v1/frameworks HTTP/1.1" 200 OK
+2025-11-01 22:03:31,847 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/frameworks, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-11-01 22:03:31,848 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1762049011.847977,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/frameworks",
+  "path": "/api/v1/frameworks",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-11-01 22:03:31,848 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/frameworks from 127.0.0.1
+2025-11-01 22:03:31,860 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1762049011.860666,
+  "method": "GET",
+  "path": "/api/v1/frameworks",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 12.75,
+  "client_ip": "127.0.0.1"
+}
+2025-11-01 22:03:31,860 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/frameworks -> 404 (0.013s)
+2025-11-01 22:03:31,861 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/frameworks, Status: 404
+INFO:     127.0.0.1:49903 - "GET /api/v1/frameworks HTTP/1.1" 404 Not Found
+WARNING:  StatReload detected changes in 'app/schemas.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 22:10:30,918 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [63195]
+2025-11-01 22:10:31,502 - app.main - INFO - CORS Origins: ['http://localhost:3000', 'http://localhost:3001', 'http://10.0.0.149:3000', 'http://10.0.0.149:3001']
+INFO:     Started server process [64793]
+INFO:     Waiting for application startup.
+2025-11-01 22:10:31,507 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 22:10:31,507 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 22:10:31,507 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/services/storage_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 22:10:39,285 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [64793]
+2025-11-01 22:10:39,785 - app.main - INFO - CORS Origins: ['http://localhost:3000', 'http://localhost:3001', 'http://10.0.0.149:3000', 'http://10.0.0.149:3001']
+INFO:     Started server process [64832]
+INFO:     Waiting for application startup.
+2025-11-01 22:10:39,790 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 22:10:39,790 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 22:10:39,790 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/schemas.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 22:11:08,481 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [64832]
+2025-11-01 22:11:09,022 - app.main - INFO - CORS Origins: ['http://localhost:3000', 'http://localhost:3001', 'http://10.0.0.149:3000', 'http://10.0.0.149:3001']
+INFO:     Started server process [64919]
+INFO:     Waiting for application startup.
+2025-11-01 22:11:09,027 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 22:11:09,028 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 22:11:09,028 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/services/storage_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 22:11:14,382 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [64919]
+2025-11-01 22:11:14,760 - app.main - INFO - CORS Origins: ['http://localhost:3000', 'http://localhost:3001', 'http://10.0.0.149:3000', 'http://10.0.0.149:3001']
+INFO:     Started server process [64933]
+INFO:     Waiting for application startup.
+2025-11-01 22:11:14,766 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 22:11:14,766 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 22:11:14,766 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/services/supabase_job_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 22:11:48,809 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [64933]
+2025-11-01 22:11:49,291 - app.main - INFO - CORS Origins: ['http://localhost:3000', 'http://localhost:3001', 'http://10.0.0.149:3000', 'http://10.0.0.149:3001']
+INFO:     Started server process [65038]
+INFO:     Waiting for application startup.
+2025-11-01 22:11:49,296 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 22:11:49,296 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 22:11:49,296 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 22:12:35,260 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [65038]
+2025-11-01 22:12:35,769 - app.main - INFO - CORS Origins: ['http://localhost:3000', 'http://localhost:3001', 'http://10.0.0.149:3000', 'http://10.0.0.149:3001']
+INFO:     Started server process [65331]
+INFO:     Waiting for application startup.
+2025-11-01 22:12:35,774 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 22:12:35,774 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 22:12:35,774 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.

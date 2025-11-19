@@ -1,0 +1,1285 @@
+INFO:     Will watch for changes in these directories: ['/Users/briandibassinga/Github-Projects/youtubedubber.com/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [42609] using StatReload
+INFO:     Started server process [42619]
+INFO:     Waiting for application startup.
+2025-10-31 23:14:04,507 - app.main - INFO - Starting YT Dubber API...
+2025-10-31 23:14:04,507 - app.main - INFO - Using Supabase REST API for database operations
+2025-10-31 23:14:04,507 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+2025-10-31 23:14:08,025 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761966848.025216,
+  "method": "GET",
+  "url": "http://localhost:8000/health",
+  "path": "/health",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "user-agent": "curl/8.7.1",
+    "accept": "*/*"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:14:08,025 - app.middleware.api_logging - INFO - 🌐 GET /health from 127.0.0.1
+2025-10-31 23:14:08,026 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761966848.0266728,
+  "method": "GET",
+  "path": "/health",
+  "status_code": 200,
+  "response_headers": {
+    "content-length": "79",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (79 bytes)",
+  "process_time_ms": 1.48,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:14:08,026 - app.middleware.api_logging - INFO - ✅ GET /health -> 200 (0.001s)
+INFO:     127.0.0.1:56862 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56990 - "OPTIONS /api/jobs/upload-urls HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57951 - "OPTIONS /api/jobs/upload-urls HTTP/1.1" 200 OK
+2025-10-31 23:17:27,794 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:17:27,795 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967047.79526,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "zh"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-10-31 23:17:27,795 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-10-31 23:17:27,797 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-10-31 23:17:27,826 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967047.826874,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 32.08,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:17:27,826 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.032s)
+2025-10-31 23:17:27,827 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:57951 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+2025-10-31 23:17:28,831 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:17:28,832 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967048.83196,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "zh"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-10-31 23:17:28,832 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-10-31 23:17:28,832 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-10-31 23:17:28,832 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967048.832778,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 1.49,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:17:28,832 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.001s)
+2025-10-31 23:17:28,833 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:57951 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+2025-10-31 23:17:30,837 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:17:30,838 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967050.838047,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "zh"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-10-31 23:17:30,838 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-10-31 23:17:30,838 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-10-31 23:17:30,839 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967050.839024,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 1.34,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:17:30,839 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.001s)
+2025-10-31 23:17:30,839 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:57951 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+2025-10-31 23:17:34,843 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:17:34,843 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967054.8437,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "zh"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-10-31 23:17:34,843 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-10-31 23:17:34,844 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-10-31 23:17:34,844 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967054.844527,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 1.2,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:17:34,844 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.001s)
+2025-10-31 23:17:34,844 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:57951 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+2025-10-31 23:19:45,131 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: curl/8.7.1
+2025-10-31 23:19:45,131 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967185.131938,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "user-agent": "curl/8.7.1",
+    "accept": "*/*",
+    "content-type": "application/json",
+    "content-length": "48"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "job_id": "test123",
+    "voice_filename": "test.mp3"
+  }
+}
+2025-10-31 23:19:45,132 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-10-31 23:19:45,132 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-10-31 23:19:45,132 - app.api.jobs - INFO - Generating upload URLs for user dev-user-123, job_id: test123
+2025-10-31 23:19:45,132 - app.api.jobs - INFO - Development mode: Skipping validation for filenames: test.mp3, None
+2025-10-31 23:19:45,136 - app.auth - ERROR - Error generating signed upload URL: create_signed_upload_url() takes 2 positional arguments but 3 were given
+2025-10-31 23:19:45,136 - app.services.storage_service - ERROR - Error generating upload URLs: Failed to generate upload URL
+2025-10-31 23:19:45,136 - app.api.jobs - ERROR - Error generating upload URLs: Failed to generate upload URLs
+Traceback (most recent call last):
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/auth.py", line 204, in generate_signed_upload_url
+    response = self.client.storage.from_(bucket).create_signed_upload_url(
+TypeError: create_signed_upload_url() takes 2 positional arguments but 3 were given
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/services/storage_service.py", line 44, in generate_upload_urls
+    voice_url = await self.supabase_storage.generate_signed_upload_url(
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/auth.py", line 216, in generate_signed_upload_url
+    raise Exception("Failed to generate upload URL")
+Exception: Failed to generate upload URL
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/api/jobs.py", line 215, in request_upload_urls
+    signed_urls = await storage_service.generate_upload_urls(
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/services/storage_service.py", line 67, in generate_upload_urls
+    raise Exception("Failed to generate upload URLs")
+Exception: Failed to generate upload URLs
+2025-10-31 23:19:45,140 - app.utils.security - ERROR - Error upload_url_generation_failed: Failed to generate upload URLs
+Traceback (most recent call last):
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/auth.py", line 204, in generate_signed_upload_url
+    response = self.client.storage.from_(bucket).create_signed_upload_url(
+TypeError: create_signed_upload_url() takes 2 positional arguments but 3 were given
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/services/storage_service.py", line 44, in generate_upload_urls
+    voice_url = await self.supabase_storage.generate_signed_upload_url(
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/auth.py", line 216, in generate_signed_upload_url
+    raise Exception("Failed to generate upload URL")
+Exception: Failed to generate upload URL
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/api/jobs.py", line 215, in request_upload_urls
+    signed_urls = await storage_service.generate_upload_urls(
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/services/storage_service.py", line 67, in generate_upload_urls
+    raise Exception("Failed to generate upload URLs")
+Exception: Failed to generate upload URLs
+2025-10-31 23:19:45,140 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967185.1406841,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 500,
+  "response_headers": {
+    "content-length": "235",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (235 bytes)",
+  "process_time_ms": 9.11,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:19:45,140 - app.middleware.api_logging - ERROR - ❌ POST /api/jobs/upload-urls -> 500 (0.009s)
+2025-10-31 23:19:45,141 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 500
+INFO:     127.0.0.1:59032 - "POST /api/jobs/upload-urls HTTP/1.1" 500 Internal Server Error
+WARNING:  StatReload detected changes in 'app/services/storage_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-10-31 23:20:04,885 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [42619]
+INFO:     Started server process [43726]
+INFO:     Waiting for application startup.
+2025-10-31 23:20:05,351 - app.main - INFO - Starting YT Dubber API...
+2025-10-31 23:20:05,351 - app.main - INFO - Using Supabase REST API for database operations
+2025-10-31 23:20:05,351 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+2025-10-31 23:20:22,119 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: curl/8.7.1
+2025-10-31 23:20:22,121 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967222.12154,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "user-agent": "curl/8.7.1",
+    "accept": "*/*",
+    "content-type": "application/json",
+    "content-length": "79"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "job_id": "test123",
+    "voice_filename": "test.mp3",
+    "background_filename": "bg.mp3"
+  }
+}
+2025-10-31 23:20:22,122 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-10-31 23:20:22,122 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-10-31 23:20:22,148 - app.api.jobs - INFO - Generating upload URLs for user dev-user-123, job_id: test123
+2025-10-31 23:20:22,148 - app.api.jobs - INFO - Development mode: Skipping validation for filenames: test.mp3, bg.mp3
+2025-10-31 23:20:22,151 - app.auth - ERROR - Error generating signed upload URL: create_signed_upload_url() takes 2 positional arguments but 3 were given
+2025-10-31 23:20:22,151 - app.services.storage_service - WARNING - Supabase Storage not available (Failed to generate upload URL), using local upload URLs
+2025-10-31 23:20:22,151 - app.services.storage_service - INFO - Generated local mock upload URLs for job job_58d7d01fefe1
+2025-10-31 23:20:22,151 - app.api.jobs - INFO - Generated upload URLs for job job_58d7d01fefe1
+2025-10-31 23:20:22,151 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967222.15152,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 200,
+  "response_headers": {
+    "content-length": "269",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (269 bytes)",
+  "process_time_ms": 30.87,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:20:22,151 - app.middleware.api_logging - INFO - ✅ POST /api/jobs/upload-urls -> 200 (0.031s)
+INFO:     127.0.0.1:59410 - "POST /api/jobs/upload-urls HTTP/1.1" 200 OK
+2025-10-31 23:22:00,054 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:22:00,055 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967320.055892,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "fr"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-10-31 23:22:00,056 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-10-31 23:22:00,056 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-10-31 23:22:00,057 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967320.0572002,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 1.75,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:22:00,057 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.002s)
+2025-10-31 23:22:00,057 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:60015 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+2025-10-31 23:22:01,063 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:22:01,065 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967321.065116,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "fr"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-10-31 23:22:01,065 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-10-31 23:22:01,065 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-10-31 23:22:01,066 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967321.066568,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 2.1,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:22:01,066 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.002s)
+2025-10-31 23:22:01,067 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:60015 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+2025-10-31 23:22:03,072 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:22:03,073 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967323.0732448,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "fr"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-10-31 23:22:03,073 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-10-31 23:22:03,073 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-10-31 23:22:03,074 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967323.0745401,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 1.86,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:22:03,074 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.002s)
+2025-10-31 23:22:03,075 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:60015 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+2025-10-31 23:22:07,081 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:22:07,082 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967327.0825331,
+  "method": "POST",
+  "url": "http://localhost:8000/api/jobs/upload-urls",
+  "path": "/api/jobs/upload-urls",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "95",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3001",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3001/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": {
+    "languages": [
+      "fr"
+    ],
+    "voice_track_name": "VOICE-ONLY.mp4",
+    "background_track_name": "SFX-ONLY.mp4"
+  }
+}
+2025-10-31 23:22:07,082 - app.middleware.api_logging - INFO - 🌐 POST /api/jobs/upload-urls from 127.0.0.1
+2025-10-31 23:22:07,083 - app.auth - INFO - Using dev-token authentication for user: dev-user-123
+2025-10-31 23:22:07,084 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967327.084225,
+  "method": "POST",
+  "path": "/api/jobs/upload-urls",
+  "status_code": 422,
+  "response_headers": {
+    "content-length": "360",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (360 bytes)",
+  "process_time_ms": 2.38,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:22:07,084 - app.middleware.api_logging - WARNING - ⚠️  POST /api/jobs/upload-urls -> 422 (0.002s)
+2025-10-31 23:22:07,084 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: POST, Path: /api/jobs/upload-urls, Status: 422
+INFO:     127.0.0.1:60015 - "POST /api/jobs/upload-urls HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:61737 - "OPTIONS /api/v1/frameworks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61738 - "OPTIONS /api/v1/mappings?min_confidence=70 HTTP/1.1" 200 OK
+2025-10-31 23:26:57,772 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/frameworks, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:26:57,772 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967617.772672,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/frameworks",
+  "path": "/api/v1/frameworks",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:26:57,773 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/frameworks from 127.0.0.1
+2025-10-31 23:26:57,773 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/mappings, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:26:57,773 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967617.773887,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/mappings?min_confidence=70",
+  "path": "/api/v1/mappings",
+  "query_params": {
+    "min_confidence": "70"
+  },
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:26:57,773 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/mappings from 127.0.0.1
+2025-10-31 23:26:57,774 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967617.774108,
+  "method": "GET",
+  "path": "/api/v1/frameworks",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 1.48,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:26:57,774 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/frameworks -> 404 (0.001s)
+2025-10-31 23:26:57,774 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967617.7743921,
+  "method": "GET",
+  "path": "/api/v1/mappings",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 0.56,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:26:57,774 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/mappings -> 404 (0.001s)
+2025-10-31 23:26:57,774 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/frameworks, Status: 404
+INFO:     127.0.0.1:61738 - "GET /api/v1/frameworks HTTP/1.1" 404 Not Found
+2025-10-31 23:26:57,774 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/mappings, Status: 404
+INFO:     127.0.0.1:61737 - "GET /api/v1/mappings?min_confidence=70 HTTP/1.1" 404 Not Found
+2025-10-31 23:26:58,780 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/frameworks, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:26:58,780 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/mappings, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:26:58,780 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967618.7808619,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/frameworks",
+  "path": "/api/v1/frameworks",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:26:58,780 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/frameworks from 127.0.0.1
+2025-10-31 23:26:58,781 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967618.781207,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/mappings?min_confidence=70",
+  "path": "/api/v1/mappings",
+  "query_params": {
+    "min_confidence": "70"
+  },
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:26:58,781 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/mappings from 127.0.0.1
+2025-10-31 23:26:58,781 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967618.781409,
+  "method": "GET",
+  "path": "/api/v1/frameworks",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 0.57,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:26:58,781 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/frameworks -> 404 (0.001s)
+2025-10-31 23:26:58,781 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967618.7815108,
+  "method": "GET",
+  "path": "/api/v1/mappings",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 0.32,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:26:58,781 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/mappings -> 404 (0.000s)
+2025-10-31 23:26:58,781 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/frameworks, Status: 404
+2025-10-31 23:26:58,781 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/mappings, Status: 404
+INFO:     127.0.0.1:61737 - "GET /api/v1/frameworks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:61738 - "GET /api/v1/mappings?min_confidence=70 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:61738 - "OPTIONS /api/v1/assessments/dashboard/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61737 - "OPTIONS /api/v1/assessments?limit=5 HTTP/1.1" 200 OK
+2025-10-31 23:27:02,038 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments/dashboard/metrics, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:27:02,038 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967622.038811,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/assessments/dashboard/metrics",
+  "path": "/api/v1/assessments/dashboard/metrics",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:27:02,038 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/assessments/dashboard/metrics from 127.0.0.1
+2025-10-31 23:27:02,039 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:27:02,039 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967622.039403,
+  "method": "GET",
+  "path": "/api/v1/assessments/dashboard/metrics",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 0.64,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:27:02,039 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/assessments/dashboard/metrics -> 404 (0.001s)
+2025-10-31 23:27:02,039 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967622.0396302,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/assessments?limit=5",
+  "path": "/api/v1/assessments",
+  "query_params": {
+    "limit": "5"
+  },
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:27:02,039 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/assessments from 127.0.0.1
+2025-10-31 23:27:02,039 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967622.039902,
+  "method": "GET",
+  "path": "/api/v1/assessments",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 0.3,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:27:02,039 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/assessments -> 404 (0.000s)
+2025-10-31 23:27:02,039 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments/dashboard/metrics, Status: 404
+INFO:     127.0.0.1:61737 - "GET /api/v1/assessments/dashboard/metrics HTTP/1.1" 404 Not Found
+2025-10-31 23:27:02,040 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments, Status: 404
+INFO:     127.0.0.1:61738 - "GET /api/v1/assessments?limit=5 HTTP/1.1" 404 Not Found
+2025-10-31 23:27:03,045 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments/dashboard/metrics, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:27:03,046 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:27:03,047 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967623.0469198,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/assessments/dashboard/metrics",
+  "path": "/api/v1/assessments/dashboard/metrics",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:27:03,047 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/assessments/dashboard/metrics from 127.0.0.1
+2025-10-31 23:27:03,048 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967623.047957,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/assessments?limit=5",
+  "path": "/api/v1/assessments",
+  "query_params": {
+    "limit": "5"
+  },
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:27:03,048 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/assessments from 127.0.0.1
+2025-10-31 23:27:03,048 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967623.048585,
+  "method": "GET",
+  "path": "/api/v1/assessments/dashboard/metrics",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 1.72,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:27:03,048 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/assessments/dashboard/metrics -> 404 (0.002s)
+2025-10-31 23:27:03,048 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967623.048876,
+  "method": "GET",
+  "path": "/api/v1/assessments",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 0.97,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:27:03,048 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/assessments -> 404 (0.001s)
+2025-10-31 23:27:03,049 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments/dashboard/metrics, Status: 404
+2025-10-31 23:27:03,049 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments, Status: 404
+INFO:     127.0.0.1:61738 - "GET /api/v1/assessments/dashboard/metrics HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:61737 - "GET /api/v1/assessments?limit=5 HTTP/1.1" 404 Not Found
+2025-10-31 23:27:04,733 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments/dashboard/metrics, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:27:04,734 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967624.734025,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/assessments/dashboard/metrics",
+  "path": "/api/v1/assessments/dashboard/metrics",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:27:04,734 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/assessments/dashboard/metrics from 127.0.0.1
+2025-10-31 23:27:04,734 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967624.734452,
+  "method": "GET",
+  "path": "/api/v1/assessments/dashboard/metrics",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 0.45,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:27:04,734 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/assessments/dashboard/metrics -> 404 (0.000s)
+2025-10-31 23:27:04,734 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:27:04,734 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967624.73488,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/assessments?limit=5",
+  "path": "/api/v1/assessments",
+  "query_params": {
+    "limit": "5"
+  },
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:27:04,734 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/assessments from 127.0.0.1
+2025-10-31 23:27:04,735 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments/dashboard/metrics, Status: 404
+2025-10-31 23:27:04,735 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967624.735323,
+  "method": "GET",
+  "path": "/api/v1/assessments",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 0.46,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:27:04,735 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/assessments -> 404 (0.000s)
+INFO:     127.0.0.1:61737 - "GET /api/v1/assessments/dashboard/metrics HTTP/1.1" 404 Not Found
+2025-10-31 23:27:04,735 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments, Status: 404
+INFO:     127.0.0.1:61738 - "GET /api/v1/assessments?limit=5 HTTP/1.1" 404 Not Found
+2025-10-31 23:27:05,740 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments/dashboard/metrics, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:27:05,740 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967625.7409291,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/assessments/dashboard/metrics",
+  "path": "/api/v1/assessments/dashboard/metrics",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:27:05,740 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/assessments/dashboard/metrics from 127.0.0.1
+2025-10-31 23:27:05,741 - app.middleware.security - INFO - API request - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments, User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.
+2025-10-31 23:27:05,741 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967625.741311,
+  "method": "GET",
+  "path": "/api/v1/assessments/dashboard/metrics",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 0.4,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:27:05,741 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/assessments/dashboard/metrics -> 404 (0.000s)
+2025-10-31 23:27:05,741 - api_calls - INFO - INCOMING: {
+  "type": "REQUEST",
+  "timestamp": 1761967625.741492,
+  "method": "GET",
+  "url": "http://localhost:8000/api/v1/assessments?limit=5",
+  "path": "/api/v1/assessments",
+  "query_params": {
+    "limit": "5"
+  },
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+    "sec-ch-ua-mobile": "?0",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9"
+  },
+  "client_ip": "127.0.0.1",
+  "body": null
+}
+2025-10-31 23:27:05,741 - app.middleware.api_logging - INFO - 🌐 GET /api/v1/assessments from 127.0.0.1
+2025-10-31 23:27:05,741 - api_calls - INFO - OUTGOING: {
+  "type": "RESPONSE",
+  "timestamp": 1761967625.741763,
+  "method": "GET",
+  "path": "/api/v1/assessments",
+  "status_code": 404,
+  "response_headers": {
+    "content-length": "22",
+    "content-type": "application/json"
+  },
+  "response_body": "Response body present (22 bytes)",
+  "process_time_ms": 0.29,
+  "client_ip": "127.0.0.1"
+}
+2025-10-31 23:27:05,741 - app.middleware.api_logging - WARNING - ⚠️  GET /api/v1/assessments -> 404 (0.000s)
+2025-10-31 23:27:05,741 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments/dashboard/metrics, Status: 404
+INFO:     127.0.0.1:61738 - "GET /api/v1/assessments/dashboard/metrics HTTP/1.1" 404 Not Found
+2025-10-31 23:27:05,742 - app.middleware.security - WARNING - Error response - IP: 127.0.0.1, Method: GET, Path: /api/v1/assessments, Status: 404
+INFO:     127.0.0.1:61737 - "GET /api/v1/assessments?limit=5 HTTP/1.1" 404 Not Found
+WARNING:  StatReload detected changes in 'app/schemas.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 00:00:33,810 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [43726]
+Process SpawnProcess-3:
+Traceback (most recent call last):
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/server.py", line 67, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/_compat.py", line 53, in asyncio_run
+    return loop.run_until_complete(main)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/asyncio/base_events.py", line 642, in run_until_complete
+    return future.result()
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/server.py", line 71, in serve
+    await self._serve(sockets)
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/server.py", line 78, in _serve
+    config.load()
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/config.py", line 438, in load
+    self.loaded_app = import_from_string(self.app)
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+  File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/main.py", line 9, in <module>
+    from app.api import jobs, payments
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/api/jobs.py", line 5, in <module>
+    from app.schemas import (
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/schemas.py", line 276, in <module>
+    class UserStatsResponse(BaseModel):
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_model_construction.py", line 130, in __new__
+    config_wrapper = ConfigWrapper.for_model(bases, namespace, raw_annotations, kwargs)
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_config.py", line 138, in for_model
+    raise PydanticUserError('"Config" and "model_config" cannot be used together', code='config-both')
+pydantic.errors.PydanticUserError: "Config" and "model_config" cannot be used together
+
+For further information visit https://errors.pydantic.dev/2.12/u/config-both
+WARNING:  StatReload detected changes in 'app/schemas.py'. Reloading...
+Process SpawnProcess-4:
+Traceback (most recent call last):
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/server.py", line 67, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/_compat.py", line 53, in asyncio_run
+    return loop.run_until_complete(main)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/asyncio/base_events.py", line 642, in run_until_complete
+    return future.result()
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/server.py", line 71, in serve
+    await self._serve(sockets)
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/server.py", line 78, in _serve
+    config.load()
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/config.py", line 438, in load
+    self.loaded_app = import_from_string(self.app)
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+  File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/main.py", line 9, in <module>
+    from app.api import jobs, payments
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/api/jobs.py", line 5, in <module>
+    from app.schemas import (
+  File "/Users/briandibassinga/Github-Projects/youtubedubber.com/backend/app/schemas.py", line 364, in <module>
+    class UserProfileResponse(BaseModel):
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_model_construction.py", line 130, in __new__
+    config_wrapper = ConfigWrapper.for_model(bases, namespace, raw_annotations, kwargs)
+  File "/Users/briandibassinga/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_config.py", line 138, in for_model
+    raise PydanticUserError('"Config" and "model_config" cannot be used together', code='config-both')
+pydantic.errors.PydanticUserError: "Config" and "model_config" cannot be used together
+
+For further information visit https://errors.pydantic.dev/2.12/u/config-both
+WARNING:  StatReload detected changes in 'app/schemas.py'. Reloading...
+INFO:     Started server process [47837]
+INFO:     Waiting for application startup.
+2025-11-01 00:01:21,697 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 00:01:21,697 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 00:01:21,697 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 21:47:18,459 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [47837]
+INFO:     Stopping reloader process [42609]

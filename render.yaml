@@ -7,21 +7,23 @@ services:
     rootDir: ./backend_hidden
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
+    healthCheckGracePeriod: 30
     plan: starter
     region: virginia
     envVars:
+      # Database connection (with fallback)
       - key: DATABASE_URL
-        fromDatabase:
-          name: youtubedubber-db
-          property: connectionString
+        sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_SERVICE_KEY
         sync: false
+      # AI Services
       - key: DEEPGRAM_API_KEY
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+      # Application Config
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
@@ -32,14 +34,19 @@ services:
         value: "1"
       - key: PYTHONDONTWRITEBYTECODE
         value: "1"
+      # Storage Config
       - key: STORAGE_BUCKET
         value: yt-dubber-uploads
       - key: MAX_FILE_SIZE
         value: 100MB
+      # Worker Config
       - key: WORKER_POLL_INTERVAL
         value: 5
       - key: MAX_CONCURRENT_JOBS
         value: 3
+      # Render specific
+      - key: PORT
+        value: 10000
 
   # Frontend Next.js Service (Virginia)
   - type: web
@@ -55,19 +62,23 @@ services:
     domains:
       - name: youtubedubber.com
     envVars:
+      # API URL with service reference
       - key: NEXT_PUBLIC_API_URL
         fromService:
           type: web
           name: youtubedubber-api
           property: url
+      # App URL
       - key: NEXT_PUBLIC_APP_URL
         value: https://youtubedubber.com
+      # Supabase Config
       - key: NEXT_PUBLIC_SUPABASE_URL
         sync: false
       - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
         sync: false
       - key: NEXT_PUBLIC_DEV_MODE
         value: "false"
+      # Node Config
       - key: NODE_VERSION
         value: 18
 

@@ -1,0 +1,111 @@
+[2025-10-26 01:46:51] UPLOAD: test_logging.txt | Size: 13 bytes | Saved to: uploads/test_logging.txt
+[2025-10-26 01:46:56] JOB_CREATED: test_logging_job | User: dev-user-123 | Languages: ['es', 'fr'] | Voice uploaded: True | Background uploaded: False
+[2025-10-26 01:48:40] UPLOAD: voice_job_1761457720087_nc9xsjl2x.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761457720087_nc9xsjl2x.wav
+[2025-10-26 01:48:40] UPLOAD: background_job_1761457720087_nc9xsjl2x.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761457720087_nc9xsjl2x.wav
+[2025-10-26 01:48:40] JOB_CREATED: job_1761457720087_nc9xsjl2x | User: dev-user-123 | Languages: ['ko'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 01:48:43] JOB_PROCESSING: job_1761457720087_nc9xsjl2x | User: dev-user-123 | Status: Started processing
+[2025-10-26 01:48:43] FILE_PROCESSING: uploads/voice_job_1761457720087_nc9xsjl2x.wav | Language: ko | Task: task_cb63103b122c
+[2025-10-26 01:54:59] UPLOAD: voice_test_1761458099.wav | Size: 1012 bytes | Saved to: uploads/voice_test_1761458099.wav
+[2025-10-26 01:54:59] UPLOAD: background_test_1761458099.wav | Size: 1012 bytes | Saved to: uploads/background_test_1761458099.wav
+[2025-10-26 01:55:00] JOB_CREATED: test_job_1761458099 | User: dev-user-123 | Languages: ['es', 'fr'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 01:55:07] JOB_PROCESSING: test_job_1761458099 | User: dev-user-123 | Status: Started processing
+[2025-10-26 01:56:50] UPLOAD: voice_job_1761458210879_98t9nk5ui.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761458210879_98t9nk5ui.wav
+[2025-10-26 01:56:51] UPLOAD: background_job_1761458210879_98t9nk5ui.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761458210879_98t9nk5ui.wav
+[2025-10-26 01:56:51] JOB_CREATED: job_1761458210879_98t9nk5ui | User: dev-user-123 | Languages: ['es'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 01:56:59] JOB_PROCESSING: job_1761458210879_98t9nk5ui | User: dev-user-123 | Status: Started processing
+[2025-10-26 01:57:00] FILE_PROCESSING: uploads/voice_job_1761458210879_98t9nk5ui.wav | Language: es | Task: task_cdc2f8067fb8
+[2025-10-26 01:59:31] UPLOAD: test_direct.txt | Size: 13 bytes | Saved to: uploads/test_direct.txt
+[2025-10-26 02:05:52] UPLOAD: voice_job_1761458752766_6a1vry49q.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761458752766_6a1vry49q.wav
+[2025-10-26 02:05:53] UPLOAD: background_job_1761458752766_6a1vry49q.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761458752766_6a1vry49q.wav
+[2025-10-26 02:05:53] JOB_CREATED: job_1761458752766_6a1vry49q | User: dev-user-123 | Languages: ['pt'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 02:06:00] JOB_PROCESSING: job_1761458752766_6a1vry49q | User: dev-user-123 | Status: Started processing
+[2025-10-26 02:06:01] FILE_PROCESSING: uploads/voice_job_1761458752766_6a1vry49q.wav | Language: pt | Task: task_e723c4b3cd29
+[2025-10-26 02:10:46] UPLOAD: voice_job_1761459045935_poav3vp9a.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761459045935_poav3vp9a.wav
+[2025-10-26 02:10:46] UPLOAD: background_job_1761459045935_poav3vp9a.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761459045935_poav3vp9a.wav
+[2025-10-26 02:10:46] JOB_CREATED: job_1761459045935_poav3vp9a | User: dev-user-123 | Languages: ['ja'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 02:10:54] JOB_PROCESSING: job_1761459045935_poav3vp9a | User: dev-user-123 | Status: Started processing
+[2025-10-26 02:10:54] FILE_PROCESSING: uploads/voice_job_1761459045935_poav3vp9a.wav | Language: ja | Task: task_c5997134a88f
+[2025-10-26 02:29:49] JOB_PROCESSING: job_1761459045935_poav3vp9a | User: dev-user-123 | Status: Started processing
+[2025-10-26 02:29:49] FILE_PROCESSING: uploads/voice_job_1761459045935_poav3vp9a.wav | Language: ja | Task: task_c5997134a88f
+[2025-10-26 02:35:14] UPLOAD: voice_job_1761460514569_9tz8jpceg.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761460514569_9tz8jpceg.wav
+[2025-10-26 02:35:14] UPLOAD: background_job_1761460514569_9tz8jpceg.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761460514569_9tz8jpceg.wav
+[2025-10-26 02:35:15] JOB_CREATED: job_1761460514569_9tz8jpceg | User: dev-user-123 | Languages: ['fr'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 02:35:23] JOB_PROCESSING: job_1761460514569_9tz8jpceg | User: dev-user-123 | Status: Started processing
+[2025-10-26 02:35:23] FILE_PROCESSING: uploads/voice_job_1761460514569_9tz8jpceg.wav | Language: fr | Task: task_4d9925cd4d39
+[2025-10-26 02:42:05] UPLOAD: voice_job_1761460924993_edpytj5a4.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761460924993_edpytj5a4.wav
+[2025-10-26 02:42:05] UPLOAD: background_job_1761460924993_edpytj5a4.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761460924993_edpytj5a4.wav
+[2025-10-26 02:42:05] JOB_CREATED: job_1761460924993_edpytj5a4 | User: dev-user-123 | Languages: ['es'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 02:42:13] JOB_PROCESSING: job_1761460924993_edpytj5a4 | User: dev-user-123 | Status: Started processing
+[2025-10-26 02:42:13] FILE_PROCESSING: uploads/voice_job_1761460924993_edpytj5a4.wav | Language: es | Task: task_9200cd4e3020
+[2025-10-26 03:06:45] UPLOAD: voice_job_1761462405663_ije4ukvb2.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761462405663_ije4ukvb2.wav
+[2025-10-26 03:06:45] UPLOAD: background_job_1761462405663_ije4ukvb2.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761462405663_ije4ukvb2.wav
+[2025-10-26 03:06:46] JOB_CREATED: job_1761462405663_ije4ukvb2 | User: dev-user-123 | Languages: ['es'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 03:06:50] JOB_PROCESSING: job_1761462405663_ije4ukvb2 | User: dev-user-123 | Status: Started processing
+[2025-10-26 03:06:50] FILE_PROCESSING: uploads/voice_job_1761462405663_ije4ukvb2.wav | Language: es | Task: task_b183dc1dc2a1
+[2025-10-26 03:13:15] UPLOAD: voice_job_1761462795070_ltelyezyz.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761462795070_ltelyezyz.wav
+[2025-10-26 03:13:15] UPLOAD: background_job_1761462795070_ltelyezyz.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761462795070_ltelyezyz.wav
+[2025-10-26 03:13:15] JOB_CREATED: job_1761462795070_ltelyezyz | User: dev-user-123 | Languages: ['zh'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 03:13:21] JOB_PROCESSING: job_1761462795070_ltelyezyz | User: dev-user-123 | Status: Started processing
+[2025-10-26 03:13:21] FILE_PROCESSING: uploads/voice_job_1761462795070_ltelyezyz.wav | Language: zh | Task: task_ab2009c0ba86
+[2025-10-26 03:25:05] UPLOAD: voice_job_1761463505511_49y4tglwx.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761463505511_49y4tglwx.wav
+[2025-10-26 03:25:05] UPLOAD: background_job_1761463505511_49y4tglwx.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761463505511_49y4tglwx.wav
+[2025-10-26 03:25:06] JOB_CREATED: job_1761463505511_49y4tglwx | User: dev-user-123 | Languages: ['zh'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 03:29:07] UPLOAD: voice_job_1761463747279_oep6uz477.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761463747279_oep6uz477.wav
+[2025-10-26 03:29:07] UPLOAD: background_job_1761463747279_oep6uz477.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761463747279_oep6uz477.wav
+[2025-10-26 03:29:08] JOB_CREATED: job_1761463747279_oep6uz477 | User: dev-user-123 | Languages: ['zh'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 03:34:41] UPLOAD: test/file.txt | Size: 12 bytes | Saved to: uploads/test/file.txt
+[2025-10-26 03:35:09] UPLOAD: voice_job_1234567890_abc123.wav | Size: 18 bytes | Saved to: uploads/voice_job_1234567890_abc123.wav
+[2025-10-26 03:56:17] UPLOAD: uploads/dev-user-123/job_a2754ea41228/voice_track_VOICE-ONLY.mp4 | Size: 17974672 bytes | Saved to: uploads/uploads/dev-user-123/job_a2754ea41228/voice_track_VOICE-ONLY.mp4
+[2025-10-26 03:56:17] UPLOAD: uploads/dev-user-123/job_a2754ea41228/background_track_SFX-ONLY.mp4 | Size: 17975234 bytes | Saved to: uploads/uploads/dev-user-123/job_a2754ea41228/background_track_SFX-ONLY.mp4
+[2025-10-26 03:57:16] JOB_CREATED: test123 | User: dev-user-123 | Languages: ['es'] | Voice uploaded: True | Background uploaded: False
+[2025-10-26 03:57:50] UPLOAD: uploads/dev-user-123/job_ce21e2c8f16d/voice_track_VOICE-ONLY.mp4 | Size: 17974672 bytes | Saved to: uploads/uploads/dev-user-123/job_ce21e2c8f16d/voice_track_VOICE-ONLY.mp4
+[2025-10-26 03:57:50] UPLOAD: uploads/dev-user-123/job_ce21e2c8f16d/background_track_SFX-ONLY.mp4 | Size: 17975234 bytes | Saved to: uploads/uploads/dev-user-123/job_ce21e2c8f16d/background_track_SFX-ONLY.mp4
+[2025-10-26 03:57:50] JOB_CREATED: job_ce21e2c8f16d | User: dev-user-123 | Languages: ['zh'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 04:02:32] UPLOAD: uploads/dev-user-123/job_b4e697d0cb5e/voice_track_VOICE-ONLY.mp4 | Size: 17974672 bytes | Saved to: uploads/uploads/dev-user-123/job_b4e697d0cb5e/voice_track_VOICE-ONLY.mp4
+[2025-10-26 04:02:32] UPLOAD: uploads/dev-user-123/job_b4e697d0cb5e/background_track_SFX-ONLY.mp4 | Size: 17975234 bytes | Saved to: uploads/uploads/dev-user-123/job_b4e697d0cb5e/background_track_SFX-ONLY.mp4
+[2025-10-26 04:02:32] JOB_CREATED: job_b4e697d0cb5e | User: dev-user-123 | Languages: ['zh'] | Voice uploaded: True | Background uploaded: True
+[2025-10-26 04:05:04] UPLOAD: uploads/dev-user-123/job_a94c7be7bf10/voice_track_VOICE-ONLY.mp4 | Size: 17974672 bytes | Saved to: uploads/uploads/dev-user-123/job_a94c7be7bf10/voice_track_VOICE-ONLY.mp4
+[2025-10-26 04:05:04] UPLOAD: uploads/dev-user-123/job_a94c7be7bf10/background_track_SFX-ONLY.mp4 | Size: 17975234 bytes | Saved to: uploads/uploads/dev-user-123/job_a94c7be7bf10/background_track_SFX-ONLY.mp4
+[2025-10-26 04:05:04] JOB_CREATED: job_a94c7be7bf10 | User: dev-user-123 | Languages: ['zh'] | Voice uploaded: True | Background uploaded: True
+[2025-10-29 22:32:53] UPLOAD: uploads/dev-user-123/job_12e6823a1218/voice_track_VOICE-ONLY.mp4 | Size: 17974672 bytes | Saved to: uploads/uploads/dev-user-123/job_12e6823a1218/voice_track_VOICE-ONLY.mp4
+[2025-10-29 22:32:54] UPLOAD: uploads/dev-user-123/job_12e6823a1218/background_track_SFX-ONLY.mp4 | Size: 17975234 bytes | Saved to: uploads/uploads/dev-user-123/job_12e6823a1218/background_track_SFX-ONLY.mp4
+[2025-10-29 22:32:55] JOB_CREATED: job_12e6823a1218 | User: dev-user-123 | Languages: ['zh'] | Voice uploaded: True | Background uploaded: True
+[2025-10-29 22:40:23] UPLOAD: voice_job_1761792023225_a1pt06uot.wav | Size: 17974672 bytes | Saved to: uploads/voice_job_1761792023225_a1pt06uot.wav
+[2025-10-29 22:40:23] UPLOAD: background_job_1761792023225_a1pt06uot.wav | Size: 17975234 bytes | Saved to: uploads/background_job_1761792023225_a1pt06uot.wav
+[2025-10-29T23:18:10.993028] DEV JOB CREATED: job_1761794290679_p1vk5ip92 for user dev-user-123 with languages ['es']
+[2025-10-29T23:22:18.865176] DEV JOB CREATED: job_1761794538569_bvqtw93sk for user dev-user-123 with languages ['es']
+[2025-10-29T23:29:58.090906] DEV JOB CREATED: job_1761794997827_w6zzxexdy for user dev-user-123 with languages ['es']
+[2025-10-29T23:38:17.913296] DEV JOB CREATED: job_1761795497629_3sq0kiega for user dev-user-123 with languages ['pt']
+[2025-10-29T23:43:59.345886] DEV JOB CREATED: job_1761795839067_cefzkiktl for user dev-user-123 with languages ['zh']
+[2025-10-29T23:49:11.248563] DEV JOB CREATED: job_1761796150971_0npd3ws1g for user dev-user-123 with languages ['zh']
+[2025-10-29T23:51:20.860683] DEV JOB CREATED: job_1761796280592_3b8fown5s for user dev-user-123 with languages ['it']
+[2025-10-29T23:59:40.242183] DEV JOB CREATED: test_job_progression for user dev-user-123 with languages ['es', 'fr', 'de']
+[2025-10-30T00:00:09.575978] DEV JOB CREATED: fresh_test_job for user dev-user-123 with languages ['ko']
+[2025-10-30T00:00:44.849399] DEV JOB CREATED: phase_test_job for user dev-user-123 with languages ['es', 'fr', 'de']
+[2025-10-30T00:09:39.124837] DEV JOB CREATED: job_1761797378826_5ahigvnj2 for user dev-user-123 with languages ['zh']
+[2025-10-30T00:12:55.954009] DEV JOB CREATED: job_1761797575656_ec5y392am for user dev-user-123 with languages ['de']
+[2025-10-30T00:16:37.261550] DEV JOB CREATED: job_7faa89915e2f for user dev-user-123 with languages ['es']
+[2025-10-30 00:46:14] JOB_PROCESSING: job_1761463505511_49y4tglwx | User: dev-user-123 | Status: Started processing
+[2025-10-30 00:46:14] JOB_PROCESSING: job_1761463747279_oep6uz477 | User: dev-user-123 | Status: Started processing
+[2025-10-30 00:46:15] JOB_PROCESSING: job_12e6823a1218 | User: dev-user-123 | Status: Started processing
+[2025-11-01 22:21:51] JOB_CREATED: job_d3b1ea9316b9 | User: dev-user-123 | Languages: ['zh'] | Voice uploaded: True | Background uploaded: True
+[2025-11-01 22:21:58] JOB_PROCESSING: job_d3b1ea9316b9 | User: dev-user-123 | Status: Started processing
+[2025-11-01 22:26:47] JOB_CREATED: job_8453bd56edb9 | User: dev-user-123 | Languages: ['zh'] | Voice uploaded: True | Background uploaded: True
+[2025-11-01 22:26:53] JOB_PROCESSING: job_8453bd56edb9 | User: dev-user-123 | Status: Started processing
+[2025-11-01 22:37:51] JOB_PROCESSING: job_8453bd56edb9 | User: dev-user-123 | Status: Started processing
+[2025-11-01 22:37:52] FILE_PROCESSING: /var/folders/6h/jjnzdw8n27s441g0cs68l3gc0000gn/T/tmpi1w8g6gd.mp4 | Language: zh | Task: task_9587fbb1eed7
+[2025-11-01 22:52:58] JOB_CREATED: job_319b47bfa974 | User: dev-user-123 | Languages: ['fr'] | Voice uploaded: True | Background uploaded: True
+[2025-11-01 22:53:06] JOB_PROCESSING: job_319b47bfa974 | User: dev-user-123 | Status: Started processing
+[2025-11-01 22:53:06] FILE_PROCESSING: /var/folders/6h/jjnzdw8n27s441g0cs68l3gc0000gn/T/tmpxwgth0ly.mp4 | Language: fr | Task: task_3475f3bc9518
+[2025-11-01 22:59:26] JOB_CREATED: job_46e243f3cd7f | User: dev-user-123 | Languages: ['fr'] | Voice uploaded: True | Background uploaded: True
+[2025-11-01 22:59:30] JOB_PROCESSING: job_46e243f3cd7f | User: dev-user-123 | Status: Started processing
+[2025-11-01 22:59:30] FILE_PROCESSING: /var/folders/6h/jjnzdw8n27s441g0cs68l3gc0000gn/T/tmpy880l07f.mp4 | Language: fr | Task: task_bbcb0cb839d0
+[2025-11-01 23:24:15] JOB_CREATED: job_2513adde69be | User: dev-user-123 | Languages: ['fr'] | Voice uploaded: True | Background uploaded: True
+[2025-11-01 23:24:21] JOB_PROCESSING: job_2513adde69be | User: dev-user-123 | Status: Started processing
+[2025-11-01 23:24:21] FILE_PROCESSING: /var/folders/6h/jjnzdw8n27s441g0cs68l3gc0000gn/T/tmpknz18c7r.mp4 | Language: fr | Task: task_61c7213cec41
+[2025-11-02 13:17:17] JOB_CREATED: job_3b68b3ec369a | User: dev-user-123 | Languages: ['zh'] | Voice uploaded: True | Background uploaded: True
+[2025-11-02 13:17:24] JOB_PROCESSING: job_3b68b3ec369a | User: dev-user-123 | Status: Started processing
+[2025-11-02 13:17:24] FILE_PROCESSING: /var/folders/6h/jjnzdw8n27s441g0cs68l3gc0000gn/T/tmp5wgvecjj.mp4 | Language: zh | Task: task_a9c2a08a5f14
+[2025-11-02 13:25:29] JOB_CREATED: job_182736b30a1a | User: dev-user-123 | Languages: ['es'] | Voice uploaded: True | Background uploaded: True
+[2025-11-02 13:25:38] JOB_PROCESSING: job_182736b30a1a | User: dev-user-123 | Status: Started processing
+[2025-11-02 13:25:38] FILE_PROCESSING: /var/folders/6h/jjnzdw8n27s441g0cs68l3gc0000gn/T/tmpd0q8mwtd.mp4 | Language: es | Task: task_1b3eab3cb02a

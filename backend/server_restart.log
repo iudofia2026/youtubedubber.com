@@ -1,0 +1,22 @@
+INFO:     Will watch for changes in these directories: ['/Users/briandibassinga/Github-Projects/youtubedubber.com/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [61660] using StatReload
+INFO:     Started server process [61663]
+INFO:     Waiting for application startup.
+2025-11-01 21:47:32,747 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 21:47:32,747 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 21:47:32,747 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'app/main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-11-01 21:49:02,676 - app.main - INFO - Shutting down YT Dubber API...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [61663]
+2025-11-01 21:49:03,147 - app.main - INFO - CORS Origins: ['http://localhost:3000', 'http://localhost:3001', 'http://10.0.0.149:3000', 'http://10.0.0.149:3001']
+INFO:     Started server process [62276]
+INFO:     Waiting for application startup.
+2025-11-01 21:49:03,152 - app.main - INFO - Starting YT Dubber API...
+2025-11-01 21:49:03,152 - app.main - INFO - Using Supabase REST API for database operations
+2025-11-01 21:49:03,152 - app.main - INFO - YT Dubber API started successfully
+INFO:     Application startup complete.
