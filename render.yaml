@@ -22,9 +22,13 @@ services:
           type: postgres
           name: youtubedubber-db
           property: connectionString
-      # Disable Supabase (using Render PostgreSQL instead)
+      # Supabase Authentication (required for auth endpoints)
+      - key: SUPABASE_URL
+        value: "https://twrehfzfqrgxngsozonh.supabase.co/"
+      - key: SUPABASE_SERVICE_KEY
+        sync: false  # Set this in Render dashboard for security
       - key: USE_SUPABASE
-        value: "false"
+        value: "true"  # Required for authentication to work
       - key: DEBUG
         value: "false"
       # AI Services (configure after deployment)
