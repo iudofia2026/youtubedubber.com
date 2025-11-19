@@ -25,12 +25,12 @@ TARGET_LANGUAGE = "es"  # Spanish
 
 HEADER = "=" * 70
 
-# Speaker voice mapping
+# Speaker voice mapping (Spanish voices)
 SPEAKER_VOICES = {
-    0: "aura-asteria-en",  # Female
-    1: "aura-helios-en",   # Male
+    0: "aura-2-celeste-es",  # Female (Colombian)
+    1: "aura-2-nestor-es",   # Male (Peninsular)
 }
-DEFAULT_VOICE = "aura-luna-en"
+DEFAULT_VOICE = "aura-2-celeste-es"
 
 def _run_ffmpeg(cmd: list):
     """Run FFmpeg command with basic error handling."""
